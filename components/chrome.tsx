@@ -2,29 +2,39 @@ import { business, nav } from "../lib/content";
 import { A } from "./link";
 
 /**
- * The mark. Client confirmed 2026-09-02 that the header badge is canonical and
- * the footer's blue "Curbology Cleaning" droplet is retired — so there is one
- * mark on this site, not two.
+ * The mark — the real badge, recovered from the site's own PDF export.
  *
- * Drawn rather than linked: no logo source file was ever captured, only
- * rasterised pixels inside screenshots. Replace with the real asset when Tristen
- * supplies it. This is a stand-in that is honestly a stand-in.
+ * It was never fetchable: the Wix HTML names it
+ * `3f6c3b_122a194aa059428a978250e93b55845a~mv2.png` on static.wixstatic.com,
+ * which this environment cannot reach. It came out of the embedded image
+ * streams in the PDF instead, at 223×142 with transparency intact.
+ *
+ * ⚠️ It is a DARK mark — 44% of its opaque pixels are #002040. It reads on
+ * teal and on white and would vanish on the ink footer, so dark grounds keep
+ * the live-text wordmark until Tristen supplies a knockout version. That is
+ * also the more robust choice in email, where an image wordmark disappears
+ * entirely when a client blocks images.
  */
 function Mark({ onDark = false }: { onDark?: boolean }) {
-  const stroke = onDark ? "#FFFFFF" : "#1A202C";
-  return (
-    <span className="inline-flex items-center gap-3">
-      <svg width="34" height="34" viewBox="0 0 34 34" aria-hidden="true" fill="none">
-        <path d="M4 16.5 17 6l13 10.5" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M7.5 15v11.5h19V15" stroke={stroke} strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-        <path d="M17 20.5c1.6 1.7 2.5 3 2.5 4.2a2.5 2.5 0 1 1-5 0c0-1.2.9-2.5 2.5-4.2Z" fill={stroke} />
-      </svg>
-      <span
-        className={`font-display text-lg font-bold uppercase tracking-tight ${onDark ? "text-paper" : "text-ink"}`}
-      >
+  if (onDark) {
+    return (
+      <span className="font-display text-lg font-bold uppercase tracking-tight text-paper">
         Curbology
       </span>
-    </span>
+    );
+  }
+  return (
+    /* eslint-disable-next-line @next/next/no-img-element */
+    <img
+      src="/brand/curbology-logo.png"
+      alt="Curbology Exterior Services"
+      width={82}
+      height={52}
+      /* Below ~50px the badge's "EXTERIOR SERVICES" bar mushes — it carries a
+         lot of fine detail for its size. A vector original would fix that
+         properly; this is the largest raster that exists. */
+      className="h-11 w-auto md:h-[52px]"
+    />
   );
 }
 

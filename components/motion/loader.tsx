@@ -54,7 +54,7 @@ function documentReady(): Promise<void> {
 export function EntryLoader() {
   const [state, setState] = useState<"idle" | "showing" | "leaving" | "done">("idle");
   const [progress, setProgress] = useState(0);
-  const path = useRef<SVGPathElement>(null);
+  const path = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
     // Nothing to do when it should not play: "idle" already renders null, so
@@ -107,17 +107,21 @@ export function EntryLoader() {
     };
   }, []);
 
-  // The mark strokes itself in. Dash length is read off the path, because a
-  // guessed length either finishes early or never arrives.
+  /*
+   * The real badge, revealed by a wipe.
+   *
+   * The previous version stroke-animated a hand-drawn SVG path — a nice effect
+   * for a mark that was only ever a stand-in. A PNG cannot draw itself, and a
+   * path that merely resembles the logo is not the logo, so the reveal moved to
+   * a clip instead of the artwork moving to fit the reveal.
+   */
   useEffect(() => {
     const node = path.current;
     if (!node || state !== "showing") return;
-    const length = node.getTotalLength();
-    node.style.strokeDasharray = String(length);
-    node.style.strokeDashoffset = String(length);
+    node.style.clipPath = "inset(0 100% 0 0)";
     requestAnimationFrame(() => {
-      node.style.transition = "stroke-dashoffset 1100ms var(--ease-out)";
-      node.style.strokeDashoffset = "0";
+      node.style.transition = "clip-path 900ms var(--ease-out)";
+      node.style.clipPath = "inset(0 0 0 0)";
     });
   }, [state]);
 
@@ -132,13 +136,15 @@ export function EntryLoader() {
         transition: "transform var(--dur-cover) var(--ease-cover)",
       }}
     >
-      <svg width="86" height="86" viewBox="0 0 34 34" fill="none">
-        <path
-          ref={path}
-          d="M4 16.5 17 6l13 10.5M7.5 15v11.5h19V15"
-          stroke="#1A202C" strokeWidth="1.6" strokeLinecap="round" strokeLinejoin="round"
-        />
-      </svg>
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img
+        ref={path}
+        src="/brand/curbology-logo.png"
+        alt=""
+        width={188}
+        height={120}
+        style={{ width: 188, height: "auto" }}
+      />
       <div className="mt-8 h-px w-40 overflow-hidden bg-ink/20">
         <div
           className="h-full bg-ink"

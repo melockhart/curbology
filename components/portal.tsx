@@ -16,13 +16,16 @@ export function PortalShell({
     <div className="ground-paper flex min-h-screen flex-col">
       <header className="bg-teal">
         <div className="mx-auto w-full max-w-2xl px-6 py-5">
-          <A href="/" className="inline-flex items-center gap-3" aria-label={`${business.name} — home`}>
-            <svg width="30" height="30" viewBox="0 0 34 34" aria-hidden="true" fill="none">
-              <path d="M4 16.5 17 6l13 10.5" stroke="#1A202C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M7.5 15v11.5h19V15" stroke="#1A202C" strokeWidth="2.2" strokeLinecap="round" strokeLinejoin="round" />
-              <path d="M17 20.5c1.6 1.7 2.5 3 2.5 4.2a2.5 2.5 0 1 1-5 0c0-1.2.9-2.5 2.5-4.2Z" fill="#1A202C" />
-            </svg>
-            <span className="font-display text-base font-bold uppercase tracking-tight text-ink">Curbology</span>
+          <A href="/" aria-label={`${business.name} — home`}>
+            {/* The real badge. Dark mark, so it lives on the teal masthead. */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src="/brand/curbology-logo.png"
+              alt="Curbology Exterior Services"
+              width={63}
+              height={40}
+              style={{ height: 40, width: "auto" }}
+            />
           </A>
         </div>
       </header>

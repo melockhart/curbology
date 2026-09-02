@@ -5,7 +5,11 @@
     "url": "https://www.curbologyexteriorcleaning.com",
     "platform": "wix",
     "generator": "Wix.com Website Builder",
-    "dns": ["cfd.wixdns.net", "cdn3.wixdns.net", "185.230.63.171"]
+    "dns": [
+      "cfd.wixdns.net",
+      "cdn3.wixdns.net",
+      "185.230.63.171"
+    ]
   },
   "meta": {
     "title": "professional exterior cleaning services",
@@ -13,51 +17,172 @@
     "ogTitle": "professional exterior cleaning services",
     "ogUrl": "https://www.curbologyexteriorcleaning.com",
     "ogType": "website",
-    "note": "Title is lowercase and generic — no brand name. og:description truncates the business name to 'Curbology Exterior C'."
+    "note": "Title is lowercase and generic \u2014 no brand name. og:description truncates the business name to 'Curbology Exterior C'."
   },
-  "routes": ["/", "/services", "/portfolio"],
+  "routes": [
+    "/",
+    "/services",
+    "/portfolio"
+  ],
   "nav": [
-    { "label": "(248) 387-9215", "href": "tel:2483879215" },
-    { "label": "Home", "href": "/" },
-    { "label": "Services", "href": "/services" },
-    { "label": "Portfolio Page", "href": "/portfolio" },
-    { "label": "Get Free Quote", "href": null }
+    {
+      "label": "(248) 387-9215",
+      "href": "tel:2483879215"
+    },
+    {
+      "label": "Home",
+      "href": "/"
+    },
+    {
+      "label": "Services",
+      "href": "/services"
+    },
+    {
+      "label": "Portfolio Page",
+      "href": "/portfolio"
+    },
+    {
+      "label": "Get Free Quote",
+      "href": null
+    }
   ],
   "business": {
     "name": "Curbology Exterior Cleaning",
-    "logoWordmarks": ["CURBOLOGY EXTERIOR SERVICES (header badge)", "Curbology Cleaning (footer droplet)"],
+    "logoWordmarks": [
+      "CURBOLOGY EXTERIOR SERVICES (header badge)",
+      "Curbology Cleaning (footer droplet)"
+    ],
     "phones": [
-      { "value": "(248) 387-9215", "href": "tel:2483879215", "where": "header", "status": "likely real — correct Oakland County area code, real tel: link" },
-      { "value": "(517) 555-0123", "href": null, "where": "footer", "status": "PLACEHOLDER — 555-01xx is a reserved fictional range; 517 is Lansing, not Oakland County" }
+      {
+        "value": "(248) 387-9215",
+        "href": "tel:2483879215",
+        "where": "header",
+        "status": "likely real \u2014 correct Oakland County area code, real tel: link"
+      },
+      {
+        "value": "(517) 555-0123",
+        "href": null,
+        "where": "footer",
+        "status": "PLACEHOLDER \u2014 555-01xx is a reserved fictional range; 517 is Lansing, not Oakland County"
+      }
     ],
     "emails": [
-      { "value": "hello@curbology.com", "where": "footer", "status": "PLACEHOLDER — wrong domain (curbology.com, not curbologyexteriorcleaning.com) and not linked with mailto: anywhere in the DOM" }
+      {
+        "value": "hello@curbology.com",
+        "where": "footer",
+        "status": "PLACEHOLDER \u2014 wrong domain (curbology.com, not curbologyexteriorcleaning.com) and not linked with mailto: anywhere in the DOM"
+      }
     ],
-    "address": { "value": "123 Exterior Way, Oakland County, MI", "status": "PLACEHOLDER — not a real address" },
+    "address": {
+      "value": "123 Exterior Way, Oakland County, MI",
+      "status": "PLACEHOLDER \u2014 not a real address"
+    },
     "hours": null,
-    "serviceArea": ["Oakland County, Michigan", "West Bloomfield, MI"],
+    "serviceArea": [
+      "Oakland County, Michigan",
+      "West Bloomfield, MI"
+    ],
     "socials": [
-      { "platform": "facebook", "href": "http://www.facebook.com", "status": "DEAD — platform homepage, not a profile" },
-      { "platform": "instagram", "href": "http://www.instagram.com", "status": "DEAD" },
-      { "platform": "youtube", "href": "http://www.youtube.com", "status": "DEAD" },
-      { "platform": "x", "href": "http://www.x.com", "status": "DEAD" },
-      { "platform": "linkedin", "href": "http://www.linkedin.com", "status": "DEAD" },
-      { "platform": "tiktok", "href": "http://www.tiktok.com", "status": "DEAD" }
+      {
+        "platform": "facebook",
+        "href": "http://www.facebook.com",
+        "status": "DEAD \u2014 platform homepage, not a profile"
+      },
+      {
+        "platform": "instagram",
+        "href": "http://www.instagram.com",
+        "status": "DEAD"
+      },
+      {
+        "platform": "youtube",
+        "href": "http://www.youtube.com",
+        "status": "DEAD"
+      },
+      {
+        "platform": "x",
+        "href": "http://www.x.com",
+        "status": "DEAD"
+      },
+      {
+        "platform": "linkedin",
+        "href": "http://www.linkedin.com",
+        "status": "DEAD"
+      },
+      {
+        "platform": "tiktok",
+        "href": "http://www.tiktok.com",
+        "status": "DEAD"
+      }
     ],
     "claims": [
-      { "claim": "300+ Projects Completed", "source": "homepage stat band", "verified": false },
-      { "claim": "3+ Years of Expertise", "source": "homepage stat band", "verified": false },
-      { "claim": "100% Customer Satisfaction", "source": "homepage stat band", "verified": false }
+      {
+        "claim": "300+ Projects Completed",
+        "source": "homepage stat band",
+        "verified": false
+      },
+      {
+        "claim": "3+ Years of Expertise",
+        "source": "homepage stat band",
+        "verified": false
+      },
+      {
+        "claim": "100% Customer Satisfaction",
+        "source": "homepage stat band",
+        "verified": false
+      }
     ],
-    "reviewProfile": { "platform": "Google", "rating": 5.0, "count": 10, "source": "embedded Google review badge", "individualReviewsCaptured": false }
+    "reviewProfile": {
+      "platform": "Google",
+      "rating": 5.0,
+      "count": 10,
+      "source": "embedded Google review badge",
+      "individualReviewsCaptured": false
+    },
+    "logo": {
+      "file": "public/brand/curbology-logo.png",
+      "size": "223x142 RGBA",
+      "recoveredFrom": "embedded image stream in the Safari PDF export \u2014 static.wixstatic.com is unreachable from the build environment",
+      "wixAsset": "3f6c3b_122a194aa059428a978250e93b55845a~mv2.png",
+      "wordmark": "CURBOLOGY EXTERIOR SERVICES",
+      "dominantColours": [
+        "#002040 (44%)",
+        "#0080c0 (15%)"
+      ],
+      "usableOn": [
+        "teal",
+        "white"
+      ],
+      "notUsableOn": [
+        "ink \u2014 the navy disappears; dark grounds keep the live-text wordmark"
+      ],
+      "outstanding": "No vector original. 223x142 is the largest raster that exists, and the 'EXTERIOR SERVICES' bar degrades below ~50px."
+    }
   },
   "services": [
-    { "name": "Pressure Washing Oakland County MI", "cta": "Book Service", "sourcePath": "/services", "price": null },
-    { "name": "Pressure Washing Oakland County MI – House & Siding Washing", "cta": "Get Quote", "sourcePath": "/services", "price": null },
-    { "name": "Gutter Cleaning & Brightening", "cta": "Refresh My Gutters", "sourcePath": "/services", "price": null }
+    {
+      "name": "Pressure Washing Oakland County MI",
+      "cta": "Book Service",
+      "sourcePath": "/services",
+      "price": null
+    },
+    {
+      "name": "Pressure Washing Oakland County MI \u2013 House & Siding Washing",
+      "cta": "Get Quote",
+      "sourcePath": "/services",
+      "price": null
+    },
+    {
+      "name": "Gutter Cleaning & Brightening",
+      "cta": "Refresh My Gutters",
+      "sourcePath": "/services",
+      "price": null
+    }
   ],
   "servicesOfferedButNotSold": [
-    { "name": "Roof cleaning", "evidence": "quote-form option on both homepage forms; hero copy; portfolio item 05 — but no section on /services" }
+    {
+      "name": "Roof cleaning",
+      "evidence": "quote-form option on both homepage forms; hero copy; portfolio item 05 \u2014 but no section on /services"
+    }
   ],
   "portfolio": [
     "01 Residential House Washing",
@@ -80,28 +205,58 @@
       "--wst-shade-3-color": "#4A5568"
     },
     "buttonTokens": {
-      "primary": { "background": "#3182CE", "text": "#04B8BA", "contrast": 1.64, "verdict": "FAIL — effectively unreadable" },
-      "secondary": { "background": "#04B8BA", "text": "#3182CE", "contrast": 1.64, "verdict": "FAIL" }
+      "primary": {
+        "background": "#3182CE",
+        "text": "#04B8BA",
+        "contrast": 1.64,
+        "verdict": "FAIL \u2014 effectively unreadable"
+      },
+      "secondary": {
+        "background": "#04B8BA",
+        "text": "#3182CE",
+        "contrast": 1.64,
+        "verdict": "FAIL"
+      }
     },
     "fonts": {
-      "display": { "family": "Fraunces", "weight": 700, "source": "Google Fonts v10", "usedFor": "headings 1-6", "lineHeights": ["0.95em h1", "1em h2", "1.1em h3-h6"] },
-      "body": { "family": "Instrument Sans", "weight": 400, "usedFor": "paragraphs 1-3 and all buttons", "lineHeight": "1.3em" },
-      "alsoPresent": ["IBM Plex Sans", "Wix Madefor Text v2", "DIN Next W01 Light"],
+      "display": {
+        "family": "Fraunces",
+        "weight": 700,
+        "source": "Google Fonts v10",
+        "usedFor": "headings 1-6",
+        "lineHeights": [
+          "0.95em h1",
+          "1em h2",
+          "1.1em h3-h6"
+        ]
+      },
+      "body": {
+        "family": "Instrument Sans",
+        "weight": 400,
+        "usedFor": "paragraphs 1-3 and all buttons",
+        "lineHeight": "1.3em"
+      },
+      "alsoPresent": [
+        "IBM Plex Sans",
+        "Wix Madefor Text v2",
+        "DIN Next W01 Light"
+      ],
       "note": "Wix's --font_N theme tokens are still the unedited Madefor defaults; the applied site typography is Fraunces + Instrument Sans."
     },
     "paletteOrigin": "#1A202C, #4A5568, #3182CE and #68D391 are stock Tailwind v1/v2 values. Only #04B8BA appears chosen."
   },
   "unresolved": [
-    "Registered postal address — required by CAN-SPAM before any email ships",
+    "Registered postal address \u2014 required by CAN-SPAM before any email ships",
     "Real sending from-address",
     "Confirmation that (248) 387-9215 is current",
     "Real social profile URLs, or a decision to drop the icons",
-    "Which logo is canonical: 'Curbology Exterior Services' or 'Curbology Cleaning'",
     "Evidence for 300+ / 3+ / 100%",
-    "Business hours — not published anywhere",
-    "Individual Google review text and reviewer names — only the 5.0/10 aggregate was captured",
+    "Business hours \u2014 not published anywhere",
+    "Individual Google review text and reviewer names \u2014 only the 5.0/10 aggregate was captured",
     "Whether roof cleaning should become a full service page",
-    "Logo source files — only rasterized in screenshots",
-    "Entity type (LLC / Sole Prop) — not published"
+    "Entity type (LLC / Sole Prop) \u2014 not published",
+    "Vector (SVG/AI/EPS) original of the badge \u2014 the raster is 223x142 and degrades at small sizes",
+    "A knockout/light version of the badge for dark grounds",
+    "Whether the site's photography is Curbology's own work: the hero image has a garbled wordmark on the shirt, which is the signature of an AI-generated image, and the six portfolio photos show no identifiable Curbology job"
   ]
 }
