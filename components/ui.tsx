@@ -8,15 +8,12 @@ import { A } from "./link";
 export function Button({
   href, children, variant = "primary",
 }: { href: string; children: ReactNode; variant?: "primary" | "onTeal" }) {
-  const styles =
-    variant === "primary"
-      ? "bg-ink text-paper hover:bg-slate"        // 16.32:1
-      : "bg-paper text-ink hover:bg-white/90";    // on a teal ground, 16.32:1
+  // .btn carries the depth and the press; the variant only picks the face.
+  // Both faces keep a solid background-color under the gradient so contrast
+  // stays measurable — see globals.css.
+  const face = variant === "primary" ? "btn--ink" : "btn--paper";
   return (
-    <A
-      href={href}
-      className={`inline-flex min-h-[44px] items-center rounded-full px-7 py-3 text-base font-medium transition-colors ${styles}`}
-    >
+    <A href={href} className={`btn ${face} text-base`}>
       {children}
     </A>
   );

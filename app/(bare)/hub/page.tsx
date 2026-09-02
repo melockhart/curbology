@@ -42,10 +42,8 @@ export default function HubPage() {
           <li key={a.href}>
             <A
               href={a.href}
-              className={`flex min-h-[60px] flex-col justify-center rounded-2xl px-5 py-3 transition-colors ${
-                a.primary
-                  ? "bg-ink text-paper hover:bg-slate"
-                  : "border border-ink/15 bg-paper text-ink hover:bg-ink/5"
+              className={`btn !min-h-[64px] !justify-start !rounded-2xl !px-5 flex-col !items-start ${
+                a.primary ? "btn--ink" : "btn--paper"
               }`}
             >
               <span className="font-medium">{a.label}</span>

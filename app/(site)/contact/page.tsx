@@ -79,10 +79,7 @@ export default function ContactPage() {
           </div>
 
           {/* ink on white — 16.32:1. The live site's submit button was 1.64:1. */}
-          <button
-            type="submit"
-            className="min-h-[44px] w-full rounded-full bg-ink px-7 py-3 font-medium text-paper transition-colors hover:bg-slate"
-          >
+          <button type="submit" className="btn btn--ink w-full">
             {quoteForm.submit}
           </button>
         </form>

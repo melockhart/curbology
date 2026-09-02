@@ -72,10 +72,7 @@ export function Field({
 export function Submit({ children }: { children: React.ReactNode }) {
   // ink on white — 16.32:1.
   return (
-    <button
-      type="submit"
-      className="min-h-[44px] w-full rounded-full bg-ink px-7 py-3 font-medium text-paper transition-colors hover:bg-slate"
-    >
+    <button type="submit" className="btn btn--ink w-full">
       {children}
     </button>
   );

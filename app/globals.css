@@ -36,6 +36,16 @@
   --color-paper: #ffffff;
 
   /* Variable-font family names come from @fontsource-variable, imported in layout.tsx. */
+  /* Motion tokens. One vocabulary, so nothing invents its own timing. */
+  --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
+  --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
+  --ease-cover: cubic-bezier(0.83, 0, 0.17, 1);
+  --dur-fast: 180ms;
+  --dur-base: 420ms;
+  --dur-slow: 900ms;
+  --dur-cover: 620ms;
+  --lift: -2px;
+
   --font-display: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
   --font-body: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
 }
@@ -96,4 +106,136 @@
     transition-duration: 0.01ms !important;
     scroll-behavior: auto !important;
   }
+}
+
+@layer components {
+  /*
+   * The button. Beveled gloss at rest, layered lift on interaction.
+   *
+   * Depth comes from light — a gradient face and a hairline top highlight — and
+   * the interaction comes from elevation: it rises on hover and presses in on
+   * click, with the shadow collapsing under it so the travel reads as physical.
+   *
+   * ⚠️ background-color is set alongside background-image on purpose. The
+   * gradient is decoration; the solid colour underneath is what the contrast
+   * sweep measures and what renders if the gradient ever fails. Remove it and
+   * the button still looks right while becoming unmeasurable.
+   */
+  .btn {
+    position: relative;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: 0.75rem 1.75rem;
+    border-radius: 999px;
+    font-weight: 500;
+    line-height: 1;
+    isolation: isolate;
+    transform: translateY(0);
+    transition:
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out),
+      filter var(--dur-fast) var(--ease-out);
+  }
+
+  /* The gloss: a highlight along the top edge, fading out by the middle. */
+  .btn::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    border-radius: inherit;
+    background: linear-gradient(180deg, rgb(255 255 255 / 0.18), rgb(255 255 255 / 0) 55%);
+    pointer-events: none;
+    z-index: -1;
+  }
+
+  .btn--ink {
+    color: #fff;
+    background-color: #1a202c;                                   /* 16.32:1 */
+    background-image: linear-gradient(180deg, #262f42 0%, #1a202c 60%, #12161f 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.14),
+      inset 0 -1px 0 rgb(0 0 0 / 0.4),
+      0 1px 2px rgb(9 12 18 / 0.28),
+      0 6px 16px -4px rgb(9 12 18 / 0.36);
+  }
+
+  .btn--paper {
+    color: #1a202c;
+    background-color: #fff;                                      /* 16.32:1 */
+    background-image: linear-gradient(180deg, #fff 0%, #f2f4f7 100%);
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.9),
+      inset 0 -1px 0 rgb(15 23 42 / 0.12),
+      0 1px 2px rgb(9 12 18 / 0.14),
+      0 6px 16px -4px rgb(9 12 18 / 0.22);
+  }
+
+  .btn:hover {
+    transform: translateY(var(--lift));
+    filter: brightness(1.04);
+  }
+  .btn--ink:hover {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.16),
+      inset 0 -1px 0 rgb(0 0 0 / 0.4),
+      0 2px 4px rgb(9 12 18 / 0.3),
+      0 14px 30px -8px rgb(9 12 18 / 0.44);
+  }
+  .btn--paper:hover {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.95),
+      inset 0 -1px 0 rgb(15 23 42 / 0.12),
+      0 2px 4px rgb(9 12 18 / 0.16),
+      0 14px 30px -8px rgb(9 12 18 / 0.28);
+  }
+
+  /* Pressed: travels below rest, shadow collapses to almost nothing. */
+  .btn:active {
+    transform: translateY(1px);
+    filter: brightness(0.98);
+    transition-duration: 70ms;
+  }
+  .btn--ink:active {
+    box-shadow: inset 0 2px 5px rgb(0 0 0 / 0.45), 0 1px 1px rgb(9 12 18 / 0.2);
+  }
+  .btn--paper:active {
+    box-shadow: inset 0 2px 5px rgb(15 23 42 / 0.16), 0 1px 1px rgb(9 12 18 / 0.12);
+  }
+
+  /*
+   * Scroll reveal. Hidden state is applied by script, never in the stylesheet —
+   * a CSS-only hidden state means content stays invisible forever if JS fails,
+   * and on a site whose job is a phone number that is unacceptable.
+   */
+  [data-reveal] {
+    opacity: 1;
+  }
+  [data-reveal].is-armed {
+    opacity: 0;
+    transform: translateY(22px);
+  }
+  [data-reveal].is-in {
+    opacity: 1;
+    transform: none;
+    transition:
+      opacity var(--dur-base) var(--ease-out) var(--reveal-delay, 0ms),
+      transform var(--dur-base) var(--ease-out) var(--reveal-delay, 0ms);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  /*
+   * Depth stays; movement goes. Someone who asked for less motion did not ask
+   * for a flatter-looking site.
+   */
+  .btn:hover, .btn:active { transform: none; }
+  [data-reveal].is-armed { opacity: 1; transform: none; }
+}
+
+@keyframes cover-wipe {
+  0%   { transform: translateY(100%); }
+  45%  { transform: translateY(0); }
+  100% { transform: translateY(-100%); }
 }

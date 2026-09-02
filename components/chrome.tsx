@@ -56,7 +56,7 @@ export function Nav() {
 
         <A
           href="/contact"
-          className="inline-flex min-h-[44px] items-center rounded-full bg-ink px-6 py-3 font-medium text-paper transition-colors hover:bg-slate"
+          className="btn btn--ink"
         >
           Get a free quote
         </A>
