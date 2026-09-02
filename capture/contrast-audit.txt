@@ -1,0 +1,19 @@
+token                  hex           on white       on ink      on teal
+----------------------------------------------------------------------
+teal (base-1)          #04B8BA      2.45 FAIL   6.66 AA     1.00 FAIL
+ink (base-2)           #1A202C     16.32 AAA    1.00 FAIL   6.66 AA  
+blue (accent-1)        #3182CE      4.03 AA18   4.05 AA18   1.64 FAIL
+green (accent-2)       #68D391      1.86 FAIL   8.79 AAA    1.32 FAIL
+slate (shade-3)        #4A5568      7.53 AAA    2.17 FAIL   3.07 AA18
+white                  #FFFFFF      1.00 FAIL  16.32 AAA    2.45 FAIL
+black                  #000000     21.00 AAA    1.29 FAIL   8.57 AAA 
+
+Real pairings used on the live site:
+  hero H1 blue on photo/white            #3182CE on #FFFFFF   4.03  large-text only (3:1)
+  primary button: teal text on blue      #04B8BA on #3182CE   1.64  FAIL
+  secondary button: blue text on teal    #3182CE on #04B8BA   1.64  FAIL
+  body ink on teal section               #1A202C on #04B8BA   6.66  PASS AA
+  body ink on white                      #1A202C on #FFFFFF  16.32  PASS AAA
+  slate meta on white                    #4A5568 on #FFFFFF   7.53  PASS AAA
+  white nav text on teal                 #FFFFFF on #04B8BA   2.45  FAIL
+  green accent on white                  #68D391 on #FFFFFF   1.86  FAIL

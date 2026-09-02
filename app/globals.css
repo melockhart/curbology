@@ -1,0 +1,79 @@
+@import "tailwindcss";
+
+/**
+ * Tokens extracted 2026-09-02 from the live site's rendered DOM (--wst-* semantic
+ * variables), not sampled from a screenshot.
+ *
+ * Contrast audit, computed against WCAG 2.1:
+ *   ink   #1A202C on white  16.32  AAA
+ *   slate #4A5568 on white   7.53  AAA
+ *   ink   #1A202C on teal    6.66  AA
+ *   teal  #04B8BA on ink     6.66  AA
+ *   blue  #3182CE on white   4.03  large text only
+ *   white          on teal   2.45  FAIL
+ *   teal  #04B8BA on white   2.45  FAIL
+ *   green #68D391 on white   1.86  FAIL
+ *
+ * TWO DELIBERATE DEPARTURES FROM THE LIVE SITE — do not "restore" these:
+ *
+ * 1. Buttons. The live tokens are --wst-button-primary-background:#3182CE with
+ *    --wst-button-primary-color:#04B8BA, and the secondary is that pair inverted.
+ *    Both compute to 1.64:1 and the quote form's Submit button is visibly
+ *    unreadable because of it. On a lead-generation site that is the conversion.
+ *    Replaced with ink-on-white (16.32) and ink-on-teal (6.66). Both replacements
+ *    are existing tokens from the same palette — nothing was invented.
+ *
+ * 2. Teal is a ground, never small text. It fails on white at 2.45:1.
+ *
+ * Blue is display-only: large enough to clear 3:1 in a hero, never body or UI.
+ * Green has no accessible role on white and is unused here.
+ */
+@theme {
+  --color-teal: #04b8ba;
+  --color-ink: #1a202c;
+  --color-slate: #4a5568;
+  --color-blue: #3182ce;
+  --color-paper: #ffffff;
+
+  --font-display: Fraunces, ui-serif, Georgia, serif;
+  --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+}
+
+:root { color-scheme: light; }
+
+html { -webkit-text-size-adjust: 100%; }
+
+body {
+  background: var(--color-paper);
+  color: var(--color-ink);
+  font-family: var(--font-body);
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-display);
+  font-weight: 700;
+  letter-spacing: -0.01em;
+}
+
+/* The live site's h1 runs at 0.95em leading. Tight enough to turn a short
+   headline into a graphic block — the one genuinely designed thing on it. */
+h1 { line-height: 0.95; }
+h2 { line-height: 1; }
+h3, h4, h5, h6 { line-height: 1.1; }
+
+a { color: inherit; }
+
+:focus-visible {
+  outline: 3px solid var(--color-blue);
+  outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *, *::before, *::after {
+    animation-duration: 0.01ms !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}

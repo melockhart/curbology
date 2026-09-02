@@ -1,0 +1,47 @@
+import type { Metadata } from "next";
+import { portfolio } from "../../lib/content";
+import { Button, Section, Eyebrow, AwaitingPhoto } from "../../components/ui";
+
+export const metadata: Metadata = { title: "Our work" };
+
+/**
+ * Absorbs the live site's "Portfolio Page" — a better label, and the same six
+ * numbered entries, verbatim.
+ *
+ * No images: none were captured. Honest empty states rather than stock, which on
+ * an exterior-cleaning site would actively cost trust — the whole sale is "this
+ * is what your house will look like".
+ *
+ * When real photos arrive, caption each with service and town. Captions are
+ * searchable text and most galleries waste them.
+ */
+export default function GalleryPage() {
+  return (
+    <>
+      <Section ground="teal">
+        <h1 className="max-w-3xl text-5xl">Our work</h1>
+        <p className="mt-6 max-w-xl text-lg">
+          Before and after, across Oakland County.
+        </p>
+      </Section>
+
+      <Section>
+        <ul className="grid gap-x-10 gap-y-16 md:grid-cols-2">
+          {portfolio.map((item) => (
+            <li key={item.n}>
+              <AwaitingPhoto label={`${item.title} — before and after.`} />
+              <Eyebrow>{item.n}</Eyebrow>
+              <h2 className="text-2xl">{item.title}</h2>
+              <p className="mt-3 text-slate">{item.body}</p>
+            </li>
+          ))}
+        </ul>
+      </Section>
+
+      <Section ground="ink">
+        <h2 className="max-w-2xl text-4xl text-paper">Want yours to look like this?</h2>
+        <div className="mt-8"><Button href="/contact">Get a free quote</Button></div>
+      </Section>
+    </>
+  );
+}

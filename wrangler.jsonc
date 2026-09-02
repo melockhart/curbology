@@ -1,0 +1,9 @@
+{
+  "name": "curbology",
+  "main": "./worker/index.ts",
+  "compatibility_date": "2026-09-02",
+  "compatibility_flags": ["nodejs_compat"],
+  // Runtime config (SUPABASE_URL, SUPABASE_SECRET_KEY) comes from the deploy
+  // target and locally from a gitignored .dev.vars. No IDs or secrets here.
+  "observability": { "enabled": true }
+}
