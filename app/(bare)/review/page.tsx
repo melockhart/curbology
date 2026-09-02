@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { PortalShell, Field, Submit } from "../../../components/portal";
 import { A } from "../../../components/link";
 import { services } from "../../../lib/content";
+import { siteSettings } from "../../../lib/db";
 
 export const metadata: Metadata = { title: "Leave a review" };
 
@@ -17,7 +18,24 @@ export const metadata: Metadata = { title: "Leave a review" };
  * Reviews land unpublished. Tristen chooses what appears on the site, per review,
  * from the admin console — but he cannot make one disappear from the inbox.
  */
-export default function ReviewPortal() {
+export default async function ReviewPortal() {
+  const settings = await siteSettings();
+  const open = settings["portal.reviewOpen"] !== false;
+  const googleUrl = typeof settings["reviews.googleUrl"] === "string"
+    ? (settings["reviews.googleUrl"] as string)
+    : "";
+
+  if (!open) {
+    return (
+      <PortalShell
+        title="Reviews are closed for now"
+        intro="We are not collecting reviews at the moment. The page is still here so the link in your email does not break — try again in a few days, or just call us."
+      >
+        <A href="/contact" className="underline underline-offset-4">Get in touch instead</A>
+      </PortalShell>
+    );
+  }
+
   return (
     <PortalShell
       title="How did we do?"
@@ -79,16 +97,28 @@ export default function ReviewPortal() {
           It helps other people in Oakland County find us — whatever you have to say.
         </p>
         {/*
-          TODO: the real Google review URL needs Curbology's Place ID. Not
-          published anywhere in the capture, so the link is not rendered rather
-          than pointed somewhere wrong.
+          The link comes from Settings, and is absent until it is set. Curbology's
+          Place ID is not published anywhere in the capture, so the alternative
+          was pointing people somewhere wrong.
         */}
-        <p className="mt-4 text-sm text-[color:var(--muted)]">
-          <A href="/contact" className="underline underline-offset-4">
-            Ask us for the Google link
-          </A>{" "}
-          — we are still setting it up.
-        </p>
+        {googleUrl ? (
+          <p className="mt-4">
+            <A
+              href={googleUrl}
+              className="inline-block min-h-[44px] rounded-full bg-teal px-5 py-2.5 font-medium text-ink"
+              rel="noopener"
+            >
+              Leave a Google review
+            </A>
+          </p>
+        ) : (
+          <p className="mt-4 text-sm text-[color:var(--muted)]">
+            <A href="/contact" className="underline underline-offset-4">
+              Ask us for the Google link
+            </A>{" "}
+            — we are still setting it up.
+          </p>
+        )}
       </div>
     </PortalShell>
   );

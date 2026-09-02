@@ -11,16 +11,40 @@
  */
 import { chromium } from "playwright";
 
-const routes = ["/", "/services", "/services/pressure-washing", "/services/house-siding-washing",
+const BASE = process.env.CONTRAST_BASE || "http://localhost:3000";
+
+const publicRoutes = ["/", "/services", "/services/pressure-washing", "/services/house-siding-washing",
   "/services/gutter-cleaning", "/services/roof-cleaning", "/about", "/contact", "/reviews",
   "/service-area", "/gallery", "/faq", "/hub", "/review", "/testimonial", "/email-unsubscribe?id=demo", "/nope-404"];
+
+/*
+ * The console is sixteen screens of dense, small, muted text — exactly where a
+ * contrast failure hides. It needs a session, so it is swept only when
+ * credentials are supplied; without them the public sweep runs as before rather
+ * than silently measuring sixteen copies of the sign-in page.
+ */
+const adminRoutes = ["/sign-in", "/admin", "/admin/analytics", "/admin/activity", "/admin/leads",
+  "/admin/reviews", "/admin/bookings", "/admin/content", "/admin/forms", "/admin/seo",
+  "/admin/theme", "/admin/settings", "/admin/team", "/admin/team-access", "/admin/users",
+  "/admin/domain", "/admin/account"];
+
+const email = process.env.CONTRAST_ADMIN_EMAIL;
+const password = process.env.CONTRAST_ADMIN_PASSWORD;
+const routes = email ? [...publicRoutes, ...adminRoutes] : publicRoutes;
 
 const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
 let fails = 0, checked = 0;
 
+if (email) {
+  await p.goto(BASE + "/sign-in", { waitUntil: "networkidle" });
+  await p.fill('input[name="email"]', email);
+  await p.fill('input[name="password"]', password ?? "");
+  await Promise.all([p.waitForURL("**/admin"), p.click("form button")]);
+}
+
 for (const route of routes) {
-  await p.goto("http://localhost:3000" + route, { waitUntil: "networkidle" });
+  await p.goto(BASE + route, { waitUntil: "networkidle" });
   const results = await p.evaluate(() => {
     /*
      * Chromium serialises computed colours as oklab() and its canvas 2D context

@@ -1,10 +1,13 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/seo";
 import { business } from "../../../lib/content";
 import { Button, Section } from "../../../components/ui";
 
-export const metadata: Metadata = {
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/service-area", {
   title: `Service area — ${business.serviceArea.county}, ${business.serviceArea.stateAbbr}`,
-};
+});
+}
 
 /**
  * Towns as text, not only on a map — text is what local search reads.

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/seo";
 import { business } from "../../../lib/content";
 import { Button, Section } from "../../../components/ui";
 import { A } from "../../../components/link";
 
-export const metadata: Metadata = { title: "Questions & pricing" };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/faq", { title: "Questions & pricing" });
+}
 
 /**
  * Answers are drawn only from what the live site actually states — service

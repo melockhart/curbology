@@ -282,3 +282,59 @@
     font-size: clamp(2.25rem, 6vw, 5rem);
   }
 }
+
+/*
+ * The console.
+ *
+ * Same brand, different job. The site is built to be looked at; the console is
+ * built to be worked in every morning, so it carries no motion, no grain and no
+ * display type at scale — those are delight on a first visit and friction on
+ * the four hundredth.
+ *
+ * Its surfaces are their own tokens rather than reused site colours, because a
+ * console needs a third value between the page ground and a card: with only two,
+ * either the sidebar disappears into the page or every card looks like a modal.
+ *
+ * Contrast, computed:
+ *   ink   #1a202c on console-bg      #f4f6f8   15.29  AAA
+ *   ink   #1a202c on console-surface #ffffff   16.32  AAA
+ *   slate #4a5568 on console-surface #ffffff    7.53  AAA
+ *   slate #4a5568 on console-sidebar #eef1f4    6.75  AA
+ *   ink   #1a202c on teal            #04b8ba    6.66  AA
+ */
+@layer base {
+  .console {
+    --console-bg: #f4f6f8;
+    --console-surface: #ffffff;
+    --console-sidebar: #eef1f4;
+    --console-line: rgb(26 32 44 / 0.12);
+    --muted: #4a5568;
+  }
+}
+
+@layer components {
+  /* The signature label above a title or a section. Mono, tight, uppercase. */
+  .eyebrow {
+    font-family: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
+    font-size: 10.5px;
+    line-height: 1.2;
+    letter-spacing: 0.22em;
+    text-transform: uppercase;
+    color: var(--muted);
+  }
+
+  /* Locked items shake rather than navigate. The animation is the whole
+     feedback — there is no toast, because there is nothing to undo. */
+  @keyframes console-shake {
+    0%, 100% { transform: translateX(0); }
+    20%      { transform: translateX(-3px); }
+    40%      { transform: translateX(3px); }
+    60%      { transform: translateX(-2px); }
+    80%      { transform: translateX(2px); }
+  }
+  .shake { animation: console-shake 320ms var(--ease-out); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .shake { animation: none; outline: 2px solid var(--color-teal); outline-offset: 2px; }
+  }
+}

@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/seo";
 import { business } from "../../../lib/content";
 import { publishedReviews } from "../../../lib/db";
 import { Button, Section, Eyebrow } from "../../../components/ui";
 
-export const metadata: Metadata = { title: "Reviews" };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/reviews", { title: "Reviews" });
+}
 
 /**
  * Renders reviews where `published = true`, set by Tristen per review in the

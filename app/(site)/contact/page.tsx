@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/seo";
 import { business, quoteForm, services } from "../../../lib/content";
 import { Section, Eyebrow } from "../../../components/ui";
 import { A } from "../../../components/link";
 
-export const metadata: Metadata = { title: "Get a free quote" };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/contact", { title: "Get a free quote" });
+}
 
 /**
  * One form, not the live site's two. Photo upload included — it is the highest-

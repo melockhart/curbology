@@ -1,5 +1,7 @@
 import type { Metadata } from "next";
 import { PortalShell, Field, Submit } from "../../../components/portal";
+import { A } from "../../../components/link";
+import { siteSettings } from "../../../lib/db";
 
 export const metadata: Metadata = { title: "Book a video testimonial" };
 
@@ -11,7 +13,19 @@ export const metadata: Metadata = { title: "Book a video testimonial" };
  * decision nobody has made yet, and guessing it would mean an integration to
  * unpick later. Writes to `bookings`.
  */
-export default function TestimonialPortal() {
+export default async function TestimonialPortal() {
+  const settings = await siteSettings();
+  if (settings["portal.testimonialOpen"] === false) {
+    return (
+      <PortalShell
+        title="Not booking right now"
+        intro="We have paused filming for a bit. The page stays up so the link we sent you still works — ask us and we will let you know when it reopens."
+      >
+        <A href="/contact" className="underline underline-offset-4">Get in touch</A>
+      </PortalShell>
+    );
+  }
+
   return (
     <PortalShell
       title="Say it on camera?"

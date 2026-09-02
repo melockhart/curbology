@@ -20,6 +20,21 @@ type RuntimeEnv = {
    * guessed address in.
    */
   ADMIN_EMAILS?: string;
+  /**
+   * The publishable key. Used only to accompany a *person's* access token on
+   * the RPC calls that write — never the secret key, which would hand a
+   * user-scoped request the power to bypass every policy it is being checked
+   * against.
+   */
+  SUPABASE_PUBLISHABLE_KEY?: string;
+  /**
+   * God mode. A subset of ADMIN_EMAILS that additionally sees the items marked
+   * `godModeOnly` and can claim the first admin role. Empty by default: nobody
+   * gets it because a constant in the repo said so.
+   */
+  OWNER_EMAILS?: string;
+  /** The hostname this deployment is meant to answer on. Diagnostics only. */
+  SITE_HOST?: string;
 };
 
 let workersEnv: Record<string, string | undefined> | null = null;
@@ -41,11 +56,29 @@ export function configured(): boolean {
   return Boolean(SUPABASE_URL && SUPABASE_SECRET_KEY);
 }
 
-export function allowedEmails(): Set<string> {
+function emailSet(raw: string | undefined): Set<string> {
   return new Set(
-    (runtimeEnv().ADMIN_EMAILS ?? "")
+    (raw ?? "")
       .split(",")
       .map((e) => e.trim().toLowerCase())
       .filter(Boolean),
   );
+}
+
+export function allowedEmails(): Set<string> {
+  return emailSet(runtimeEnv().ADMIN_EMAILS);
+}
+
+/** God mode is an intersection, never a shortcut: an owner address that is not
+ *  also on the admin allowlist does not get in at all. */
+export function ownerEmails(): Set<string> {
+  const admins = allowedEmails();
+  return new Set([...emailSet(runtimeEnv().OWNER_EMAILS)].filter((e) => admins.has(e)));
+}
+
+/** Whether writes can happen. Reads work with the secret key alone; the RPC
+ *  contract needs the publishable key too, and saying so here means the screens
+ *  can explain it instead of failing at the first Save. */
+export function writable(): boolean {
+  return configured() && Boolean(runtimeEnv().SUPABASE_PUBLISHABLE_KEY);
 }

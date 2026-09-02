@@ -3,6 +3,7 @@ import { notFound } from "next/navigation";
 import { business, services } from "../../../../lib/content";
 import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../../components/ui";
 import { A } from "../../../../components/link";
+import { pageMetadata } from "../../../../lib/seo";
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -14,10 +15,10 @@ export async function generateMetadata({
   const { slug } = await params;
   const service = services.find((s) => s.slug === slug);
   if (!service) return {};
-  return {
+  return pageMetadata(`/services/${slug}`, {
     title: `${service.name} in ${business.serviceArea.county}, ${business.serviceArea.stateAbbr}`,
     description: service.intro.slice(0, 155),
-  };
+  });
 }
 
 /**

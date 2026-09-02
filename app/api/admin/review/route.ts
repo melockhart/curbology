@@ -1,22 +1,17 @@
-import { patch } from "../../../../lib/db";
-import { adminOnly, backTo } from "../../../../lib/admin-action";
+import { handle, rpc } from "../../../../lib/admin-route";
 
 export async function POST(request: Request) {
-  const auth = await adminOnly();
-  if (auth instanceof Response) return auth;
-
-  const form = await request.formData();
-  const id = String(form.get("id") ?? "");
-  if (!id) return new Response("Bad request", { status: 400 });
-
-  const reply = String(form.get("owner_reply") ?? "").trim();
-  await patch("reviews", id, {
-    published: form.get("published") === "yes",
-    owner_reply: reply || null,
+  return handle(request, "/admin/reviews", async (form, session) => {
+    const id = String(form.get("id") ?? "");
+    if (!id) throw new Error("Missing review");
     // Archived leaves the queue; it does not delete. There is no delete here on
     // purpose — choosing what the site shows is curation, making a review
-    // disappear is not.
-    status: form.get("archived") === "yes" ? "archived" : reply ? "replied" : "new",
+    // disappear is not, and there is no policy or function that would allow it.
+    await rpc("review_set_state", {
+      _id: id,
+      _published: form.get("published") === "yes",
+      _archived: form.get("archived") === "yes",
+      _reply: String(form.get("owner_reply") ?? "").trim(),
+    }, session);
   });
-  return backTo(request, "/admin/reviews");
 }

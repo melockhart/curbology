@@ -1,9 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/seo";
 import { services } from "../../../lib/content";
 import { Button, Section, Eyebrow } from "../../../components/ui";
 import { A } from "../../../components/link";
 
-export const metadata: Metadata = { title: "Services" };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/services", { title: "Services" });
+}
 
 export default function ServicesIndex() {
   return (

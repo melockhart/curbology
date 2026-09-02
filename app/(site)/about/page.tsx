@@ -1,8 +1,12 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/seo";
 import { business, home } from "../../../lib/content";
+import { publishedTeam } from "../../../lib/db";
 import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../components/ui";
 
-export const metadata: Metadata = { title: "About" };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/about", { title: "About" });
+}
 
 /**
  * The live site has no About page. This one is built from the copy that does
@@ -12,7 +16,9 @@ export const metadata: Metadata = { title: "About" };
  *
  * No "3+ Years of Expertise" here. That was one of the unsourced stats.
  */
-export default function AboutPage() {
+export default async function AboutPage() {
+  const team = await publishedTeam();
+
   return (
     <>
       <Section ground="teal">
@@ -34,6 +40,33 @@ export default function AboutPage() {
           <AwaitingPhoto label="The owner. This is the single most valuable photo on the site — a face is why a stranger lets someone onto their property with a pressure washer." />
         </div>
       </Section>
+
+      {/* Only the people published in the console. Nobody is invented to fill
+          the row, so an empty team means this section is simply absent. */}
+      {team.length > 0 && (
+        <Section>
+          <Eyebrow>Who turns up</Eyebrow>
+          <ul className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
+            {team.map((person) => (
+              <li key={person.id}>
+                {person.photo_url ? (
+                  /* eslint-disable-next-line @next/next/no-img-element */
+                  <img src={person.photo_url} alt={person.name}
+                    className="h-40 w-40 rounded-full object-cover" />
+                ) : (
+                  <span aria-hidden="true"
+                    className="grid h-40 w-40 place-items-center rounded-full bg-teal font-display text-5xl font-bold text-ink">
+                    {person.name.slice(0, 1).toUpperCase()}
+                  </span>
+                )}
+                <h3 className="mt-5 font-display text-2xl font-bold">{person.name}</h3>
+                {person.role_title && <p className="text-slate">{person.role_title}</p>}
+                {person.bio && <p className="mt-3 text-slate">{person.bio}</p>}
+              </li>
+            ))}
+          </ul>
+        </Section>
+      )}
 
       <Section ground="ink">
         <Eyebrow>Ready when you are</Eyebrow>

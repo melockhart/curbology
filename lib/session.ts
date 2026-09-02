@@ -1,5 +1,5 @@
 import { cookies } from "next/headers";
-import { runtimeEnv, allowedEmails } from "./env";
+import { runtimeEnv, allowedEmails, ownerEmails } from "./env";
 
 /**
  * The console holds customers' names, addresses, phone numbers and photographs
@@ -38,9 +38,23 @@ export async function signIn(email: string, password: string) {
   return { token: payload.access_token, expiresIn: payload.expires_in ?? 3600 };
 }
 
-/** The signed-in address, or null. Verified against GoTrue — never trusted from
- *  the cookie alone, which is only a bearer of someone else's claim. */
-export async function currentUser(): Promise<string | null> {
+/**
+ * The signed-in person, or null. Verified against GoTrue — never trusted from
+ * the cookie alone, which is only a bearer of someone else's claim.
+ *
+ * The token comes back with them because the RPC contract needs it: writes are
+ * made as the person, so the database can re-check who they are rather than
+ * take this process's word for it.
+ */
+export type Session = {
+  email: string;
+  id: string;
+  token: string;
+  /** Sees `godModeOnly` screens and can claim the first admin role. */
+  isGodMode: boolean;
+};
+
+export async function currentSession(): Promise<Session | null> {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
   const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
@@ -51,10 +65,16 @@ export async function currentUser(): Promise<string | null> {
       headers: { apikey: SUPABASE_SECRET_KEY, Authorization: `Bearer ${token}` },
     });
     if (!response.ok) return null;
-    const user = (await response.json()) as { email?: string };
+    const user = (await response.json()) as { email?: string; id?: string };
     const email = user.email?.toLowerCase();
-    return email && allowedEmails().has(email) ? email : null;
+    if (!email || !user.id || !allowedEmails().has(email)) return null;
+    return { email, id: user.id, token, isGodMode: ownerEmails().has(email) };
   } catch {
     return null;
   }
+}
+
+/** The address only, for the many callers that need nothing else. */
+export async function currentUser(): Promise<string | null> {
+  return (await currentSession())?.email ?? null;
 }

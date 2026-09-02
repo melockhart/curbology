@@ -1,3 +1,5 @@
+import type { Metadata } from "next";
+import { pageMetadata } from "../../lib/seo";
 import { business, home, services } from "../../lib/content";
 import { Hero } from "../../components/hero";
 import { Cinema } from "../../components/motion/cinema";
@@ -6,6 +8,10 @@ import { A } from "../../components/link";
 import { Reveal } from "../../components/motion/reveal";
 import { Magnetic } from "../../components/motion/magnetic";
 import { BeforeAfter } from "../../components/motion/before-after";
+
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/", {});
+}
 
 /**
  * Section order follows the /site-build standard inventory:

@@ -1,9 +1,9 @@
 import { redirect } from "next/navigation";
-import { currentUser } from "./session";
+import { currentSession, type Session } from "./session";
 
-/** Every admin page and every admin action goes through this. */
-export async function requireUser(): Promise<string> {
-  const email = await currentUser();
-  if (!email) redirect("/sign-in");
-  return email;
+/** Every admin page goes through this. */
+export async function requireUser(): Promise<Session> {
+  const session = await currentSession();
+  if (!session) redirect("/sign-in");
+  return session;
 }

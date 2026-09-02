@@ -1,8 +1,11 @@
 import type { Metadata } from "next";
+import { pageMetadata } from "../../../lib/seo";
 import { portfolio } from "../../../lib/content";
 import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../components/ui";
 
-export const metadata: Metadata = { title: "Our work" };
+export function generateMetadata(): Promise<Metadata> {
+  return pageMetadata("/gallery", { title: "Our work" });
+}
 
 /**
  * Absorbs the live site's "Portfolio Page" — a better label, and the same six
