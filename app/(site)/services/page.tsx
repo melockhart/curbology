@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { services } from "../../lib/content";
-import { Button, Section, Eyebrow } from "../../components/ui";
-import { A } from "../../components/link";
+import { services } from "../../../lib/content";
+import { Button, Section, Eyebrow } from "../../../components/ui";
+import { A } from "../../../components/link";
 
 export const metadata: Metadata = { title: "Services" };
 
@@ -30,7 +30,8 @@ export default function ServicesIndex() {
                 <ul className="mt-5 space-y-2">
                   {s.includes.map((item) => (
                     <li key={item} className="flex gap-3">
-                      <span aria-hidden="true" className="text-teal">✓</span>
+                      {/* Not text-teal: teal at body size on white is 2.45:1. */}
+                      <span aria-hidden="true">✓</span>
                       <span>{item}</span>
                     </li>
                   ))}

@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { business } from "../../lib/content";
-import { A } from "../../components/link";
+import { business } from "../../../lib/content";
+import { A } from "../../../components/link";
 
 export const metadata: Metadata = {
   title: `${business.name}`,

@@ -1,8 +1,8 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { business, services } from "../../../lib/content";
-import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../components/ui";
-import { A } from "../../../components/link";
+import { business, services } from "../../../../lib/content";
+import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../../components/ui";
+import { A } from "../../../../components/link";
 
 export function generateStaticParams() {
   return services.map((s) => ({ slug: s.slug }));
@@ -58,7 +58,8 @@ export default async function ServicePage({
           <ul className="mt-8 grid gap-4 md:grid-cols-2">
             {service.includes.map((item) => (
               <li key={item} className="flex gap-3 border-t border-ink/10 pt-4">
-                <span aria-hidden="true" className="text-teal">✓</span>
+                {/* Not text-teal: teal at body size on white is 2.45:1. */}
+                      <span aria-hidden="true">✓</span>
                 <span>{item}</span>
               </li>
             ))}

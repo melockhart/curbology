@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { business } from "../../lib/content";
-import { Button, Section } from "../../components/ui";
-import { A } from "../../components/link";
+import { business } from "../../../lib/content";
+import { Button, Section } from "../../../components/ui";
+import { A } from "../../../components/link";
 
 export const metadata: Metadata = { title: "Questions & pricing" };
 

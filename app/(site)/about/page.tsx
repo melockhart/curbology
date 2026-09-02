@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { business, home } from "../../lib/content";
-import { Button, Section, Eyebrow, AwaitingPhoto } from "../../components/ui";
+import { business, home } from "../../../lib/content";
+import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../components/ui";
 
 export const metadata: Metadata = { title: "About" };
 

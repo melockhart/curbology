@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
-import { business } from "../../lib/content";
-import { Button, Section } from "../../components/ui";
+import { business } from "../../../lib/content";
+import { Button, Section } from "../../../components/ui";
 
 export const metadata: Metadata = {
   title: `Service area — ${business.serviceArea.county}, ${business.serviceArea.stateAbbr}`,

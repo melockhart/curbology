@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
-import { business, quoteForm, services } from "../../lib/content";
-import { Section, Eyebrow } from "../../components/ui";
-import { A } from "../../components/link";
+import { business, quoteForm, services } from "../../../lib/content";
+import { Section, Eyebrow } from "../../../components/ui";
+import { A } from "../../../components/link";
 
 export const metadata: Metadata = { title: "Get a free quote" };
 

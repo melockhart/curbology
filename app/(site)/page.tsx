@@ -1,6 +1,6 @@
-import { business, home, services } from "../lib/content";
-import { Button, Section, Eyebrow, AwaitingPhoto } from "../components/ui";
-import { A } from "../components/link";
+import { business, home, services } from "../../lib/content";
+import { Button, Section, Eyebrow, AwaitingPhoto } from "../../components/ui";
+import { A } from "../../components/link";
 
 /**
  * Section order follows the /site-build standard inventory:

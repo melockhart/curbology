@@ -35,39 +35,59 @@
   --color-blue: #3182ce;
   --color-paper: #ffffff;
 
-  --font-display: Fraunces, ui-serif, Georgia, serif;
-  --font-body: "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  /* Variable-font family names come from @fontsource-variable, imported in layout.tsx. */
+  --font-display: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
+  --font-body: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
 }
 
-:root { color-scheme: light; }
+@layer base {
+  /*
+   * Each ground publishes the muted text colour that actually passes AA on it.
+   * A single hardcoded --color-slate cannot: it is 7.53 on white, 3.07 on teal
+   * and 2.17 on ink. Components read var(--muted) instead of picking a colour
+   * and hoping the ground underneath them agrees.
+   */
+  .ground-paper { --muted: #4a5568; }  /* 7.53 on white  */
+  .ground-teal  { --muted: #1a202c; }  /* 6.66 on teal   */
+  .ground-ink   { --muted: #ffffff; }  /* 16.32 on ink   */
 
-html { -webkit-text-size-adjust: 100%; }
+  /*
+   * These MUST stay inside @layer base. Unlayered CSS outranks Tailwind's
+   * utilities layer, so `a { color: inherit }` written outside a layer silently
+   * beats `text-paper` on every anchor that sets its own colour — which is how
+   * the nav's "Get a free quote" button rendered ink-on-ink at 1:1 and still
+   * looked broadly right.
+   */
+  :root { color-scheme: light; }
 
-body {
-  background: var(--color-paper);
-  color: var(--color-ink);
-  font-family: var(--font-body);
-  font-size: 16px;
-  line-height: 1.6;
-}
+  html { -webkit-text-size-adjust: 100%; }
 
-h1, h2, h3, h4, h5, h6 {
-  font-family: var(--font-display);
-  font-weight: 700;
-  letter-spacing: -0.01em;
-}
+  body {
+    background: var(--color-paper);
+    color: var(--color-ink);
+    font-family: var(--font-body);
+    font-size: 16px;
+    line-height: 1.6;
+  }
 
-/* The live site's h1 runs at 0.95em leading. Tight enough to turn a short
-   headline into a graphic block — the one genuinely designed thing on it. */
-h1 { line-height: 0.95; }
-h2 { line-height: 1; }
-h3, h4, h5, h6 { line-height: 1.1; }
+  h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-display);
+    font-weight: 700;
+    letter-spacing: -0.01em;
+  }
 
-a { color: inherit; }
+  /* The live site's h1 runs at 0.95em leading. Tight enough to turn a short
+     headline into a graphic block — the one genuinely designed thing on it. */
+  h1 { line-height: 0.95; }
+  h2 { line-height: 1; }
+  h3, h4, h5, h6 { line-height: 1.1; }
 
-:focus-visible {
-  outline: 3px solid var(--color-blue);
-  outline-offset: 2px;
+  a { color: inherit; }
+
+  :focus-visible {
+    outline: 3px solid var(--color-blue);
+    outline-offset: 2px;
+  }
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -28,9 +28,9 @@ export function Section({
   // Teal ground with ink type is the brand's signature pairing and the one
   // combination here that is both on-brand and accessible at 6.66:1.
   const grounds = {
-    paper: "bg-paper text-ink",
-    teal: "bg-teal text-ink",
-    ink: "bg-ink text-paper",
+    paper: "ground-paper bg-paper text-ink",
+    teal: "ground-teal bg-teal text-ink",
+    ink: "ground-ink bg-ink text-paper",
   } as const;
   return (
     <section id={id} className={grounds[ground]}>
@@ -41,7 +41,7 @@ export function Section({
 
 export function Eyebrow({ children }: { children: ReactNode }) {
   return (
-    <p className="mb-4 font-body text-sm font-medium uppercase tracking-[0.14em] text-slate">
+    <p className="mb-4 font-body text-sm font-medium uppercase tracking-[0.14em] text-[color:var(--muted,#4a5568)]">
       {children}
     </p>
   );
@@ -55,9 +55,9 @@ export function Eyebrow({ children }: { children: ReactNode }) {
 export function AwaitingPhoto({ label, className = "" }: { label: string; className?: string }) {
   return (
     <div
-      className={`flex aspect-[4/3] items-center justify-center rounded-2xl border-2 border-dashed border-slate/30 bg-slate/5 p-6 text-center ${className}`}
+      className={`flex aspect-[4/3] items-center justify-center rounded-2xl border-2 border-dashed border-current/30 p-6 text-center text-[color:var(--muted,#4a5568)] ${className}`}
     >
-      <p className="max-w-xs text-sm text-slate">
+      <p className="max-w-xs text-sm">
         <span className="block font-medium">Photography to come</span>
         {label}
       </p>
