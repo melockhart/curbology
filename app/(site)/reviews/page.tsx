@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { business } from "../../../lib/content";
+import { publishedReviews } from "../../../lib/db";
 import { Button, Section, Eyebrow } from "../../../components/ui";
 
 export const metadata: Metadata = { title: "Reviews" };
@@ -13,8 +14,10 @@ export const metadata: Metadata = { title: "Reviews" };
  * review text or reviewer names were captured, so none are shown. A quote with no
  * attributable author does not go on a page.
  */
-export default function ReviewsPage() {
-  const published: Array<{ id: string; author: string; body: string; service: string }> = [];
+export default async function ReviewsPage() {
+  // Only rows the owner marked published in the console. Returns [] with no
+  // database, so the page renders its empty state rather than throwing.
+  const published = await publishedReviews();
 
   return (
     <>
@@ -42,8 +45,13 @@ export default function ReviewsPage() {
             {published.map((r) => (
               <li key={r.id} className="border-t border-ink/10 pt-6">
                 <blockquote className="text-lg">{r.body}</blockquote>
-                <p className="mt-4 text-slate">
-                  {r.author} · {r.service}
+                {r.owner_reply && (
+                  <p className="mt-3 border-l-2 border-teal pl-4 text-[color:var(--muted)]">
+                    <span className="font-medium text-ink">Curbology:</span> {r.owner_reply}
+                  </p>
+                )}
+                <p className="mt-4 text-[color:var(--muted)]">
+                  {r.name}{r.service ? ` · ${r.service}` : ""}
                 </p>
               </li>
             ))}

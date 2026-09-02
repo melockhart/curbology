@@ -12,6 +12,14 @@ import { EntryLoader, RouteCover } from "./loader";
  */
 export function MotionStage() {
   const pathname = usePathname();
+
+  /*
+   * The console and the sign-in page get no loader and no route covers.
+   * Motion in a tool someone opens every morning is friction, not delight —
+   * and a splash between "leads" and "reviews" is just a delay.
+   */
+  if (pathname === "/sign-in" || pathname === "/admin" || pathname.startsWith("/admin/")) return null;
+
   return (
     <>
       <EntryLoader />
