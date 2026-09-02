@@ -80,6 +80,30 @@ Everything the preview shows is **sample data** — not Curbology's customers,
 reviews or bookings. Every page carries a ribbon saying so, and every write
 reports that nothing was saved rather than implying it was.
 
+### The hosted preview
+
+`scripts/preview-bundle.mjs` drives the running preview with a headless browser,
+waits for each page to settle, and writes **one self-contained HTML file** — 39
+screens, the stylesheet and both fonts inlined, no network required:
+
+```
+npm start &                                    # with PREVIEW_MODE=1
+node scripts/preview-bundle.mjs http://127.0.0.1:3000 <preview-password> preview.html
+```
+
+It captures the build's own output rather than re-implementing it, so the
+preview cannot drift from the app. Inside the file, links and form buttons are
+rewritten to move the viewer between captured screens — pressing Send on the
+quote form lands on the confirmation, the same as it does in the app.
+
+What it cannot carry: hover and scroll-linked motion, and the first-visit
+loader. Those need the client bundle, and an ES-module graph will not inline
+into a single file without a second build step. The viewer says so on its own
+face rather than leaving someone to wonder why nothing moves.
+
+The output is gitignored — it is 3 MB of generated build output, and it is one
+command to make again.
+
 ### Checks
 
 ```

@@ -1,0 +1,370 @@
+<title>Curbology Preview</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=IBM+Plex+Mono:wght@400;500&family=IBM+Plex+Sans:wght@400;500;600&display=swap">
+
+<style>
+/*
+ * The harness, not the site.
+ *
+ * Deliberately quiet and deliberately not Curbology's palette: the thing being
+ * looked at is inside the frame, and a teal chrome around a teal site turns the
+ * whole window into one wash. The client's teal appears in exactly one place —
+ * the marker on the active screen — and never as text, because teal on white is
+ * 2.45:1 and that rule holds here too.
+ *
+ * IBM Plex rather than the site's Fraunces and Instrument Sans, so the chrome
+ * can never be mistaken for part of the page it is framing.
+ */
+:root {
+  --ground: #e9ebee;
+  --panel: #ffffff;
+  --ink: #16181c;
+  --muted: #5c636d;
+  --line: rgba(22, 24, 28, 0.13);
+  --line-strong: rgba(22, 24, 28, 0.22);
+  --hover: rgba(22, 24, 28, 0.05);
+  --accent: #04b8ba;
+  --shadow: 0 1px 2px rgba(16, 18, 21, 0.06), 0 12px 32px rgba(16, 18, 21, 0.10);
+  --sans: "IBM Plex Sans", ui-sans-serif, system-ui, -apple-system, Segoe UI, sans-serif;
+  --mono: "IBM Plex Mono", ui-monospace, SFMono-Regular, Menlo, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --ground: #101215;
+    --panel: #181b20;
+    --ink: #e6e9ed;
+    --muted: #98a0aa;
+    --line: rgba(230, 233, 237, 0.13);
+    --line-strong: rgba(230, 233, 237, 0.24);
+    --hover: rgba(230, 233, 237, 0.06);
+    --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 16px 40px rgba(0, 0, 0, 0.45);
+  }
+}
+:root[data-theme="dark"] {
+  --ground: #101215;
+  --panel: #181b20;
+  --ink: #e6e9ed;
+  --muted: #98a0aa;
+  --line: rgba(230, 233, 237, 0.13);
+  --line-strong: rgba(230, 233, 237, 0.24);
+  --hover: rgba(230, 233, 237, 0.06);
+  --shadow: 0 1px 2px rgba(0, 0, 0, 0.5), 0 16px 40px rgba(0, 0, 0, 0.45);
+}
+
+* { box-sizing: border-box; }
+body {
+  margin: 0;
+  background: var(--ground);
+  color: var(--ink);
+  font-family: var(--sans);
+  font-size: 14px;
+  line-height: 1.5;
+  -webkit-font-smoothing: antialiased;
+}
+:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; border-radius: 3px; }
+
+.app { display: grid; grid-template-columns: 288px 1fr; height: 100vh; }
+
+/* ------------------------------------------------------------------ rail */
+.rail {
+  display: flex; flex-direction: column; min-height: 0;
+  background: var(--panel); border-right: 1px solid var(--line);
+}
+.brand { padding: 18px 20px 14px; border-bottom: 1px solid var(--line); }
+.brand h1 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.brand p { margin: 4px 0 0; color: var(--muted); font-size: 12px; }
+.rail nav { flex: 1; min-height: 0; overflow-y: auto; padding: 14px 10px 20px; }
+.group + .group { margin-top: 18px; }
+.group > h2 {
+  margin: 0 0 6px; padding: 0 10px;
+  font-family: var(--mono); font-size: 10px; font-weight: 500;
+  letter-spacing: 0.18em; text-transform: uppercase; color: var(--muted);
+}
+.group ul { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 1px; }
+.screen {
+  position: relative; display: block; width: 100%; text-align: left;
+  background: none; border: 0; cursor: pointer;
+  padding: 7px 10px 7px 14px; border-radius: 6px;
+  font: inherit; color: inherit;
+}
+.screen:hover { background: var(--hover); }
+.screen[aria-current="true"] { background: color-mix(in srgb, var(--accent) 14%, transparent); }
+.screen[aria-current="true"]::before {
+  content: ""; position: absolute; left: 3px; top: 7px; bottom: 7px;
+  width: 3px; border-radius: 2px; background: var(--accent);
+}
+.screen .label { display: block; font-weight: 500; }
+.screen[aria-current="true"] .label { font-weight: 600; }
+.screen .path {
+  display: block; font-family: var(--mono); font-size: 11px; color: var(--muted);
+  overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+.railfoot {
+  border-top: 1px solid var(--line); padding: 12px 20px 14px;
+  color: var(--muted); font-size: 12px;
+}
+.railfoot strong { color: var(--ink); font-weight: 600; }
+
+/* ------------------------------------------------------------------ stage */
+.main { display: flex; flex-direction: column; min-width: 0; min-height: 0; }
+.bar {
+  display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+  padding: 12px 20px; border-bottom: 1px solid var(--line);
+  background: var(--panel);
+}
+.now { min-width: 0; flex: 1; }
+.now h2 { margin: 0; font-size: 15px; font-weight: 600; letter-spacing: -0.01em; }
+.now p { margin: 2px 0 0; color: var(--muted); font-size: 12px; }
+.now code { font-family: var(--mono); }
+
+.widths { display: flex; gap: 2px; padding: 2px; border: 1px solid var(--line); border-radius: 8px; }
+.widths button {
+  font: inherit; font-size: 12px; padding: 5px 11px; border: 0; border-radius: 6px;
+  background: none; color: var(--muted); cursor: pointer;
+}
+.widths button:hover { color: var(--ink); }
+.widths button[aria-pressed="true"] { background: var(--hover); color: var(--ink); font-weight: 500; }
+.stepper { display: flex; gap: 2px; }
+.stepper button {
+  font: inherit; width: 30px; height: 30px; line-height: 1; cursor: pointer;
+  border: 1px solid var(--line); border-radius: 7px; background: none; color: var(--ink);
+}
+.stepper button:hover { background: var(--hover); }
+.stepper button:disabled { opacity: 0.35; cursor: default; }
+
+.stage { flex: 1; min-height: 0; overflow: auto; padding: 22px; display: flex; justify-content: center; }
+.device {
+  width: 100%; max-width: 100%; height: 100%;
+  background: #fff; border: 1px solid var(--line-strong); border-radius: 10px;
+  box-shadow: var(--shadow); overflow: hidden; flex: none;
+}
+.device iframe { display: block; width: 100%; height: 100%; border: 0; background: #fff; }
+
+.note {
+  position: fixed; left: 50%; bottom: 18px; transform: translateX(-50%);
+  background: var(--panel); color: var(--ink);
+  border: 1px solid var(--line-strong); border-radius: 999px;
+  padding: 8px 16px; font-size: 12px; box-shadow: var(--shadow);
+  opacity: 0; pointer-events: none; transition: opacity 160ms ease;
+}
+.note[data-show="true"] { opacity: 1; }
+
+.railpick { display: none; }
+
+@media (max-width: 900px) {
+  .app { grid-template-columns: 1fr; height: auto; min-height: 100vh; }
+  .rail { border-right: 0; border-bottom: 1px solid var(--line); }
+  .rail nav { display: none; }
+  .railpick {
+    display: block; width: 100%; font: inherit; margin-top: 12px;
+    padding: 9px 10px; border: 1px solid var(--line-strong); border-radius: 8px;
+    background: var(--panel); color: var(--ink);
+  }
+  .railfoot { display: none; }
+  .stage { padding: 12px; height: 78vh; }
+}
+@media (prefers-reduced-motion: reduce) { .note { transition: none; } }
+</style>
+
+<div class="app">
+  <aside class="rail">
+    <div class="brand">
+      <h1>Curbology — every screen</h1>
+      <p>Captured from the running build. Sample data; nothing here is a real customer.</p>
+      <label class="sr-only" for="railpick" hidden>Screen</label>
+      <select class="railpick" id="railpick"></select>
+    </div>
+    <nav id="rail" aria-label="Screens"></nav>
+    <div class="railfoot" id="railfoot"></div>
+  </aside>
+
+  <div class="main">
+    <div class="bar">
+      <div class="now">
+        <h2 id="now-label">&nbsp;</h2>
+        <p><code id="now-path"></code> <span id="now-note"></span></p>
+      </div>
+      <div class="stepper">
+        <button id="prev" type="button" title="Previous screen" aria-label="Previous screen">&#8249;</button>
+        <button id="next" type="button" title="Next screen" aria-label="Next screen">&#8250;</button>
+      </div>
+      <div class="widths" role="group" aria-label="Viewport width">
+        <button type="button" data-w="1440">Desktop</button>
+        <button type="button" data-w="834">Tablet</button>
+        <button type="button" data-w="390">Phone</button>
+      </div>
+    </div>
+    <div class="stage"><div class="device" id="device"><iframe id="stage" title="Screen"></iframe></div></div>
+  </div>
+</div>
+
+<p class="note" id="note" role="status"></p>
+
+<script id="page-css" type="text/css-store">/*__CSS__*/</script>
+
+<script>
+const MANIFEST = __MANIFEST__;
+const PAGES = __PAGES__;
+const FORMS = __FORMS__;
+const SITE_CSS = document.getElementById("page-css").textContent;
+
+const ORDER = MANIFEST.flatMap(([, items]) => items);
+const BY_ROUTE = Object.fromEntries(ORDER.map((s) => [s.route, s]));
+
+const rail = document.getElementById("rail");
+const railpick = document.getElementById("railpick");
+const stage = document.getElementById("stage");
+const device = document.getElementById("device");
+const note = document.getElementById("note");
+
+/* Build the rail from the manifest, so the viewer and the crawl can never
+   disagree about what exists. */
+for (const [group, items] of MANIFEST) {
+  const section = document.createElement("section");
+  section.className = "group";
+  const h2 = document.createElement("h2");
+  h2.textContent = group;
+  const ul = document.createElement("ul");
+  for (const item of items) {
+    const li = document.createElement("li");
+    const button = document.createElement("button");
+    button.type = "button";
+    button.className = "screen";
+    button.dataset.route = item.route;
+    button.innerHTML = '<span class="label"></span><span class="path"></span>';
+    button.querySelector(".label").textContent = item.label;
+    button.querySelector(".path").textContent = item.route;
+    button.addEventListener("click", () => show(item.route));
+    li.append(button);
+    ul.append(li);
+  }
+  section.append(h2, ul);
+  rail.append(section);
+
+  const optgroup = document.createElement("optgroup");
+  optgroup.label = group;
+  for (const item of items) {
+    const option = document.createElement("option");
+    option.value = item.route;
+    option.textContent = item.label;
+    optgroup.append(option);
+  }
+  railpick.append(optgroup);
+}
+railpick.addEventListener("change", () => show(railpick.value));
+
+document.getElementById("railfoot").innerHTML =
+  "<strong>" + ORDER.length + " screens.</strong> Layout, type and copy are the real build. " +
+  "Hover and scroll-linked motion, and the first-visit loader, need the app running — " +
+  "they are not in this file.";
+
+/* The document each screen is dropped into. One copy of the stylesheet, one
+   bridge script, and nothing else — no network, no fonts to fetch. */
+function frameDoc(page) {
+  return '<!doctype html><html lang="en"><head><meta charset="utf-8">' +
+    '<meta name="viewport" content="width=device-width, initial-scale=1">' +
+    "<style>" + SITE_CSS + "</style></head>" +
+    '<body class="' + page.bodyClass.replace(/"/g, "&quot;") + '">' + page.html +
+    "<" + "script>" + BRIDGE + "</" + "script></body></html>";
+}
+
+/* Injected into every screen. Links inside the frame were stripped of their
+   href during capture, so they carry an instruction instead of a destination —
+   a real navigation would leave the harness behind. */
+const BRIDGE = `
+  document.addEventListener("click", function (e) {
+    var el = e.target.closest("[data-screen]");
+    if (el) { e.preventDefault(); parent.postMessage({ go: el.dataset.screen }, "*"); return; }
+    var submit = e.target.closest("button[type=submit], button:not([type]), input[type=submit]");
+    var form = submit && submit.closest("form[data-action]");
+    if (form) { e.preventDefault(); parent.postMessage({ submit: form.dataset.action }, "*"); }
+  });
+  document.addEventListener("keydown", function (e) {
+    if (e.key !== "Enter" && e.key !== " ") return;
+    var el = e.target.closest && e.target.closest("[data-screen]");
+    if (el) { e.preventDefault(); parent.postMessage({ go: el.dataset.screen }, "*"); }
+  });
+  document.addEventListener("submit", function (e) { e.preventDefault(); });
+`;
+
+let current = null;
+
+function show(route) {
+  const page = route && PAGES[route];
+  if (!page) { if (route) flash("Not captured: " + route); return false; }
+  current = route;
+  stage.srcdoc = frameDoc(page);
+  const meta = BY_ROUTE[route] ?? { label: page.title, note: "" };
+  document.getElementById("now-label").textContent = meta.label;
+  document.getElementById("now-path").textContent = route;
+  document.getElementById("now-note").textContent = meta.note ? "— " + meta.note : "";
+  for (const b of rail.querySelectorAll(".screen")) {
+    const active = b.dataset.route === route;
+    b.setAttribute("aria-current", String(active));
+    // Keeps the rail in step when stepping with the keyboard, which otherwise
+    // walks the selection off the bottom of a list of thirty-nine.
+    if (active) b.scrollIntoView({ block: "nearest" });
+  }
+  railpick.value = route;
+  const i = ORDER.findIndex((s) => s.route === route);
+  document.getElementById("prev").disabled = i <= 0;
+  document.getElementById("next").disabled = i < 0 || i >= ORDER.length - 1;
+  if (location.hash.slice(1) !== route) history.replaceState(null, "", "#" + route);
+  return true;
+}
+
+function step(delta) {
+  const i = ORDER.findIndex((s) => s.route === current);
+  const next = ORDER[i + delta];
+  if (next) show(next.route);
+}
+document.getElementById("prev").addEventListener("click", () => step(-1));
+document.getElementById("next").addEventListener("click", () => step(1));
+
+let noteTimer;
+function flash(text) {
+  note.textContent = text;
+  note.dataset.show = "true";
+  clearTimeout(noteTimer);
+  noteTimer = setTimeout(() => { note.dataset.show = "false"; }, 2600);
+}
+
+window.addEventListener("message", (e) => {
+  const data = e.data || {};
+  if (data.go) {
+    if (!PAGES[data.go]) flash(data.go + " is a real route in the build, but is not one of the captured screens.");
+    else show(data.go);
+  }
+  if (data.submit) {
+    const target = FORMS[data.submit];
+    if (target && PAGES[target]) { flash("Submitted — this is where it lands."); show(target); }
+    else flash("That posts to " + data.submit + " in the running app.");
+  }
+});
+
+/* Width. The stylesheet is intact, so narrowing the frame genuinely reflows the
+   page rather than scaling a picture of it. */
+function setWidth(w) {
+  device.style.width = w + "px";
+  for (const b of document.querySelectorAll(".widths button")) {
+    b.setAttribute("aria-pressed", String(Number(b.dataset.w) === w));
+  }
+  try { localStorage.setItem("curbology:preview-width", String(w)); } catch (err) { /* private mode */ }
+}
+for (const b of document.querySelectorAll(".widths button")) {
+  b.addEventListener("click", () => setWidth(Number(b.dataset.w)));
+}
+
+document.addEventListener("keydown", (e) => {
+  if (e.target.matches("input, select, textarea")) return;
+  if (e.key === "ArrowDown" || e.key === "j") { e.preventDefault(); step(1); }
+  if (e.key === "ArrowUp" || e.key === "k") { e.preventDefault(); step(-1); }
+});
+
+let startWidth = 1440;
+try { startWidth = Number(localStorage.getItem("curbology:preview-width")) || 1440; } catch (err) { /* private mode */ }
+setWidth(startWidth);
+const fromHash = location.hash ? decodeURIComponent(location.hash.slice(1)) : "";
+if (!show(fromHash)) show(ORDER[0].route);
+</script>
