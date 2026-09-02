@@ -20,8 +20,8 @@ export function Button({
 }
 
 export function Section({
-  ground = "paper", children, id,
-}: { ground?: "paper" | "teal" | "ink"; children: ReactNode; id?: string }) {
+  ground = "paper", children, id, grain = false,
+}: { ground?: "paper" | "teal" | "ink"; children: ReactNode; id?: string; grain?: boolean }) {
   // Teal ground with ink type is the brand's signature pairing and the one
   // combination here that is both on-brand and accessible at 6.66:1.
   const grounds = {
@@ -30,7 +30,7 @@ export function Section({
     ink: "ground-ink bg-ink text-paper",
   } as const;
   return (
-    <section id={id} className={grounds[ground]}>
+    <section id={id} className={`${grounds[ground]} ${grain ? "grain relative" : ""}`}>
       <div className="mx-auto w-full max-w-6xl px-6 py-20 md:py-28">{children}</div>
     </section>
   );

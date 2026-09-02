@@ -31,35 +31,68 @@ function Mark({ onDark = false }: { onDark?: boolean }) {
 export function Nav() {
   return (
     <header className="bg-teal">
-      <div className="mx-auto flex w-full max-w-6xl flex-wrap items-center gap-x-8 gap-y-4 px-6 py-5">
-        <A href="/" className="mr-auto" aria-label={`${business.name} — home`}>
-          <Mark />
-        </A>
+      <div className="mx-auto w-full max-w-[1600px] px-6 py-4 md:py-5">
+        <div className="flex items-center gap-x-6 gap-y-3">
+          <A href="/" className="mr-auto" aria-label={`${business.name} — home`}>
+            <Mark />
+          </A>
 
-        {/* Click-to-call sits in the header on the live site and stays there.
-            For a local service business it is the highest-intent action there is. */}
-        <A href={business.phone.href} className="font-medium text-ink underline underline-offset-4">
-          {business.phone.display}
-        </A>
+          {/* Click-to-call stays visible at every width. For a local service
+              business it is the highest-intent action on the page, and burying
+              it behind a menu on the devices most likely to place the call
+              would be the wrong economy. */}
+          {/* nowrap: without it a formatted number breaks at the hyphen and the
+              space, and "(248) 387-9215" stacks into three lines on a phone. */}
+          <A
+            href={business.phone.href}
+            className="whitespace-nowrap font-medium text-ink underline underline-offset-4"
+          >
+            {business.phone.display}
+          </A>
 
-        <nav aria-label="Main">
-          <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-            {nav.map((item) => (
-              <li key={item.href}>
-                <A href={item.href} className="text-ink hover:underline hover:underline-offset-4">
-                  {item.label}
-                </A>
-              </li>
-            ))}
-          </ul>
-        </nav>
+          {/* Desktop: the links inline. */}
+          <nav aria-label="Main" className="hidden md:block">
+            <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
+              {nav.map((item) => (
+                <li key={item.href}>
+                  <A href={item.href} className="text-ink hover:underline hover:underline-offset-4">
+                    {item.label}
+                  </A>
+                </li>
+              ))}
+            </ul>
+          </nav>
 
-        <A
-          href="/contact"
-          className="btn btn--ink"
-        >
-          Get a free quote
-        </A>
+          <A href="/contact" className="btn btn--ink hidden md:inline-flex">Get a free quote</A>
+
+          {/*
+            Mobile: a <details> disclosure rather than a scripted menu.
+            It opens and closes with no JavaScript at all, which matters on the
+            devices this audience actually uses — and it meant the header stopped
+            eating 430px of an 844px screen before the headline began.
+          */}
+          <details className="group md:hidden">
+            <summary
+              className="btn btn--ink list-none [&::-webkit-details-marker]:hidden"
+              aria-label="Open menu"
+            >
+              Menu
+            </summary>
+            <nav
+              aria-label="Main"
+              className="absolute inset-x-0 z-50 mt-3 border-y border-ink/15 bg-teal px-6 py-5"
+            >
+              <ul className="space-y-3">
+                {nav.map((item) => (
+                  <li key={item.href}>
+                    <A href={item.href} className="text-lg text-ink">{item.label}</A>
+                  </li>
+                ))}
+              </ul>
+              <A href="/contact" className="btn btn--ink mt-5 w-full">Get a free quote</A>
+            </nav>
+          </details>
+        </div>
       </div>
     </header>
   );

@@ -29,6 +29,12 @@ export function Kinetic({ text, className }: { text: string; className?: string 
       outer.style.display = "inline-block";
       outer.style.overflow = "hidden";
       outer.style.verticalAlign = "top";
+      // The mask has to clear the descenders or it shaves the tail off every
+      // g, y and p — very visible at display scale, where "Oakland County" lost
+      // the bottom of its y. Padding opens the box; the negative margin keeps
+      // the line box the same height so nothing below it moves.
+      outer.style.paddingBottom = "0.16em";
+      outer.style.marginBottom = "-0.16em";
       const inner = document.createElement("span");
       inner.style.display = "inline-block";
       inner.style.transform = "translateY(105%)";

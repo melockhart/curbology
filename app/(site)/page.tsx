@@ -1,9 +1,9 @@
 import { business, home, services } from "../../lib/content";
+import { Hero } from "../../components/hero";
+import { Cinema } from "../../components/motion/cinema";
 import { Button, Section, Eyebrow, AwaitingPhoto } from "../../components/ui";
 import { A } from "../../components/link";
 import { Reveal } from "../../components/motion/reveal";
-import { Parallax } from "../../components/motion/parallax";
-import { Kinetic } from "../../components/motion/kinetic";
 import { Magnetic } from "../../components/motion/magnetic";
 import { BeforeAfter } from "../../components/motion/before-after";
 
@@ -22,32 +22,13 @@ import { BeforeAfter } from "../../components/motion/before-after";
 export default function HomePage() {
   return (
     <>
-      {/* bleedHero — headline arrives word by word, media drifts against scroll */}
-      <Section ground="teal">
-        <div className="grid items-center gap-12 md:grid-cols-2">
-          <div>
-            <h1 className="text-5xl md:text-6xl" aria-label={home.heroHeading}>
-              <Kinetic text={home.heroHeading} />
-            </h1>
-            <p className="mt-6 max-w-md text-lg">{home.heroBody}</p>
-            <div className="mt-8 flex flex-wrap items-center gap-4">
-              <Button href="/contact" variant="onTeal">Get a free quote</Button>
-              <A href={business.phone.href} className="inline-flex min-h-[44px] items-center font-medium underline underline-offset-4">
-                Call {business.phone.display}
-              </A>
-            </div>
-          </div>
-          <Parallax strength={0.14}>
-            <AwaitingPhoto label="The hero shot — a real job, in Oakland County." />
-          </Parallax>
-        </div>
-      </Section>
+      <Hero />
 
       {/* featureGrid — staggered, so the eye is led down the list */}
       <Section>
         <Reveal><Eyebrow>What we clean</Eyebrow></Reveal>
         <Reveal delay={60}>
-          <h2 className="max-w-2xl text-4xl">Four services, one crew</h2>
+          <h2 className="display-lg max-w-2xl">Four services,<br />one crew</h2>
         </Reveal>
         <ul className="mt-12 grid gap-8 md:grid-cols-2">
           {services.map((s, i) => (
@@ -72,16 +53,16 @@ export default function HomePage() {
 
       {/* beforeAfter — the proof this industry runs on, and the one element
           worth building as a real mechanism rather than two images side by side */}
-      <Section ground="teal">
+      <Section ground="teal" grain>
         <Reveal><Eyebrow>The difference</Eyebrow></Reveal>
-        <Reveal delay={60}><h2 className="max-w-2xl text-4xl">Before and after</h2></Reveal>
+        <Reveal delay={60}><h2 className="display-lg max-w-2xl">Before<br />and after</h2></Reveal>
         <Reveal delay={140}>
-          <div className="mt-10 max-w-3xl">
+          <Cinema className="mt-10">
             <BeforeAfter
               beforeAlt="Before cleaning" afterAlt="After cleaning"
               caption="Drag to compare. A matched pair — same house, same angle, same light."
             />
-          </div>
+          </Cinema>
         </Reveal>
         <Reveal delay={200}>
           <p className="mt-8">
@@ -96,7 +77,7 @@ export default function HomePage() {
         <div className="grid gap-12 md:grid-cols-2">
           <div className="md:sticky md:top-24 md:self-start">
             <Eyebrow>How it works</Eyebrow>
-            <h2 className="text-4xl">Three steps, no surprises</h2>
+            <h2 className="display-lg">Three steps,<br />no surprises</h2>
             <p className="mt-4 text-[color:var(--muted)]">
               Most quotes come back the same day.
             </p>
@@ -132,15 +113,13 @@ export default function HomePage() {
             </div>
           </Reveal>
           <Reveal delay={120}>
-            <Parallax strength={0.1}>
-              <AwaitingPhoto label="The owner, on a job. A face is why a stranger lets someone onto their property." />
-            </Parallax>
+            <AwaitingPhoto label="The owner, on a job. A face is why a stranger lets someone onto their property." />
           </Reveal>
         </div>
       </Section>
 
       {/* localVoice — towns as text; this is what local search reads */}
-      <Section ground="ink">
+      <Section ground="ink" grain>
         <Reveal><Eyebrow>Where we work</Eyebrow></Reveal>
         <Reveal delay={60}>
           <h2 className="max-w-2xl text-4xl text-paper">
@@ -156,9 +135,9 @@ export default function HomePage() {
       </Section>
 
       {/* magneticCta — same action as the hero */}
-      <Section ground="teal">
+      <Section ground="teal" grain>
         <div className="max-w-2xl">
-          <Reveal><h2 className="text-4xl">{home.quoteHeading}</h2></Reveal>
+          <Reveal><h2 className="display-lg max-w-3xl">{home.quoteHeading}</h2></Reveal>
           <Reveal delay={80}><p className="mt-4 text-lg">{home.quoteSub}</p></Reveal>
           <Reveal delay={160}>
             <div className="mt-8">
