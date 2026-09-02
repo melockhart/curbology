@@ -97,7 +97,17 @@ export function normalizeBody(input) {
 /* renderShell                                                         */
 /* ------------------------------------------------------------------ */
 
-export function renderShell({ shell, body, preheader, subject, contactId, postalAddress, agent }) {
+/**
+ * Where the email's own assets live — the brand faces and the grain tile.
+ *
+ * Absolute by necessity: an email has no origin to resolve a relative URL
+ * against. Overridable so a local preview can point at the dev server and
+ * actually render in the real typeface; without that, every preview is checked
+ * in the fallback stack and the design is never seen.
+ */
+export const ASSET_BASE = process.env.EMAIL_ASSET_BASE || "https://curbology.op-site.net";
+
+export function renderShell({ shell, body, preheader, subject, contactId, postalAddress, agent, assetBase }) {
   if (!["client", "transactional", "team"].includes(shell)) {
     throw new Error(`Unknown shell: ${shell}`);
   }
@@ -138,6 +148,7 @@ export function renderShell({ shell, body, preheader, subject, contactId, postal
     contactId: contactId ?? "",
     postalAddress: postalAddress ?? "",
     agent: agent ?? "",
+    assetBase: assetBase ?? ASSET_BASE,
   };
   for (const [key, value] of Object.entries(slots)) {
     html = html.replaceAll(`{{${key}}}`, String(value));
@@ -155,72 +166,102 @@ const TEAL = "#04b8ba";
 const MUTED = "#4a5568";
 
 export const el = {
+  /** A kicker with a rule over it — the editorial tell that a section started. */
   kicker: (t) =>
-    `<p style="margin:0 0 10px 0;font-size:12px;letter-spacing:0.14em;text-transform:uppercase;color:${MUTED};">${t}</p>`,
-  heading: (t) =>
-    `<h1 style="margin:0 0 16px 0;font-family:Georgia,'Times New Roman',serif;font-size:28px;line-height:34px;font-weight:bold;color:${INK};">${t}</h1>`,
-  text: (t) => `<p style="margin:0 0 18px 0;color:${INK};">${t}</p>`,
-  quote: (t, who) =>
-    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>` +
-    `<td style="border-left:3px solid ${TEAL};padding:4px 0 4px 16px;">` +
-    `<p style="margin:0 0 6px 0;font-family:Georgia,'Times New Roman',serif;font-size:18px;line-height:27px;color:${INK};">${t}</p>` +
-    `<p style="margin:0;font-size:13px;color:${MUTED};">${who}</p></td></tr></table>` +
-    `<div style="height:18px;line-height:18px;">&nbsp;</div>`,
-  // White on ink is 16.32:1. Never teal on white (2.45) or white on teal (2.45).
-  button: (label, href) =>
-    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:6px 0 22px 0;"><tr>` +
-    `<td style="background:${INK};border-radius:999px;">` +
-    `<a href="${href}" style="display:inline-block;padding:14px 28px;font-family:Arial,Helvetica,sans-serif;font-size:15px;font-weight:bold;color:#ffffff;text-decoration:none;">${label}</a>` +
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:0 0 14px 0;"><tr><td>` +
+    `<div style="width:44px;border-top:2px solid ${TEAL};font-size:1px;line-height:1px;">&nbsp;</div>` +
+    `<div style="padding-top:10px;font-family:'Instrument Sans',Helvetica,Arial,sans-serif;font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:${MUTED};">${t}</div>` +
     `</td></tr></table>`,
-  rule: () =>
-    `<div style="border-top:1px solid #d9dee5;font-size:1px;line-height:1px;margin:26px 0;">&nbsp;</div>`,
-  spacer: (h = 18) => `<div style="height:${h}px;line-height:${h}px;">&nbsp;</div>`,
 
-  /** A service, as Curbology sells it. */
+  /** Display scale, tight leading — the same move the site's hero makes. */
+  heading: (t) =>
+    `<h1 class="h1 display" style="margin:0 0 18px 0;font-family:'Fraunces',Georgia,'Times New Roman',serif;font-size:36px;line-height:38px;font-weight:700;letter-spacing:-0.02em;color:${INK};">${t}</h1>`,
+
+  subheading: (t) =>
+    `<h2 class="display" style="margin:34px 0 14px 0;font-family:'Fraunces',Georgia,serif;font-size:23px;line-height:28px;font-weight:700;letter-spacing:-0.01em;color:${INK};">${t}</h2>`,
+
+  text: (t) => `<p style="margin:0 0 20px 0;color:${INK};">${t}</p>`,
+
+  lead: (t) =>
+    `<p style="margin:0 0 24px 0;font-size:18px;line-height:29px;color:${INK};">${t}</p>`,
+
+  quote: (t, who) =>
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:6px 0 26px 0;background:${TEAL};"><tr>` +
+    `<td style="padding:26px 28px;">` +
+    `<p class="display" style="margin:0 0 12px 0;font-family:'Fraunces',Georgia,serif;font-size:21px;line-height:30px;font-weight:700;color:${INK};">&ldquo;${t}&rdquo;</p>` +
+    `<p style="margin:0;font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:${INK};">${who}</p>` +
+    `</td></tr></table>`,
+
+  /*
+   * The button.
+   *
+   * White on ink is 16.32:1. A gradient face and an inner top highlight give it
+   * the same depth the site's buttons have; Outlook drops both and renders the
+   * flat background-color, which is why that is set as well as the gradient.
+   * Square corners in Outlook desktop are accepted rather than fought.
+   */
+  button: (label, href) =>
+    `<table role="presentation" cellpadding="0" cellspacing="0" style="margin:10px 0 26px 0;"><tr>` +
+    `<td align="center" bgcolor="${INK}" style="background:${INK};background-image:linear-gradient(180deg,#262f42 0%,#1a202c 62%,#12161f 100%);border-radius:999px;box-shadow:inset 0 1px 0 rgba(255,255,255,0.14);">` +
+    `<a href="${href}" style="display:inline-block;padding:16px 34px;font-family:'Instrument Sans',Helvetica,Arial,sans-serif;font-size:15px;font-weight:600;letter-spacing:0.01em;color:#ffffff;text-decoration:none;">${label}&nbsp;&rarr;</a>` +
+    `</td></tr></table>`,
+
+  rule: () =>
+    `<div style="border-top:1px solid #dfe4ea;font-size:1px;line-height:1px;margin:30px 0;">&nbsp;</div>`,
+  spacer: (h = 20) => `<div style="height:${h}px;line-height:${h}px;">&nbsp;</div>`,
+
+  /** A service, as Curbology sells it. The arrow is a glyph, so it survives
+   *  image blocking where an icon would not. */
   serviceCard: ({ name, blurb, href }) =>
-    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 16px 0;background:${TEAL};"><tr>` +
-    `<td style="padding:22px 24px;">` +
-    `<p style="margin:0 0 6px 0;font-family:Georgia,'Times New Roman',serif;font-size:19px;font-weight:bold;color:${INK};">${name}</p>` +
-    `<p style="margin:0 0 12px 0;font-size:15px;line-height:23px;color:${INK};">${blurb}</p>` +
-    `<a href="${href}" style="font-size:14px;font-weight:bold;color:${INK};text-decoration:underline;">See what's included</a>` +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 14px 0;background:${TEAL};"><tr>` +
+    `<td style="padding:26px 28px;">` +
+    `<p class="display" style="margin:0 0 8px 0;font-family:'Fraunces',Georgia,serif;font-size:21px;line-height:26px;font-weight:700;letter-spacing:-0.01em;color:${INK};">${name}</p>` +
+    `<p style="margin:0 0 14px 0;font-size:15px;line-height:24px;color:${INK};">${blurb}</p>` +
+    `<a href="${href}" style="font-size:12px;font-weight:600;letter-spacing:0.14em;text-transform:uppercase;color:${INK};text-decoration:none;border-bottom:2px solid ${INK};padding-bottom:2px;">See what&rsquo;s included &rarr;</a>` +
     `</td></tr></table>`,
 
   /**
-   * Before and after. Email cannot do a drag slider, so it is two plates side by
-   * side with a still that links out. Every image slot has an honest empty
-   * state — never a broken image, never stock. On this business the photograph
-   * is the argument, so a missing one is worth naming.
+   * Before and after. Email cannot do a drag slider, so it is two plates with
+   * their labels set as captions beneath. Every slot has an honest empty state
+   * — never a broken image, never stock. On this business the photograph is the
+   * argument, so a missing one is worth naming rather than papering over.
    */
   beforeAfter: ({ before, after, caption }) => {
     const plate = (src, label) =>
-      src
-        ? `<img src="${src}" alt="${label}" width="264" style="display:block;width:100%;max-width:264px;height:auto;" />`
-        : `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="border:2px dashed #b9c2ce;"><tr>` +
-          `<td align="center" style="padding:38px 12px;font-size:13px;line-height:19px;color:${MUTED};">Photography to come<br />${label}</td>` +
-          `</tr></table>`;
+      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0">` +
+      `<tr><td>` +
+      (src
+        ? `<img src="${src}" alt="${label}" width="258" style="display:block;width:100%;max-width:258px;height:auto;" />`
+        : `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#eef1f5;border:1px solid #dfe4ea;"><tr>` +
+          `<td align="center" style="padding:46px 12px;font-size:12px;line-height:18px;color:#8b95a3;">Photography<br />to come</td></tr></table>`) +
+      `</td></tr>` +
+      `<tr><td style="padding-top:8px;font-size:11px;font-weight:600;letter-spacing:0.16em;text-transform:uppercase;color:${MUTED};">${label}</td></tr>` +
+      `</table>`;
     return (
-      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>` +
-      `<td class="stack" width="50%" valign="top" style="padding-right:8px;">${plate(before, "Before")}</td>` +
-      `<td class="stack" width="50%" valign="top" style="padding-left:8px;">${plate(after, "After")}</td>` +
+      `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 0 0;"><tr>` +
+      `<td class="stack" width="50%" valign="top" style="padding-right:9px;">${plate(before, "Before")}</td>` +
+      `<td class="stack" width="50%" valign="top" style="padding-left:9px;">${plate(after, "After")}</td>` +
       `</tr></table>` +
-      (caption ? `<p style="margin:10px 0 22px 0;font-size:13px;color:${MUTED};">${caption}</p>` : el.spacer(22))
+      (caption ? `<p style="margin:14px 0 26px 0;font-size:13px;line-height:20px;color:${MUTED};">${caption}</p>` : el.spacer(26))
     );
   },
 
-  /** A quote, itemised. Amounts are rendered as given — never computed here. */
+  /** A quote, itemised. Amounts render as given — never computed here, because
+   *  Number() over a merge token produces NaN in every template. */
   quoteEstimate: ({ lines, total, note }) =>
-    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:0 0 20px 0;border:1px solid #d9dee5;">` +
+    `<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="margin:4px 0 20px 0;">` +
+    `<tr><td colspan="2" style="background:${INK};padding:13px 20px;font-size:11px;font-weight:600;letter-spacing:0.18em;text-transform:uppercase;color:#ffffff;">The quote</td></tr>` +
     lines
       .map(
         (l) =>
-          `<tr><td style="padding:12px 18px;border-bottom:1px solid #eceff3;font-size:15px;color:${INK};">${l.label}</td>` +
-          `<td align="right" style="padding:12px 18px;border-bottom:1px solid #eceff3;font-size:15px;color:${INK};">${l.amount}</td></tr>`,
+          `<tr><td style="padding:15px 20px;border-bottom:1px solid #e6eaef;font-size:15px;color:${INK};">${l.label}</td>` +
+          `<td align="right" style="padding:15px 20px;border-bottom:1px solid #e6eaef;font-size:15px;color:${INK};white-space:nowrap;">${l.amount}</td></tr>`,
       )
       .join("") +
-    `<tr><td style="padding:14px 18px;font-size:15px;font-weight:bold;color:${INK};">Total</td>` +
-    `<td align="right" style="padding:14px 18px;font-size:15px;font-weight:bold;color:${INK};">${total}</td></tr>` +
+    `<tr><td style="padding:18px 20px;background:${TEAL};font-family:'Fraunces',Georgia,serif;font-size:17px;font-weight:700;color:${INK};">Total</td>` +
+    `<td align="right" style="padding:18px 20px;background:${TEAL};font-family:'Fraunces',Georgia,serif;font-size:20px;font-weight:700;color:${INK};white-space:nowrap;">${total}</td></tr>` +
     `</table>` +
-    (note ? `<p style="margin:0 0 20px 0;font-size:13px;color:${MUTED};">${note}</p>` : ""),
+    (note ? `<p style="margin:0 0 22px 0;font-size:13px;line-height:20px;color:${MUTED};">${note}</p>` : ""),
 };
 
 /* ------------------------------------------------------------------ */

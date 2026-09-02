@@ -4,42 +4,83 @@
 <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta name="x-apple-disable-message-reformatting" />
+<meta name="color-scheme" content="light" />
+<meta name="supported-color-schemes" content="light" />
 <title>Preheader text</title>
 <!--[if mso]>
 <noscript><xml><o:OfficeDocumentSettings><o:PixelsPerInch>96</o:PixelsPerInch></o:OfficeDocumentSettings></xml></noscript>
 <![endif]-->
 <style>
-  /* Every colour is baked literally. Outlook does not support CSS custom
-     properties, so a var() here renders as no colour at all. */
-  body { margin:0; padding:0; width:100% !important; background:#f2f4f7; }
+  /*
+   * The real brand faces, served from Curbology's own domain rather than
+   * Google's — no third-party dependency in a message that may be read years
+   * from now, and the same files the site already ships.
+   *
+   * Apple Mail, iOS Mail, Outlook for Mac and Thunderbird load these. Everything
+   * else falls to the stack behind them, which is why Georgia sits behind
+   * Fraunces (both high-contrast serifs) and Helvetica behind Instrument Sans.
+   * The layout must look deliberate either way — it is a fallback, not a
+   * degradation.
+   */
+  @font-face {
+    font-family: 'Fraunces';
+    font-style: normal;
+    font-weight: 400 700;
+    font-display: swap;
+    src: url('https://curbology.op-site.net/fonts/fraunces.woff2') format('woff2');
+  }
+  @font-face {
+    font-family: 'Instrument Sans';
+    font-style: normal;
+    font-weight: 400 600;
+    font-display: swap;
+    src: url('https://curbology.op-site.net/fonts/instrument-sans.woff2') format('woff2');
+  }
+
+  body { margin:0; padding:0; width:100% !important; background:#e9edf2; }
   table { border-collapse:collapse; }
   img { border:0; outline:none; text-decoration:none; -ms-interpolation-mode:bicubic; }
   a { color:#1a202c; }
-  .well a { color:#1a202c; }
+
+  /* Outlook cannot render the webfont, so give it the fallback explicitly
+     rather than letting it guess at a variable font it half-recognises. */
+  <!--[if mso]>
+  .display { font-family: Georgia, 'Times New Roman', serif !important; }
+  .body-type { font-family: Arial, Helvetica, sans-serif !important; }
+  <![endif]-->
+
   @media only screen and (max-width:620px) {
     .shell { width:100% !important; }
-    .pad { padding-left:20px !important; padding-right:20px !important; }
-    .stack { display:block !important; width:100% !important; }
+    .pad { padding-left:22px !important; padding-right:22px !important; }
+    .stack { display:block !important; width:100% !important; padding:0 0 12px 0 !important; }
+    .h1 { font-size:28px !important; line-height:32px !important; }
   }
 </style>
 </head>
-<body style="margin:0;padding:0;background:#f2f4f7;">
-<div style="display:none;font-size:1px;color:#f2f4f7;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">Preheader text</div>
+<body style="margin:0;padding:0;background:#e9edf2;">
+<div style="display:none;font-size:1px;color:#e9edf2;line-height:1px;max-height:0;max-width:0;opacity:0;overflow:hidden;">Preheader text&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;&nbsp;&zwnj;</div>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#04b8ba;">
-  <tr><td align="center" style="padding:0;">
-    <table role="presentation" class="shell" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;">
-      <tr><td class="pad" style="padding:26px 32px;font-family:Georgia,'Times New Roman',serif;font-size:20px;font-weight:bold;letter-spacing:0.06em;color:#1a202c;text-transform:uppercase;">
-        Curbology
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e9edf2;">
+  <tr><td align="center" style="padding:28px 0 0 0;">
+    <table role="presentation" class="shell" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#04b8ba;background-image:url('https://curbology.op-site.net/email/grain.png');background-repeat:repeat;">
+      <tr><td class="pad" style="padding:30px 36px 12px 36px;">
+        <table role="presentation" width="100%" cellpadding="0" cellspacing="0"><tr>
+          <td class="display" style="font-family:'Fraunces',Georgia,'Times New Roman',serif;font-size:27px;line-height:30px;font-weight:700;letter-spacing:0.02em;color:#1a202c;text-transform:uppercase;">Curbology</td>
+          <td class="body-type" align="right" style="font-family:'Instrument Sans',Helvetica,Arial,sans-serif;font-size:11px;line-height:16px;letter-spacing:0.18em;text-transform:uppercase;color:#1a202c;">Exterior<br />Cleaning</td>
+        </tr></table>
+      </td></tr>
+      <tr><td class="pad" style="padding:0 36px 26px 36px;">
+        <div style="border-top:2px solid #1a202c;font-size:1px;line-height:1px;">&nbsp;</div>
+        <div class="body-type" style="padding-top:9px;font-family:'Instrument Sans',Helvetica,Arial,sans-serif;font-size:11px;letter-spacing:0.16em;text-transform:uppercase;color:#1a202c;">Oakland County, Michigan</div>
       </td></tr>
     </table>
   </td></tr>
 </table>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#f2f4f7;">
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e9edf2;">
   <tr><td align="center" style="padding:0;">
     <table role="presentation" class="shell" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#ffffff;">
-      <tr><td class="pad well" style="padding:36px 32px;font-family:Arial,Helvetica,sans-serif;font-size:16px;line-height:26px;color:#1a202c;">
+      <tr><td class="pad well body-type" style="padding:42px 36px 40px 36px;font-family:'Instrument Sans',Helvetica,Arial,sans-serif;font-size:16px;line-height:27px;color:#1a202c;">
 
 <div style="border:2px dashed #b9c2ce;padding:26px;text-align:center;color:#4a5568;font-size:14px;line-height:21px;">
   <strong style="color:#1a202c;">The Well</strong><br />
@@ -51,13 +92,19 @@
   </td></tr>
 </table>
 
-<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#1a202c;">
-  <tr><td align="center" style="padding:0;">
-    <table role="presentation" class="shell" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;">
-      <tr><td class="pad" style="padding:28px 32px;font-family:Arial,Helvetica,sans-serif;font-size:13px;line-height:20px;color:#ffffff;">
-        <div style="font-family:Georgia,'Times New Roman',serif;font-size:17px;font-weight:bold;letter-spacing:0.06em;text-transform:uppercase;color:#ffffff;">Curbology</div>
-        <div style="height:10px;line-height:10px;">&nbsp;</div>
-        <div style="color:#ffffff;">Questions about this job? Call <a href="tel:+12483879215" style="color:#ffffff;text-decoration:underline;">(248) 387-9215</a>.</div>
+<table role="presentation" width="100%" cellpadding="0" cellspacing="0" style="background:#e9edf2;">
+  <tr><td align="center" style="padding:0 0 32px 0;">
+    <table role="presentation" class="shell" width="600" cellpadding="0" cellspacing="0" style="width:600px;max-width:600px;background:#1a202c;">
+      <tr><td class="pad" style="padding:34px 36px 14px 36px;">
+        <div class="display" style="font-family:'Fraunces',Georgia,serif;font-size:26px;line-height:30px;font-weight:700;letter-spacing:0.02em;color:#ffffff;text-transform:uppercase;">Curbology</div>
+      </td></tr>
+      <tr><td class="pad" style="padding:0 36px;">
+        <div style="border-top:2px solid #04b8ba;font-size:1px;line-height:1px;">&nbsp;</div>
+      </td></tr>
+      <tr><td class="pad body-type" style="padding:16px 36px 34px 36px;font-family:'Instrument Sans',Helvetica,Arial,sans-serif;font-size:14px;line-height:22px;color:#ffffff;">
+        Questions about this job? Call
+        <a href="tel:+12483879215" style="color:#04b8ba;text-decoration:none;font-weight:600;">(248) 387-9215</a>
+        or just reply to this email.
       </td></tr>
     </table>
   </td></tr>
