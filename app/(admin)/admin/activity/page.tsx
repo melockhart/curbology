@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { configured } from "../../../../lib/env";
+import { previewMode } from "../../../../lib/preview";
 import { listActivity } from "../../../../lib/db";
 import { AdminHeader, NotConfigured, Empty, Card, Pill, when } from "../../../../components/admin/admin-ui";
 
@@ -32,7 +33,7 @@ const LABELS: Record<string, string> = {
 };
 
 export default async function ActivityPage() {
-  if (!configured()) {
+  if (!configured() && !previewMode()) {
     return <div className="space-y-8"><AdminHeader eyebrow="Data" title="Activity Log" /><NotConfigured /></div>;
   }
 

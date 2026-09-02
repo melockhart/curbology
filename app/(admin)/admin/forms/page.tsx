@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { configured } from "../../../../lib/env";
+import { previewMode } from "../../../../lib/preview";
 import { listAllLeads, listReviews, listBookings } from "../../../../lib/db";
 import { AdminHeader, NotConfigured, Card, Pill, Code, age } from "../../../../components/admin/admin-ui";
 import { A } from "../../../../components/link";
@@ -75,7 +76,7 @@ const FORMS: FormSpec[] = [
 ];
 
 export default async function FormsPage() {
-  if (!configured()) {
+  if (!configured() && !previewMode()) {
     return <div className="space-y-8"><AdminHeader eyebrow="Marketing" title="Forms" /><NotConfigured /></div>;
   }
 

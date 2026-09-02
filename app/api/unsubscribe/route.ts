@@ -1,5 +1,6 @@
 import { insert } from "../../../lib/db";
 import { configured } from "../../../lib/env";
+import { previewMode } from "../../../lib/preview";
 
 /**
  * ⛔ THE ONLY PLACE SUPPRESSION IS EVER WRITTEN.
@@ -16,6 +17,10 @@ export async function POST(request: Request) {
   const form = await request.formData();
   const contactId = String(form.get("id") ?? "").trim();
   if (!contactId) return redirectBack(request, "missing");
+  // Validation still ran: the preview exercises the real form, it just has
+  // nowhere to put the result. Saying "unconfigured" here would read as a
+  // fault rather than as the demo working exactly as intended.
+  if (previewMode()) return redirectBack(request, "preview");
   if (!configured()) return redirectBack(request, "unconfigured");
 
   try {

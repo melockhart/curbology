@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { configured } from "../../../../lib/env";
+import { previewMode } from "../../../../lib/preview";
 import { listAllLeads, listReviews, listBookings, type Lead } from "../../../../lib/db";
 import {
   AdminHeader, NotConfigured, Empty, Card, Stat, Pill,
@@ -21,7 +22,7 @@ export const metadata: Metadata = { title: "Analytics" };
 const DAY = 86_400_000;
 
 export default async function AnalyticsPage() {
-  if (!configured()) {
+  if (!configured() && !previewMode()) {
     return <div className="space-y-8"><AdminHeader eyebrow="Data" title="Analytics" /><NotConfigured /></div>;
   }
 

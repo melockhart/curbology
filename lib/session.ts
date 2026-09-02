@@ -1,5 +1,8 @@
 import { cookies } from "next/headers";
 import { runtimeEnv, allowedEmails, ownerEmails } from "./env";
+import {
+  previewMode, previewPassword, PREVIEW_SESSION_VALUE, PREVIEW_EMAIL, PREVIEW_USER_ID,
+} from "./preview";
 
 /**
  * The console holds customers' names, addresses, phone numbers and photographs
@@ -15,6 +18,23 @@ import { runtimeEnv, allowedEmails, ownerEmails } from "./env";
 export const SESSION_COOKIE = "curbology_session";
 
 export async function signIn(email: string, password: string) {
+  /*
+   * The preview door.
+   *
+   * It exists because the console has to be walkable before Tristen has an
+   * account, and it is safe to exist because previewMode() is false the moment
+   * SUPABASE_URL is set — so this branch is unreachable anywhere there is real
+   * customer data to reach. Without PREVIEW_PASSWORD there is no door at all;
+   * the preview is not meant to be a publicly walkable admin, even of sample
+   * rows. The email is not checked, because in preview there is nobody to be.
+   */
+  if (previewMode()) {
+    const expected = previewPassword();
+    if (!expected) return { error: "The preview console is not open." };
+    if (password !== expected) return { error: "Wrong email or password." };
+    return { token: PREVIEW_SESSION_VALUE, expiresIn: 60 * 60 * 8 };
+  }
+
   const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) return { error: "The console is not configured yet." };
 
@@ -57,6 +77,14 @@ export type Session = {
 export async function currentSession(): Promise<Session | null> {
   const token = (await cookies()).get(SESSION_COOKIE)?.value;
   if (!token) return null;
+
+  if (previewMode()) {
+    if (token !== PREVIEW_SESSION_VALUE || !previewPassword()) return null;
+    // God mode on, so the preview shows every screen including the locked one.
+    // There is nothing behind it here but which env vars are set.
+    return { email: PREVIEW_EMAIL, id: PREVIEW_USER_ID, token, isGodMode: true };
+  }
+
   const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) return null;
 

@@ -1,5 +1,6 @@
 import { runtimeEnv, configured } from "./env";
 import type { Session } from "./session";
+import * as preview from "./preview";
 
 /**
  * Supabase REST, service-role.
@@ -58,17 +59,34 @@ export type Booking = {
   video_url: string | null; notes: string | null;
 };
 
-export const listLeads = () =>
-  rows<Lead>("leads?select=*&order=created_at.asc&status=in.(new,contacted,quoted)");
-export const listAllLeads = () => rows<Lead>("leads?select=*&order=created_at.desc");
-export const listReviews = () => rows<Review>("reviews?select=*&order=created_at.desc");
-export const listBookings = () => rows<Booking>("bookings?select=*&order=created_at.desc");
+export const listLeads = async () =>
+  preview.previewMode()
+    ? preview.previewLeads.filter((l) => ["new", "contacted", "quoted"].includes(l.status))
+    : rows<Lead>("leads?select=*&order=created_at.asc&status=in.(new,contacted,quoted)");
+export const listAllLeads = async () =>
+  preview.previewMode() ? preview.previewLeads : rows<Lead>("leads?select=*&order=created_at.desc");
+export const listReviews = async () =>
+  preview.previewMode() ? preview.previewReviews : rows<Review>("reviews?select=*&order=created_at.desc");
+export const listBookings = async () =>
+  preview.previewMode() ? preview.previewBookings : rows<Booking>("bookings?select=*&order=created_at.desc");
 
 /** Published reviews, for the public /reviews page. */
-export const publishedReviews = () =>
-  rows<Review>("reviews?select=*&published=is.true&order=created_at.desc");
+export const publishedReviews = async () =>
+  preview.previewMode()
+    ? preview.previewReviews.filter((r) => r.published)
+    : rows<Review>("reviews?select=*&published=is.true&order=created_at.desc");
+
+/** Thrown instead of writing, so a route reports it the same way it reports any
+ *  other refusal rather than pretending the save worked. */
+export class PreviewWrite extends Error {
+  constructor() {
+    super("This is a preview — the form works, but there is no database behind it yet.");
+    this.name = "PreviewWrite";
+  }
+}
 
 export async function insert(table: string, record: Record<string, unknown>) {
+  if (preview.previewMode()) throw new PreviewWrite();
   const response = await rest(table, {
     method: "POST",
     headers: { Prefer: "return=minimal" },
@@ -78,6 +96,7 @@ export async function insert(table: string, record: Record<string, unknown>) {
 }
 
 export async function contentBlocks(): Promise<Record<string, unknown>> {
+  if (preview.previewMode()) return preview.previewContent;
   const list = await rows<{ key: string; value: unknown }>("content_blocks?select=key,value");
   return Object.fromEntries(list.map((b) => [b.key, b.value]));
 }
@@ -113,15 +132,25 @@ export type Redirect = {
 };
 
 /** The people the public about page shows. Draft rows never leave the console. */
-export const publishedTeam = () =>
-  rows<TeamMember>("team_members?select=*&is_published=is.true&order=sort_order.asc,created_at.asc");
-export const listTeam = () => rows<TeamMember>("team_members?select=*&order=sort_order.asc,created_at.asc");
-export const listActivity = (limit = 200) =>
-  rows<Activity>(`admin_activity?select=*&order=created_at.desc&limit=${limit}`);
-export const listSeo = () => rows<SeoOverride>("seo_overrides?select=*&order=path.asc");
-export const listRedirects = () => rows<Redirect>("redirects?select=*&order=created_at.desc");
+export const publishedTeam = async () =>
+  preview.previewMode()
+    ? preview.previewTeam.filter((t) => t.is_published)
+    : rows<TeamMember>("team_members?select=*&is_published=is.true&order=sort_order.asc,created_at.asc");
+export const listTeam = async () =>
+  preview.previewMode()
+    ? preview.previewTeam
+    : rows<TeamMember>("team_members?select=*&order=sort_order.asc,created_at.asc");
+export const listActivity = async (limit = 200) =>
+  preview.previewMode()
+    ? preview.previewActivity.slice(0, limit)
+    : rows<Activity>(`admin_activity?select=*&order=created_at.desc&limit=${limit}`);
+export const listSeo = async () =>
+  preview.previewMode() ? preview.previewSeo : rows<SeoOverride>("seo_overrides?select=*&order=path.asc");
+export const listRedirects = async () =>
+  preview.previewMode() ? preview.previewRedirects : rows<Redirect>("redirects?select=*&order=created_at.desc");
 
 export async function siteSettings(): Promise<Record<string, unknown>> {
+  if (preview.previewMode()) return preview.previewSettings;
   const list = await rows<{ key: string; value: unknown }>("site_settings?select=key,value");
   return Object.fromEntries(list.map((b) => [b.key, b.value]));
 }
@@ -138,6 +167,10 @@ export async function siteSettings(): Promise<Record<string, unknown>> {
  * refused by the database.
  */
 export async function rpc(name: string, args: Record<string, unknown>, session: Session): Promise<void> {
+  // In preview there is nothing to write to. The form still round-trips so the
+  // interaction can be walked through; the banner it returns to says plainly
+  // that nothing was saved, rather than implying it was.
+  if (preview.previewMode()) throw new PreviewWrite();
   const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = runtimeEnv();
   if (!SUPABASE_URL) throw new Error("Supabase is not configured");
   if (!SUPABASE_PUBLISHABLE_KEY) {
@@ -167,6 +200,7 @@ export async function rpc(name: string, args: Record<string, unknown>, session: 
 
 /** Reads that only an admin may make, made as that admin. */
 export async function rpcRows<T>(name: string, args: Record<string, unknown>, session: Session): Promise<T[]> {
+  if (preview.previewMode()) return name === "list_users" ? (preview.previewUsers as unknown as T[]) : [];
   const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return [];
   try {
@@ -188,6 +222,9 @@ export async function rpcRows<T>(name: string, args: Record<string, unknown>, se
 
 /** The redirect table, consulted before a 404 is rendered. */
 export async function findRedirect(path: string): Promise<Redirect | null> {
+  if (preview.previewMode()) {
+    return preview.previewRedirects.find((r) => r.is_active && r.from_path === path) ?? null;
+  }
   const list = await rows<Redirect>(
     `redirects?select=*&is_active=is.true&from_path=eq.${encodeURIComponent(path)}&limit=1`,
   );
@@ -197,13 +234,14 @@ export async function findRedirect(path: string): Promise<Redirect | null> {
 /** Counting a redirect's use. Best-effort: a failed counter must never cost
  *  the visitor the redirect they came for. */
 export async function countRedirectHit(fromPath: string): Promise<void> {
-  if (!configured()) return;
+  if (preview.previewMode() || !configured()) return;
   try {
     await rest("rpc/redirect_hit", { method: "POST", body: JSON.stringify({ _from: fromPath }) });
   } catch { /* the redirect matters, the counter does not */ }
 }
 
 export async function seoFor(path: string): Promise<SeoOverride | null> {
+  if (preview.previewMode()) return preview.previewSeo.find((o) => o.path === path) ?? null;
   const list = await rows<SeoOverride>(
     `seo_overrides?select=*&path=eq.${encodeURIComponent(path)}&limit=1`,
   );

@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PortalShell, Field, Submit } from "../../../components/portal";
+import { PortalShell, Field, Submit, SubmitNotice, type SubmitState } from "../../../components/portal";
 import { A } from "../../../components/link";
 import { services } from "../../../lib/content";
 import { siteSettings } from "../../../lib/db";
@@ -18,7 +18,10 @@ export const metadata: Metadata = { title: "Leave a review" };
  * Reviews land unpublished. Tristen chooses what appears on the site, per review,
  * from the admin console — but he cannot make one disappear from the inbox.
  */
-export default async function ReviewPortal() {
+export default async function ReviewPortal({
+  searchParams,
+}: { searchParams: Promise<{ sent?: string }> }) {
+  const { sent } = await searchParams;
   const settings = await siteSettings();
   const open = settings["portal.reviewOpen"] !== false;
   const googleUrl = typeof settings["reviews.googleUrl"] === "string"
@@ -36,11 +39,60 @@ export default async function ReviewPortal() {
     );
   }
 
+  if (sent === "ok" || sent === "preview") {
+    return (
+      <PortalShell
+        title="Thank you — we have it"
+        intro="Tristen reads every one of these himself. If something went wrong, expect to hear from him."
+      >
+        <SubmitNotice state={sent as SubmitState} />
+      {/*
+        Offered to everyone, identically, and after the form rather than instead
+        of it — so it is a second place to leave the same review, not a fork in
+        the road based on sentiment.
+      */}
+      <div className="mt-12 border-t border-ink/10 pt-8">
+        <h2 className="font-display text-xl font-bold">Would you post it on Google too?</h2>
+        <p className="mt-2 text-[color:var(--muted)]">
+          It helps other people in Oakland County find us — whatever you have to say.
+        </p>
+        {/*
+          The link comes from Settings, and is absent until it is set. Curbology's
+          Place ID is not published anywhere in the capture, so the alternative
+          was pointing people somewhere wrong.
+        */}
+        {googleUrl ? (
+          <p className="mt-4">
+            <A
+              href={googleUrl}
+              className="inline-block min-h-[44px] rounded-full bg-teal px-5 py-2.5 font-medium text-ink"
+              rel="noopener"
+            >
+              Leave a Google review
+            </A>
+          </p>
+        ) : (
+          <p className="mt-4 text-sm text-[color:var(--muted)]">
+            <A href="/contact" className="underline underline-offset-4">
+              Ask us for the Google link
+            </A>{" "}
+            — we are still setting it up.
+          </p>
+        )}
+      </div>
+        <p className="mt-10">
+          <A href="/" className="underline underline-offset-4">Back to the site</A>
+        </p>
+      </PortalShell>
+    );
+  }
+
   return (
     <PortalShell
       title="How did we do?"
       intro="Good or bad, we want to hear it. It takes about a minute."
     >
+      <SubmitNotice state={sent as SubmitState} />
       <form action="/api/reviews" method="post" className="space-y-5">
         <Field name="name" label="Your name" required autoComplete="name" />
         <Field name="email" label="Email" type="email" required autoComplete="email"

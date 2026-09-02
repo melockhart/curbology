@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PortalShell, Field, Submit } from "../../../components/portal";
+import { PortalShell, Field, Submit, SubmitNotice, type SubmitState } from "../../../components/portal";
 import { A } from "../../../components/link";
 import { siteSettings } from "../../../lib/db";
 
@@ -13,7 +13,10 @@ export const metadata: Metadata = { title: "Book a video testimonial" };
  * decision nobody has made yet, and guessing it would mean an integration to
  * unpick later. Writes to `bookings`.
  */
-export default async function TestimonialPortal() {
+export default async function TestimonialPortal({
+  searchParams,
+}: { searchParams: Promise<{ sent?: string }> }) {
+  const { sent } = await searchParams;
   const settings = await siteSettings();
   if (settings["portal.testimonialOpen"] === false) {
     return (
@@ -26,11 +29,26 @@ export default async function TestimonialPortal() {
     );
   }
 
+  if (sent === "ok" || sent === "preview") {
+    return (
+      <PortalShell
+        title="Got it — we will be in touch"
+        intro="Tristen will come back to you with a time from the ones you offered. Nothing is booked until he does."
+      >
+        <SubmitNotice state={sent as SubmitState} />
+        <p className="mt-8">
+          <A href="/" className="underline underline-offset-4">Back to the site</A>
+        </p>
+      </PortalShell>
+    );
+  }
+
   return (
     <PortalShell
       title="Say it on camera?"
       intro="A short video — a minute, maybe two — about the work we did. We come to you, or you record it on your phone. Your call."
     >
+      <SubmitNotice state={sent as SubmitState} />
       <form action="/api/bookings" method="post" className="space-y-5">
         <Field name="name" label="Your name" required autoComplete="name" />
         <Field name="email" label="Email" type="email" required autoComplete="email" />

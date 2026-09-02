@@ -3,6 +3,7 @@ import { pageMetadata } from "../../../lib/seo";
 import { business, quoteForm, services } from "../../../lib/content";
 import { Section, Eyebrow } from "../../../components/ui";
 import { A } from "../../../components/link";
+import { SubmitNotice, type SubmitState } from "../../../components/portal";
 
 export function generateMetadata(): Promise<Metadata> {
   return pageMetadata("/contact", { title: "Get a free quote" });
@@ -17,8 +18,41 @@ export function generateMetadata(): Promise<Metadata> {
  * the browser never writes to Supabase directly, or anyone could set their own
  * lead status.
  */
-export default function ContactPage() {
+export default async function ContactPage({
+  searchParams,
+}: { searchParams: Promise<{ sent?: string }> }) {
+  const { sent } = await searchParams;
   const f = quoteForm.fields;
+
+  /*
+   * A sent quote gets its own screen rather than the same form back with a
+   * banner. This is the conversion on a lead-generation site: the person needs
+   * to know it arrived, and needs somewhere to go next that is not "fill this
+   * in again".
+   */
+  if (sent === "ok" || sent === "preview") {
+    return (
+      <Section>
+        <div className="max-w-xl">
+          <Eyebrow>Free quote</Eyebrow>
+          <h1 className="text-5xl">We have it</h1>
+          <p className="mt-6 text-lg text-slate">
+            Tristen will come back to you with a real number. If it is urgent,
+            calling is faster —{" "}
+            <A href={business.phone.href} className="font-medium underline underline-offset-4">
+              {business.phone.display}
+            </A>
+            .
+          </p>
+          <div className="mt-8"><SubmitNotice state={sent as SubmitState} /></div>
+          <p className="mt-4">
+            <A href="/gallery" className="underline underline-offset-4">See the work we have done</A>
+          </p>
+        </div>
+      </Section>
+    );
+  }
+
   return (
     <Section>
       <div className="grid gap-14 md:grid-cols-2">
@@ -40,6 +74,8 @@ export default function ContactPage() {
           </p>
         </div>
 
+        <div>
+          <SubmitNotice state={sent as SubmitState} />
         <form action="/api/leads" method="post" encType="multipart/form-data" className="space-y-5">
           <Field name="name" label={f.name} required autoComplete="name" />
           <Field name="email" label={f.email} type="email" required autoComplete="email" />
@@ -86,6 +122,7 @@ export default function ContactPage() {
             {quoteForm.submit}
           </button>
         </form>
+        </div>
       </div>
     </Section>
   );

@@ -1,4 +1,5 @@
 import { MotionStage } from "../components/motion/stage";
+import { PreviewRibbon } from "../components/preview-ribbon";
 import { siteMetadata } from "../lib/document";
 // Self-hosted rather than a fonts.googleapis.com <link>: no third-party request,
 // nothing render-blocking, and it works in a sandbox with no egress.
@@ -23,6 +24,7 @@ export default function RootLayout({ children }: { children: React.ReactNode }) 
       <body>
         <MotionStage />
         {children}
+        <PreviewRibbon />
       </body>
     </html>
   );

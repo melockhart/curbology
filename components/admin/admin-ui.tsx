@@ -1,4 +1,5 @@
 import type { ReactNode } from "react";
+import { previewMode } from "../../lib/preview";
 
 /**
  * The primitives.
@@ -134,6 +135,9 @@ export function NotConfigured() {
  *  token alongside the publishable key. Saying which half is missing saves
  *  someone discovering it at the first Save. */
 export function NotWritable() {
+  // In preview the ribbon already says nothing saves. Two notices saying the
+  // same thing differently is how someone stops reading either.
+  if (previewMode()) return null;
   return (
     <div className="rounded-lg border border-ink/20 bg-[color:var(--console-surface)] p-5">
       <p className="text-sm">

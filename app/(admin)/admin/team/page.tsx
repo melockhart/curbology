@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { configured, writable } from "../../../../lib/env";
+import { previewMode } from "../../../../lib/preview";
 import { listTeam } from "../../../../lib/db";
 import {
   AdminHeader, NotConfigured, NotWritable, Empty, Card, Pill, Button, Field,
@@ -23,7 +24,7 @@ export default async function TeamPage({
   searchParams,
 }: { searchParams: Promise<{ s?: string; m?: string }> }) {
   const { s, m } = await searchParams;
-  if (!configured()) {
+  if (!configured() && !previewMode()) {
     return <div className="space-y-8"><AdminHeader eyebrow="Configure" title="Team" /><NotConfigured /></div>;
   }
 

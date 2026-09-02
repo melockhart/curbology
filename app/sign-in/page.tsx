@@ -1,6 +1,8 @@
 import type { Metadata } from "next";
 import { currentUser } from "../../lib/session";
 import { redirect } from "next/navigation";
+import { previewMode, previewPassword } from "../../lib/preview";
+import { A } from "../../components/link";
 
 export const metadata: Metadata = { title: "Sign in", robots: { index: false, follow: false } };
 
@@ -16,6 +18,22 @@ export default async function SignIn({
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img src="/brand/curbology-logo.png" alt="Curbology Exterior Services" className="mb-8 h-12 w-auto" />
         <h1 className="font-display text-2xl font-bold">Console</h1>
+        {previewMode() && (
+          <p className="mt-3 rounded-lg border border-ink/20 bg-teal/15 px-3 py-2 text-sm">
+            {previewPassword() ? (
+              <>
+                Preview. Any email, plus the preview password —{" "}
+                <A href="/preview" className="underline underline-offset-4">every screen</A>.
+              </>
+            ) : (
+              <>
+                Preview, and the console is closed: no preview password is set on
+                this deployment. The rest of the build is at{" "}
+                <A href="/preview" className="underline underline-offset-4">/preview</A>.
+              </>
+            )}
+          </p>
+        )}
 
         <form action="/api/sign-in" method="post" className="mt-6 space-y-4">
           <div>

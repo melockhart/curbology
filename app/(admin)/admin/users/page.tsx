@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { requireUser } from "../../../../lib/guard";
 import { configured, writable } from "../../../../lib/env";
+import { previewMode } from "../../../../lib/preview";
 import { rpcRows, type AdminUser } from "../../../../lib/db";
 import {
   AdminHeader, NotConfigured, NotWritable, Empty, Card, Stat, Pill, Button,
@@ -23,7 +24,7 @@ export default async function UsersPage({
 }: { searchParams: Promise<{ s?: string; m?: string }> }) {
   const { s, m } = await searchParams;
   const session = await requireUser();
-  if (!configured()) {
+  if (!configured() && !previewMode()) {
     return <div className="space-y-8"><AdminHeader eyebrow="Configure" title="Users" /><NotConfigured /></div>;
   }
 

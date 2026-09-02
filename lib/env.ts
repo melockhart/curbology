@@ -35,6 +35,14 @@ type RuntimeEnv = {
   OWNER_EMAILS?: string;
   /** The hostname this deployment is meant to answer on. Diagnostics only. */
   SITE_HOST?: string;
+  /**
+   * "1" serves the whole site and console from a fixed set of sample rows, with
+   * no database. See lib/preview.ts — it refuses to switch on when SUPABASE_URL
+   * is set, which is what keeps it out of production.
+   */
+  PREVIEW_MODE?: string;
+  /** The password that opens the preview console. No value, no console. */
+  PREVIEW_PASSWORD?: string;
 };
 
 let workersEnv: Record<string, string | undefined> | null = null;

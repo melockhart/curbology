@@ -1,5 +1,6 @@
 import type { Metadata } from "next";
 import { configured } from "../../../lib/env";
+import { previewMode } from "../../../lib/preview";
 import { listLeads, listReviews, listBookings } from "../../../lib/db";
 import { AdminHeader, NotConfigured, Empty, Card, Stat, Pill, age } from "../../../components/admin/admin-ui";
 import { A } from "../../../components/link";
@@ -14,7 +15,7 @@ export const metadata: Metadata = { title: "Dashboard" };
  * three empty tables.
  */
 export default async function AdminDashboard() {
-  if (!configured()) {
+  if (!configured() && !previewMode()) {
     return (
       <div className="space-y-8">
         <AdminHeader eyebrow="Data" title="Dashboard" />

@@ -1,5 +1,6 @@
 import { business, nav } from "../lib/content";
 import { A } from "./link";
+import { previewMode } from "../lib/preview";
 
 /**
  * The mark — the real badge, recovered from the site's own PDF export.
@@ -111,7 +112,9 @@ export function Nav() {
 export function Footer() {
   return (
     <footer className="bg-ink text-paper">
-      <div className="mx-auto w-full max-w-6xl px-6 py-16">
+      {/* Extra bottom clearance in preview so the fixed ribbon does not sit on
+          top of the legal links. It costs nothing anywhere else. */}
+      <div className={`mx-auto w-full max-w-6xl px-6 pt-16 ${previewMode() ? "pb-28" : "pb-16"}`}>
         <div className="flex flex-col gap-10 md:flex-row md:justify-between">
           <div>
             <Mark onDark />

@@ -1,5 +1,6 @@
 import { insert } from "../../../lib/db";
 import { configured } from "../../../lib/env";
+import { previewMode } from "../../../lib/preview";
 
 /**
  * The review portal.
@@ -20,6 +21,10 @@ export async function POST(request: Request) {
   if (!name || !email || !body || !Number.isInteger(rating) || rating < 1 || rating > 5) {
     return redirectBack(request, "missing");
   }
+  // Validation still ran: the preview exercises the real form, it just has
+  // nowhere to put the result. Saying "unconfigured" here would read as a
+  // fault rather than as the demo working exactly as intended.
+  if (previewMode()) return redirectBack(request, "preview");
   if (!configured()) return redirectBack(request, "unconfigured");
 
   try {

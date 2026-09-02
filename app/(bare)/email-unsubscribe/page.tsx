@@ -1,5 +1,5 @@
 import type { Metadata } from "next";
-import { PortalShell, Submit } from "../../../components/portal";
+import { PortalShell, Submit, SubmitNotice, type SubmitState } from "../../../components/portal";
 import { A } from "../../../components/link";
 import { business } from "../../../lib/content";
 
@@ -27,8 +27,25 @@ export const metadata: Metadata = {
  */
 export default async function UnsubscribePage({
   searchParams,
-}: { searchParams: Promise<{ id?: string }> }) {
-  const { id } = await searchParams;
+}: { searchParams: Promise<{ id?: string; done?: string }> }) {
+  const { id, done } = await searchParams;
+
+  // Done means done. Showing the form again after a successful opt-out invites
+  // a second press, and a second press that looks like it failed is how a
+  // spam complaint starts.
+  if (done === "ok" || done === "preview") {
+    return (
+      <PortalShell
+        title="You are unsubscribed"
+        intro="We will not email you again. You will still hear from us about a job you have booked — that is not marketing, and turning it off would mean you missed your own appointment."
+      >
+        <SubmitNotice state={done as SubmitState} />
+        <p className="mt-8">
+          <A href="/" className="underline underline-offset-4">Back to the site</A>
+        </p>
+      </PortalShell>
+    );
+  }
 
   if (!id) {
     return (
@@ -50,6 +67,7 @@ export default async function UnsubscribePage({
       title="Unsubscribe from our emails"
       intro="One click and we stop emailing you. You will still hear from us about a job you have booked."
     >
+      <SubmitNotice state={done as SubmitState} />
       <form action="/api/unsubscribe" method="post" className="space-y-6">
         <input type="hidden" name="id" value={id} />
 

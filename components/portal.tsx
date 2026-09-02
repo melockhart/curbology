@@ -80,3 +80,36 @@ export function Submit({ children }: { children: React.ReactNode }) {
     </button>
   );
 }
+
+/**
+ * What happened to the thing you just submitted.
+ *
+ * Every form on this site posts, redirects, and comes back with a state in the
+ * query string. Until this existed, nothing rendered that state — you pressed
+ * Send, landed on an identical empty form, and had no way to tell whether it
+ * had worked. The redirect is right (it stops a refresh re-submitting); the
+ * silence was the bug.
+ */
+export type SubmitState = "ok" | "preview" | "missing" | "failed" | "unconfigured" | undefined;
+
+const MESSAGES: Record<string, { tone: "good" | "bad"; text: string }> = {
+  missing: { tone: "bad", text: "Some of it did not come through. Have a look below and send it again." },
+  failed: { tone: "bad", text: "Something went wrong on our end. Please call us instead — we would rather hear from you than lose it." },
+  unconfigured: { tone: "bad", text: "We could not save that just now. Please call us — the number is at the bottom of this page." },
+  preview: { tone: "good", text: "This is a preview, so nothing was stored — on the real site this is where it would land." },
+};
+
+export function SubmitNotice({ state }: { state: SubmitState }) {
+  const message = state ? MESSAGES[state] : undefined;
+  if (!message) return null;
+  return (
+    <p
+      role="status"
+      className={`mb-8 rounded-lg border px-4 py-3 ${
+        message.tone === "good" ? "border-ink/20 bg-teal/15" : "border-[#7a2e12] bg-[#7a2e12]/10"
+      }`}
+    >
+      {message.text}
+    </p>
+  );
+}

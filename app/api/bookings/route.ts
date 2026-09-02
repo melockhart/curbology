@@ -1,5 +1,6 @@
 import { insert } from "../../../lib/db";
 import { configured } from "../../../lib/env";
+import { previewMode } from "../../../lib/preview";
 
 /** Testimonial booking requests. Nothing is confirmed here — `state` starts at
  *  requested and only the console moves it on. */
@@ -11,6 +12,10 @@ export async function POST(request: Request) {
   const email = value("email");
   const slots = value("slots");
   if (!name || !email || !slots) return redirectBack(request, "missing");
+  // Validation still ran: the preview exercises the real form, it just has
+  // nowhere to put the result. Saying "unconfigured" here would read as a
+  // fault rather than as the demo working exactly as intended.
+  if (previewMode()) return redirectBack(request, "preview");
   if (!configured()) return redirectBack(request, "unconfigured");
 
   const format = value("format");

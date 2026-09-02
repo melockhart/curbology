@@ -15,7 +15,12 @@ const BASE = process.env.CONTRAST_BASE || "http://localhost:3000";
 
 const publicRoutes = ["/", "/services", "/services/pressure-washing", "/services/house-siding-washing",
   "/services/gutter-cleaning", "/services/roof-cleaning", "/about", "/contact", "/reviews",
-  "/service-area", "/gallery", "/faq", "/hub", "/review", "/testimonial", "/email-unsubscribe?id=demo", "/nope-404"];
+  "/service-area", "/gallery", "/faq", "/hub", "/review", "/testimonial", "/email-unsubscribe?id=demo", "/nope-404",
+  // The confirmation screens. Every form redirects to one of these, and until
+  // they existed the redirect landed on an identical empty form — so they are
+  // both new and exactly the sort of screen nobody thinks to check.
+  "/contact?sent=ok", "/review?sent=ok", "/testimonial?sent=ok", "/email-unsubscribe?id=demo&done=ok",
+  "/contact?sent=failed"];
 
 /*
  * The console is sixteen screens of dense, small, muted text — exactly where a
@@ -27,6 +32,10 @@ const adminRoutes = ["/sign-in", "/admin", "/admin/analytics", "/admin/activity"
   "/admin/reviews", "/admin/bookings", "/admin/content", "/admin/forms", "/admin/seo",
   "/admin/theme", "/admin/settings", "/admin/team", "/admin/team-access", "/admin/users",
   "/admin/domain", "/admin/account"];
+
+// /preview only exists in preview mode, where it is the index everything hangs
+// off — worth measuring, and a 404 everywhere else.
+if (process.env.CONTRAST_PREVIEW === "1") publicRoutes.push("/preview");
 
 const email = process.env.CONTRAST_ADMIN_EMAIL;
 const password = process.env.CONTRAST_ADMIN_PASSWORD;
