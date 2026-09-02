@@ -1,0 +1,98 @@
+CURBOLOGY — EMAIL SHELL CONTRACT
+Self-contained. If you have this file you do not need the repository.
+
+WHY THIS EXISTS
+An unbranded email is the failure this prevents. Every Curbology send goes out
+in one of three shells. The body is a single well; everything around it is
+already branded, already compliant, already correct. An agent that writes bare
+paragraphs still sends a correct email.
+
+------------------------------------------------------------------
+1. PICK THE SHELL — by what the message IS, not only who gets it
+------------------------------------------------------------------
+
+  transactional   External, NOT commercial. Its primary purpose is to complete
+                  or service something the customer already asked for.
+                  Quote replies. Booking confirmations. "We're coming Tuesday."
+                  Receipts. Job-complete notices. Reschedules.
+                  Carries: lockup. NO postal address. NO opt-out.
+
+  client          External and COMMERCIAL. Its primary purpose is advertising
+                  or promotion. Seasonal offers. Newsletters. Win-back.
+                  Carries: lockup, postal address, EXACTLY ONE opt-out.
+
+  team            Internal, to whoever works at Curbology.
+                  Carries: the sending agent's name, a tabular well, and
+                  neither an address nor an opt-out.
+
+  A REVIEW REQUEST USES THE CLIENT SHELL. It sits close enough to promotional
+  that being wrong in the cautious direction costs nothing.
+
+  Internal mail is not commercial email. An opt-out on staff mail implies a
+  staff member can unsubscribe from being told a job moved. Never put one there.
+
+------------------------------------------------------------------
+2. THE CLIENT SHELL CURRENTLY REFUSES TO RENDER
+------------------------------------------------------------------
+Curbology has no valid physical postal address. CAN-SPAM requires one in every
+commercial email (15 U.S.C. 7704(a)(5)); 16 CFR 316.2 accepts a street address,
+a USPS-registered PO Box, or a private mailbox registered with a CMRA.
+
+Until one exists, renderShell throws for shell:"client". Do not work around it.
+Use the transactional shell — most of what Curbology sends is exempt anyway.
+
+------------------------------------------------------------------
+3. NORMALIZE THE BODY BEFORE IT GOES IN THE WELL
+------------------------------------------------------------------
+In order:
+  1. Strip any opt-out the body brought. The shell owns the opt-out.
+  2. Pass real HTML through untouched.
+  3. Repair newlines sitting INSIDE a <p>. HTML collapses them, so a signature
+     written as three lines arrives as one. Convert only newlines with text to
+     their left; leave newlines between tags alone.
+  4. Convert plain text to escaped paragraphs.
+
+------------------------------------------------------------------
+4. MERGE TOKENS
+------------------------------------------------------------------
+  {singleBrace}   the CRM's own — {firstName}, {jobDate}, {propertyAddress}
+  {{doubleBrace}} the shell's slots — {{preheader}}, {{contactId}},
+                  {{postalAddress}}, {{agent}}
+
+They pass through each other untouched. Do not collapse them into one
+convention.
+
+Replace GLOBALLY. Each shell documents its tokens in a header comment, so the
+first {{preheader}} is the documentation — a single-occurrence replace
+substitutes the comment and ships the real token unreplaced.
+
+------------------------------------------------------------------
+5. THE OPT-OUT
+------------------------------------------------------------------
+  https://curbology.op-site.net/email-unsubscribe?id=<contact id>
+
+Curbology's own route on its own site. /unsubscribe and /email-opt-out are
+permanent aliases. Never point a Curbology email at another property's opt-out.
+Suppression never runs on page render — scanners fetch every URL in a message.
+
+------------------------------------------------------------------
+6. PRE-SEND CHECKS
+------------------------------------------------------------------
+  - No {{token}} survives.
+  - Client email: exactly ONE visible unsubscribe. Count ANCHOR TEXT — the word
+    appears twice in a correct email because it is in the href too.
+  - Transactional and team: ZERO.
+  - No known-wrong fact appears. These shipped on the old site and are all
+    false: "123 Exterior Way", "(517) 555-0123", "hello@curbology.com".
+  - The only verified phone is (248) 387-9215, and it is PROVISIONAL — the
+    owner assumes it is current but has not confirmed it.
+
+------------------------------------------------------------------
+7. NEVER
+------------------------------------------------------------------
+  - Never invent a postal address, phone number or email to fill a slot.
+  - Never put an opt-out in a transactional or team email.
+  - Never use teal (#04b8ba) for small text: 2.45:1 on white. It is a ground.
+    Ink (#1a202c) on teal is 6.66:1 and is the brand's signature pairing.
+  - Never use a stock photo. On this business the photograph is the argument;
+    every image slot has an honest empty state instead.
