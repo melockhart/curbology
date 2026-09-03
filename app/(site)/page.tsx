@@ -3,7 +3,7 @@ import { pageMetadata } from "../../lib/seo";
 import { business, home, services } from "../../lib/content";
 import { Hero } from "../../components/hero";
 import { Cinema } from "../../components/motion/cinema";
-import { Button, Section, Eyebrow, AwaitingPhoto } from "../../components/ui";
+import { Button, Section, Eyebrow, AwaitingPhoto, ProofBand } from "../../components/ui";
 import { A } from "../../components/link";
 import { Reveal } from "../../components/motion/reveal";
 import { Magnetic } from "../../components/motion/magnetic";
@@ -31,7 +31,35 @@ export default function HomePage() {
       <Hero />
 
       {/* featureGrid — staggered, so the eye is led down the list */}
-      <Section>
+      {/* Proof band, high — standing in for itself until there is proof.
+          Only checkable facts: the services sold, the area named on the live
+          site, and the number that carries a real tel: link there. */}
+      <Section ground="deep" washFrom="teal">
+        <Eyebrow>Oakland County, Michigan</Eyebrow>
+        <ProofBand
+          items={[
+            {
+              label: "What we clean",
+              value: `${services.length} services`,
+              note: services.map((s) => s.name).join(" · "),
+            },
+            {
+              label: "Where we work",
+              value: business.serviceArea.county,
+              note: business.serviceArea.townsNamed.length
+                ? business.serviceArea.townsNamed.join(" · ")
+                : business.serviceArea.state,
+            },
+            {
+              label: "Talk to us",
+              value: business.phone.display,
+              note: "Call or text — quotes are free.",
+            },
+          ]}
+        />
+      </Section>
+
+      <Section washFrom="deep" ground="shallow" dirty>
         <Reveal><Eyebrow>What we clean</Eyebrow></Reveal>
         <Reveal delay={60}>
           <h2 className="display-lg max-w-2xl">Four services,<br />one crew</h2>
@@ -59,7 +87,7 @@ export default function HomePage() {
 
       {/* beforeAfter — the proof this industry runs on, and the one element
           worth building as a real mechanism rather than two images side by side */}
-      <Section ground="teal" grain>
+      <Section ground="teal" grain washFrom="shallow">
         <Reveal><Eyebrow>The difference</Eyebrow></Reveal>
         <Reveal delay={60}><h2 className="display-lg max-w-2xl">Before<br />and after</h2></Reveal>
         <Reveal delay={140}>
@@ -79,7 +107,7 @@ export default function HomePage() {
 
       {/* pinnedSteps — the column holds while the steps advance beside it.
           Pure sticky: no scroll listener, so it costs nothing. */}
-      <Section>
+      <Section ground="paper" washFrom="teal">
         <div className="grid gap-12 md:grid-cols-2">
           <div className="md:sticky md:top-24 md:self-start">
             <Eyebrow>How it works</Eyebrow>
@@ -107,11 +135,11 @@ export default function HomePage() {
       </Section>
 
       {/* about — verbatim from the live site */}
-      <Section>
+      <Section ground="deep" washFrom="paper" dirty>
         <div className="grid gap-12 md:grid-cols-2">
           <Reveal>
             <div>
-              <h2 className="text-4xl">{home.aboutHeading}</h2>
+              <h2 data-wash-type className="text-4xl">{home.aboutHeading}</h2>
               <p className="mt-6 text-lg text-[color:var(--muted)]">{home.aboutBody}</p>
               <p className="mt-6">
                 <A href="/about" className="font-medium underline underline-offset-4">More about us</A>
@@ -125,10 +153,10 @@ export default function HomePage() {
       </Section>
 
       {/* localVoice — towns as text; this is what local search reads */}
-      <Section ground="ink" grain>
+      <Section ground="ink" grain washFrom="deep">
         <Reveal><Eyebrow>Where we work</Eyebrow></Reveal>
         <Reveal delay={60}>
-          <h2 className="max-w-2xl text-4xl text-paper">
+          <h2 data-wash-type className="max-w-2xl text-4xl text-paper">
             {business.serviceArea.county}, {business.serviceArea.state}
           </h2>
         </Reveal>
@@ -141,7 +169,7 @@ export default function HomePage() {
       </Section>
 
       {/* magneticCta — same action as the hero */}
-      <Section ground="teal" grain>
+      <Section ground="teal" grain washFrom="ink">
         <div className="max-w-2xl">
           <Reveal><h2 className="display-lg max-w-3xl">{home.quoteHeading}</h2></Reveal>
           <Reveal delay={80}><p className="mt-4 text-lg">{home.quoteSub}</p></Reveal>

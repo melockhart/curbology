@@ -22,27 +22,27 @@ export default function GalleryPage() {
   return (
     <>
       <Section ground="teal">
-        <h1 className="max-w-3xl text-5xl">Our work</h1>
+        <h1 data-wash-type className="max-w-3xl text-5xl">Our work</h1>
         <p className="mt-6 max-w-xl text-lg">
           Before and after, across Oakland County.
         </p>
       </Section>
 
-      <Section>
+      <Section ground="shallow" washFrom="teal">
         <ul className="grid gap-x-10 gap-y-16 md:grid-cols-2">
           {portfolio.map((item) => (
             <li key={item.n}>
               <AwaitingPhoto label={`${item.title} — before and after.`} />
               <Eyebrow>{item.n}</Eyebrow>
               <h2 className="text-2xl">{item.title}</h2>
-              <p className="mt-3 text-slate">{item.body}</p>
+              <p className="mt-3 text-[color:var(--muted)]">{item.body}</p>
             </li>
           ))}
         </ul>
       </Section>
 
-      <Section ground="ink">
-        <h2 className="max-w-2xl text-4xl text-paper">Want yours to look like this?</h2>
+      <Section ground="ink" washFrom="shallow">
+        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Want yours to look like this?</h2>
         <div className="mt-8"><Button href="/contact">Get a free quote</Button></div>
       </Section>
     </>

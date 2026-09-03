@@ -12,13 +12,13 @@ export default function ServicesIndex() {
   return (
     <>
       <Section ground="teal">
-        <h1 className="max-w-3xl text-5xl">Exterior cleaning services</h1>
+        <h1 data-wash-type className="max-w-3xl text-5xl">Exterior cleaning services</h1>
         <p className="mt-6 max-w-xl text-lg">
           Four services across Oakland County. Every one starts with a free quote.
         </p>
       </Section>
 
-      <Section>
+      <Section ground="shallow" washFrom="teal">
         <ul className="grid gap-x-10 gap-y-14 md:grid-cols-2">
           {services.map((s) => (
             <li key={s.slug}>
@@ -28,7 +28,7 @@ export default function ServicesIndex() {
                   {s.name}
                 </A>
               </h2>
-              <p className="mt-4 text-slate">{s.intro}</p>
+              <p className="mt-4 text-[color:var(--muted)]">{s.intro}</p>
               {s.includes.length > 0 && (
                 <ul className="mt-5 space-y-2">
                   {s.includes.map((item) => (
@@ -46,8 +46,8 @@ export default function ServicesIndex() {
         </ul>
       </Section>
 
-      <Section ground="teal">
-        <h2 className="max-w-2xl text-4xl">Not sure which one you need?</h2>
+      <Section ground="teal" washFrom="shallow">
+        <h2 data-wash-type className="max-w-2xl text-4xl">Not sure which one you need?</h2>
         <p className="mt-4 max-w-xl text-lg">
           Send a photo with your quote request. Most of the time that is enough to
           price the job without visiting.

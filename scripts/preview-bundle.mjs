@@ -149,6 +149,16 @@ for (const [route, label] of flat) {
   await page.waitForTimeout(400);
 
   const result = await page.evaluate(() => {
+    /*
+     * Settle the wash before serialising. The capture scrolls to the bottom and
+     * back to make every reveal fire, which leaves the scrubbed sections
+     * reading whatever scrollY 0 says — i.e. dirty. A still of the page
+     * mid-transition is not the page; pin every section to its resolved state.
+     */
+    for (const section of document.querySelectorAll("[data-wash-section]")) {
+      section.style.setProperty("--wash", "1");
+      section.style.setProperty("--grime", "0");
+    }
     const css = document.querySelector('link[rel="stylesheet"]')?.getAttribute("href") ?? null;
     for (const el of document.querySelectorAll("script, link, meta[http-equiv]")) el.remove();
 

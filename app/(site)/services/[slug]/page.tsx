@@ -45,7 +45,7 @@ export default async function ServicePage({
             <Eyebrow>
               {business.serviceArea.county}, {business.serviceArea.stateAbbr}
             </Eyebrow>
-            <h1 className="text-5xl">{service.name}</h1>
+            <h1 data-wash-type className="text-5xl">{service.name}</h1>
             <p className="mt-6 text-lg">{service.intro}</p>
             <div className="mt-8"><Button href="/contact" variant="onTeal">{service.cta}</Button></div>
           </div>
@@ -54,8 +54,8 @@ export default async function ServicePage({
       </Section>
 
       {service.includes.length > 0 && (
-        <Section>
-          <h2 className="text-4xl">What&rsquo;s included</h2>
+        <Section ground="shallow" washFrom="teal">
+          <h2 data-wash-type className="text-4xl">What&rsquo;s included</h2>
           <ul className="mt-8 grid gap-4 md:grid-cols-2">
             {service.includes.map((item) => (
               <li key={item} className="flex gap-3 border-t border-ink/10 pt-4">
@@ -69,7 +69,7 @@ export default async function ServicePage({
       )}
 
       <Section ground={service.includes.length > 0 ? "teal" : "paper"}>
-        <h2 className="text-4xl">The work</h2>
+        <h2 data-wash-type className="text-4xl">The work</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <AwaitingPhoto label="Before." />
           <AwaitingPhoto label="After." />
@@ -81,8 +81,8 @@ export default async function ServicePage({
         here is a quote Tristen would have to honour or walk back.
       */}
 
-      <Section>
-        <h2 className="text-4xl">Other services</h2>
+      <Section ground="teal" washFrom="shallow">
+        <h2 data-wash-type className="text-4xl">Other services</h2>
         <ul className="mt-8 grid gap-8 md:grid-cols-3">
           {siblings.map((s) => (
             <li key={s.slug} className="border-t border-ink/10 pt-5">
@@ -96,8 +96,8 @@ export default async function ServicePage({
         </ul>
       </Section>
 
-      <Section ground="ink">
-        <h2 className="max-w-2xl text-4xl text-paper">
+      <Section ground="ink" washFrom="teal">
+        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">
           Get a free quote for {service.name.toLowerCase()}
         </h2>
         <p className="mt-4 text-white/75">

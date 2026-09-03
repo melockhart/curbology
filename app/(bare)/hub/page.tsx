@@ -32,7 +32,7 @@ export default function HubPage() {
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
       <div className="text-center">
         <h1 className="font-display text-3xl font-bold">{business.name}</h1>
-        <p className="mt-2 text-slate">
+        <p className="mt-2 text-[color:var(--muted)]">
           Pressure washing · Soft washing · Gutters · Roofs
         </p>
       </div>
@@ -47,7 +47,7 @@ export default function HubPage() {
               }`}
             >
               <span className="font-medium">{a.label}</span>
-              <span className={`text-sm ${a.primary ? "text-white/70" : "text-slate"}`}>
+              <span className={`text-sm ${a.primary ? "text-white/70" : "text-[color:var(--muted)]"}`}>
                 {a.sub}
               </span>
             </A>
@@ -59,13 +59,13 @@ export default function HubPage() {
         <ul className="mt-8 flex justify-center gap-5">
           {business.socials.map((s) => (
             <li key={s.platform}>
-              <A href={s.href} className="text-slate hover:text-ink">{s.platform}</A>
+              <A href={s.href} className="text-[color:var(--muted)] hover:text-ink">{s.platform}</A>
             </li>
           ))}
         </ul>
       )}
 
-      <p className="mt-10 text-center text-sm text-slate">
+      <p className="mt-10 text-center text-sm text-[color:var(--muted)]">
         {business.serviceArea.county}, {business.serviceArea.state}
       </p>
     </div>

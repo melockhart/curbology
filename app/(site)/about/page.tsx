@@ -22,14 +22,14 @@ export default async function AboutPage() {
   return (
     <>
       <Section ground="teal">
-        <h1 className="max-w-3xl text-5xl">{home.aboutHeading}</h1>
+        <h1 data-wash-type className="max-w-3xl text-5xl">{home.aboutHeading}</h1>
       </Section>
 
-      <Section>
+      <Section ground="shallow" washFrom="teal">
         <div className="grid gap-12 md:grid-cols-2">
           <div>
-            <p className="text-lg text-slate">{home.aboutBody}</p>
-            <p className="mt-6 text-lg text-slate">
+            <p className="text-lg text-[color:var(--muted)]">{home.aboutBody}</p>
+            <p className="mt-6 text-lg text-[color:var(--muted)]">
               We work across {business.serviceArea.county},{" "}
               {business.serviceArea.state}
               {business.serviceArea.townsNamed.length > 0 &&
@@ -44,7 +44,7 @@ export default async function AboutPage() {
       {/* Only the people published in the console. Nobody is invented to fill
           the row, so an empty team means this section is simply absent. */}
       {team.length > 0 && (
-        <Section>
+        <Section ground="teal" washFrom="shallow">
           <Eyebrow>Who turns up</Eyebrow>
           <ul className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((person) => (
@@ -60,17 +60,17 @@ export default async function AboutPage() {
                   </span>
                 )}
                 <h3 className="mt-5 font-display text-2xl font-bold">{person.name}</h3>
-                {person.role_title && <p className="text-slate">{person.role_title}</p>}
-                {person.bio && <p className="mt-3 text-slate">{person.bio}</p>}
+                {person.role_title && <p className="text-[color:var(--muted)]">{person.role_title}</p>}
+                {person.bio && <p className="mt-3 text-[color:var(--muted)]">{person.bio}</p>}
               </li>
             ))}
           </ul>
         </Section>
       )}
 
-      <Section ground="ink">
+      <Section ground="ink" washFrom="teal">
         <Eyebrow>Ready when you are</Eyebrow>
-        <h2 className="max-w-2xl text-4xl text-paper">Get a free quote</h2>
+        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Get a free quote</h2>
         <div className="mt-8"><Button href="/contact">Request a quote</Button></div>
       </Section>
     </>

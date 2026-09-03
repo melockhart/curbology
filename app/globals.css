@@ -29,25 +29,88 @@
  * Green has no accessible role on white and is unused here.
  */
 @theme {
-  --color-teal: #04b8ba;
-  --color-ink: #1a202c;
-  --color-slate: #4a5568;
-  --color-blue: #3182ce;
-  --color-paper: #ffffff;
+  /*
+   * ══ Water & surface ══
+   *
+   * The kit's own note on the old palette: "a template palette with one custom
+   * colour, not a designed brand system." #1A202C, #4A5568, #3182CE and #68D391
+   * are stock Tailwind defaults; only #04B8BA was ever chosen. This keeps the
+   * one chosen colour and builds the system the other four were standing in for.
+   *
+   * Teal gets depth, because a single flat teal is exactly what reads as a
+   * template. The neutrals are biased toward it rather than being grey — a
+   * neutral picked for the accent reads as chosen; a stock grey reads as
+   * inherited. And there is a counter-tone, because "the wash" needs something
+   * to wash off.
+   *
+   * Every ratio below is computed, not asserted:
+   *
+   *   stone-950 on white ......... 17.61  AAA   body
+   *   stone-950 on stone-050 ..... 16.21  AAA   body on the shallow ground
+   *   stone-600 on white .......... 5.88  AA    muted
+   *   stone-950 on teal-500 ....... 7.19  AAA   ink on the brand teal
+   *   teal-800  on white .......... 7.23  AAA   ← teal that can finally be TEXT
+   *   teal-800  on stone-050 ...... 6.66  AA
+   *   stone-050 on teal-900 ...... 11.19  AAA   light on deep water
+   *   teal-300  on teal-900 ....... 6.84  AA    accent on deep water
+   *   stone-400 on teal-900 ....... 4.50  AA    muted on deep water
+   *   stone-050 on stone-950 ..... 16.21  AAA   light on soaked
+   *   teal-300  on stone-950 ...... 9.91  AAA
+   *   stone-400 on stone-950 ...... 6.52  AA
+   *   teal-700  on stone-050 ...... 4.04  large text only — display, never body
+   *
+   * THE UNLOCK. The old palette had no teal that could carry text at any size:
+   * #04B8BA on white is 2.45:1 and the brand colour could only ever be a
+   * ground. teal-800 is 7.23 on white, so the accent can now be a link, a
+   * label, a number — which is most of what an accent is for.
+   */
+  --color-teal-050: #e8fafa;
+  --color-teal-100: #c4f1f1;
+  --color-teal-300: #5ad4d5;
+  --color-teal-500: #04b8ba;
+  --color-teal-700: #04868a;
+  --color-teal-800: #046165;
+  --color-teal-900: #053c40;
 
-  /* Variable-font family names come from @fontsource-variable, imported in layout.tsx. */
+  --color-stone-050: #f3f6f6;
+  --color-stone-100: #e5eaea;
+  --color-stone-200: #d2dada;
+  --color-stone-400: #93a0a0;
+  --color-stone-600: #5a6767;
+  --color-stone-800: #2a3232;
+  --color-stone-950: #141a1a;
+
+  /*
+   * The counter-tone. Not a UI colour and never used as one: it is what the
+   * wash removes — the umber of oxidation and organic staining, which is the
+   * actual colour of the problem this business is paid to solve.
+   */
+  --color-grime: #6b5540;
+
+  /* The old names, kept pointing at the new system so nothing that already
+     reads them breaks, and so the diff is a palette change rather than a
+     rename of four hundred class attributes. */
+  --color-teal: var(--color-teal-500);
+  --color-ink: var(--color-stone-950);
+  --color-slate: var(--color-stone-600);
+  --color-paper: #ffffff;
+  --color-blue: #3182ce;
+
   /* Motion tokens. One vocabulary, so nothing invents its own timing. */
   --ease-out: cubic-bezier(0.22, 0.61, 0.36, 1);
   --ease-spring: cubic-bezier(0.34, 1.56, 0.64, 1);
   --ease-cover: cubic-bezier(0.83, 0, 0.17, 1);
+  --ease-water: cubic-bezier(0.65, 0, 0.35, 1);
   --dur-fast: 180ms;
   --dur-base: 420ms;
   --dur-slow: 900ms;
   --dur-cover: 620ms;
+  --dur-wash: 1100ms;
   --lift: -2px;
 
   --font-display: "Fraunces Variable", Fraunces, ui-serif, Georgia, serif;
   --font-body: "Instrument Sans Variable", "Instrument Sans", ui-sans-serif, system-ui, sans-serif;
+  --font-spec: ui-monospace, SFMono-Regular, "SF Mono", Menlo, monospace;
 }
 
 @layer base {
@@ -57,9 +120,46 @@
    * and 2.17 on ink. Components read var(--muted) instead of picking a colour
    * and hoping the ground underneath them agrees.
    */
-  .ground-paper { --muted: #4a5568; }  /* 7.53 on white  */
-  .ground-teal  { --muted: #1a202c; }  /* 6.66 on teal   */
-  .ground-ink   { --muted: #ffffff; }  /* 16.32 on ink   */
+  /*
+   * Five grounds, each publishing the muted colour and the rule that actually
+   * measure on it. Components read var(--muted) rather than picking a colour
+   * and hoping the ground underneath agrees — which is the bug this pattern
+   * exists to make impossible.
+   *
+   * Two of these are new, and they are what lets the page run dirty-to-clean:
+   * `deep` is water with the light gone out of it, `shallow` is the bleached
+   * concrete a driveway becomes.
+   */
+  .ground-paper {
+    --ground: #ffffff; --ink: var(--color-stone-950);
+    --muted: var(--color-stone-600);    /* 5.88  */
+    --accent-text: var(--color-teal-800); /* 7.23 */
+    --rule: rgb(20 26 26 / 0.12);
+  }
+  .ground-shallow {
+    --ground: var(--color-stone-050); --ink: var(--color-stone-950);
+    --muted: var(--color-stone-600);    /* 5.41  */
+    --accent-text: var(--color-teal-800); /* 6.66 */
+    --rule: rgb(20 26 26 / 0.13);
+  }
+  .ground-teal {
+    --ground: var(--color-teal-500); --ink: var(--color-stone-950);
+    --muted: var(--color-stone-950);    /* 7.19  */
+    --accent-text: var(--color-teal-900); /* 4.96 */
+    --rule: rgb(20 26 26 / 0.22);
+  }
+  .ground-deep {
+    --ground: var(--color-teal-900); --ink: var(--color-stone-050);
+    --muted: var(--color-stone-400);    /* 4.50  */
+    --accent-text: var(--color-teal-300); /* 6.84 */
+    --rule: rgb(243 246 246 / 0.16);
+  }
+  .ground-ink, .ground-soaked {
+    --ground: var(--color-stone-950); --ink: var(--color-stone-050);
+    --muted: var(--color-stone-400);    /* 6.52  */
+    --accent-text: var(--color-teal-300); /* 9.91 */
+    --rule: rgb(243 246 246 / 0.14);
+  }
 
   /*
    * These MUST stay inside @layer base. Unlayered CSS outranks Tailwind's
@@ -368,14 +468,35 @@
 @layer components {
   .glass {
     position: relative;
-    isolation: isolate;
-    background: rgb(4 184 186 / 0.86);
-    -webkit-backdrop-filter: blur(14px) saturate(1.4);
-    backdrop-filter: blur(14px) saturate(1.4);
+    background: transparent;
     border: none;
   }
 
+  /*
+   * ⚠️ The filter lives on the pseudo-element, NOT on .glass itself, and this
+   * is load-bearing rather than tidiness.
+   *
+   * `backdrop-filter` makes an element a containing block for fixed-position
+   * descendants. With the filter on the header, the full-screen menu inside it
+   * was positioned against the bar instead of the viewport — it rendered as a
+   * dark band across the top and covered its own Close control. Moving the
+   * filter one level down fixes it and changes nothing about how it looks.
+   */
   .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    background: rgb(4 184 186 / 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    pointer-events: none;
+  }
+
+  /* The border: a gradient the mask cuts to a hairline. Never a `border` rule —
+     a flat line around frosted glass reads as a sticker on the page rather
+     than a pane of it. */
+  .glass::after {
     content: "";
     position: absolute;
     inset: 0;
@@ -428,7 +549,7 @@
    * panel, which is where seeing through it means something.
    */
   @media (max-width: 767px) {
-    .glass--strong { background: rgb(4 184 186 / 0.98); }
+    .glass--strong::before { background: rgb(4 184 186 / 0.98); }
   }
 
   .glass--strong::before {
@@ -473,6 +594,40 @@
     transform-origin: top center;
     animation: menu-in var(--dur-base) var(--ease-out) both;
   }
+
+  /*
+   * The overlay arrives as a wash rather than a fade — a clip that travels
+   * down over the page, the same move the section boundaries make. One
+   * vocabulary, used everywhere something changes state.
+   *
+   * The summary sits in the header at z-50; the overlay is z-40 and offset
+   * below the bar's height, so the Close control is never covered by the thing
+   * it closes.
+   */
+  @keyframes menu-wash-in {
+    from { clip-path: inset(0 0 100% 0); }
+    to   { clip-path: inset(0 0 0% 0); }
+  }
+  .menu-overlay {
+    animation: menu-wash-in var(--dur-cover) var(--ease-cover) both;
+  }
+  .menu-overlay [data-row] {
+    animation: menu-row-in var(--dur-base) var(--ease-spring) both;
+    animation-delay: calc(240ms + var(--i, 0) * 55ms);
+  }
+  .menu-link {
+    font-variation-settings: "SOFT" 0, "WONK" 0, "opsz" 144;
+    transition: font-variation-settings var(--dur-base) var(--ease-water);
+  }
+  .menu-link:hover,
+  .menu-link:focus-visible {
+    font-variation-settings: "SOFT" 100, "WONK" 1, "opsz" 144;
+  }
+
+  /* The page behind an open full-screen menu must not scroll under it. */
+  .menu[open] { position: static; }
+  body:has(.menu[open]) { overflow: hidden; }
+
   .menu-panel [data-row] {
     animation: menu-row-in var(--dur-base) var(--ease-spring) both;
     animation-delay: calc(70ms + var(--i, 0) * 45ms);
@@ -480,6 +635,211 @@
 
   @media (prefers-reduced-motion: reduce) {
     .menu-panel,
-    .menu-panel [data-row] { animation: none; }
+    .menu-panel [data-row],
+    .menu-overlay,
+    .menu-overlay [data-row] { animation: none; }
+    .menu-link { transition: none; }
+  }
+}
+
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ *  THE WASH
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * The signature, and the one idea here that could not be lifted onto another
+ * site: the page cleans itself as you move down it. Every section hands off to
+ * the next through a wash — grime lifts, the ground resolves, and the
+ * letterforms harden.
+ *
+ * It is not a fade and it is not a straight-edged wipe. Water does not have a
+ * hard edge and neither does a surface coming clean: the boundary is an
+ * irregular mask that eats into the outgoing ground the way a pressure washer
+ * actually takes a stripe off concrete.
+ *
+ * Three things move together, all driven by one scroll-linked progress value
+ * so they can never drift apart:
+ *
+ *   --wash        0 → 1   the boundary travelling
+ *   --grime       1 → 0   the umber texture lifting
+ *   type axes     soft → crisp   (see below)
+ *
+ * @property is what makes the axes animatable at all. A custom property is a
+ * string by default and a string cannot be interpolated, so `transition:
+ * --fx-soft` silently does nothing — the type would snap between two states
+ * and the whole idea would read as broken rather than absent.
+ */
+@property --wash {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --grime {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --fx-soft {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+@property --fx-wonk {
+  syntax: "<number>";
+  inherits: true;
+  initial-value: 0;
+}
+
+@layer components {
+  /*
+   * Display type, on the axes almost nobody touches.
+   *
+   * Fraunces carries SOFT (0–100) and WONK (0–1) as well as weight and optical
+   * size. SOFT rounds the terminals and softens the joins; WONK swaps in the
+   * cursive single-storey g and the swashier a. Run them together and the same
+   * word can read as blurred-and-organic or as cut-and-precise without
+   * changing typeface — which is exactly the before and after of a clean.
+   *
+   * ⚠️ These axes are NOT in the default @fontsource-variable/fraunces import,
+   * which ships the wght-only subset. Setting them against that file does
+   * nothing at all, silently. layout.tsx imports `/full.css` for this reason;
+   * it costs 84KB on the display face and it is the whole type direction.
+   */
+  .display-xl,
+  .display-lg,
+  .font-display {
+    font-variation-settings:
+      "SOFT" var(--fx-soft, 0),
+      "WONK" var(--fx-wonk, 0),
+      "opsz" var(--fx-opsz, 96);
+  }
+
+  /* The dirty state: soft, wonky, slightly heavier — type that has not been
+     cleaned yet. Sections start here and are washed to crisp. */
+  [data-wash-type] {
+    --fx-soft: calc(100 - (var(--wash) * 100));
+    --fx-wonk: calc(1 - var(--wash));
+    transition:
+      --fx-soft var(--dur-wash) var(--ease-water),
+      --fx-wonk var(--dur-wash) var(--ease-water);
+  }
+
+  /*
+   * The boundary between two sections.
+   *
+   * An irregular mask, not a line. The gradient stops are deliberately uneven
+   * and the mask is repeated at two scales so the edge never reads as a shape
+   * being animated — the giveaway that turns an effect into a transition.
+   */
+  .wash-edge {
+    position: absolute;
+    inset-inline: 0;
+    height: clamp(64px, 9vw, 132px);
+    pointer-events: none;
+    z-index: 2;
+    background: var(--wash-from, transparent);
+    -webkit-mask-image:
+      radial-gradient(120% 78% at 12% 0%, #000 38%, transparent 72%),
+      radial-gradient(90% 96% at 47% 4%, #000 30%, transparent 78%),
+      radial-gradient(140% 70% at 84% 0%, #000 42%, transparent 74%),
+      linear-gradient(#000 0 0);
+    mask-image:
+      radial-gradient(120% 78% at 12% 0%, #000 38%, transparent 72%),
+      radial-gradient(90% 96% at 47% 4%, #000 30%, transparent 78%),
+      radial-gradient(140% 70% at 84% 0%, #000 42%, transparent 74%),
+      linear-gradient(#000 0 0);
+    -webkit-mask-composite: source-over, source-over, source-over, xor;
+    mask-composite: add, add, add, exclude;
+    -webkit-mask-size: 100% 100%, 100% 100%, 100% 100%, 100% calc(var(--wash) * 100%);
+    mask-size: 100% 100%, 100% 100%, 100% 100%, 100% calc(var(--wash) * 100%);
+    -webkit-mask-repeat: no-repeat;
+    mask-repeat: no-repeat;
+  }
+
+  /*
+   * The grime. A warm umber grain that sits over a section and lifts as the
+   * wash passes — the counter-tone earning its place. Multiply, so it darkens
+   * the ground rather than sitting on it as a film.
+   */
+  .grime-layer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    opacity: calc(var(--grime, 0) * 0.5);
+    mix-blend-mode: multiply;
+    background-color: var(--color-grime);
+    -webkit-mask-image: var(--grime-texture);
+    mask-image: var(--grime-texture);
+    -webkit-mask-size: 340px 340px;
+    mask-size: 340px 340px;
+  }
+
+  :root {
+    --grime-texture: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='340' height='340'%3E%3Cfilter id='g'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.012 0.055' numOctaves='4' seed='7'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='340' height='340' filter='url(%23g)'/%3E%3C/svg%3E");
+  }
+
+  /*
+   * The stripe. When a section is mid-wash the leading edge carries a faint
+   * bright line, the way a wet surface catches light along the cut. One
+   * element, no cost, and it is what makes the boundary read as a tool passing
+   * rather than as an opacity change.
+   */
+  .wash-edge::after {
+    content: "";
+    position: absolute;
+    inset-inline: 0;
+    top: calc(var(--wash) * 100%);
+    height: 2px;
+    background: linear-gradient(
+      90deg,
+      transparent,
+      rgb(255 255 255 / 0.5) 18%,
+      rgb(255 255 255 / 0.72) 50%,
+      rgb(255 255 255 / 0.5) 82%,
+      transparent
+    );
+    opacity: calc(var(--wash) * (1 - var(--wash)) * 4);
+  }
+
+  /*
+   * Reduced motion takes the finished state, not a frozen half-state. Someone
+   * who has asked for less motion should get the clean page, not the dirty one
+   * with the animation switched off.
+   */
+  @media (prefers-reduced-motion: reduce) {
+    [data-wash-type] { --fx-soft: 0; --fx-wonk: 0; transition: none; }
+    .wash-edge, .grime-layer { display: none; }
+    [data-wash-section] { --wash: 1; --grime: 0; }
+  }
+}
+
+@layer components {
+  /*
+   * The preloader leaves the way every section boundary arrives — as a wash.
+   * The first thing anybody sees is the site's whole idea, rather than a fade
+   * that could belong to any site.
+   */
+  .preloader {
+    transition: opacity 320ms var(--ease-water);
+  }
+  .preloader[data-leaving="true"] {
+    animation: preloader-wash 1000ms var(--ease-cover) forwards;
+  }
+  @keyframes preloader-wash {
+    from {
+      clip-path: inset(0 0 0% 0);
+    }
+    to {
+      clip-path: inset(0 0 100% 0);
+    }
+  }
+  .preloader-mark {
+    font-variation-settings: "SOFT" var(--fx-soft, 0), "WONK" var(--fx-wonk, 0), "opsz" 144;
+  }
+  .font-spec { font-family: var(--font-spec); }
+
+  @media (prefers-reduced-motion: reduce) {
+    .preloader { display: none; }
   }
 }

@@ -53,10 +53,10 @@ export default function FaqPage() {
   return (
     <>
       <Section ground="teal">
-        <h1 className="max-w-3xl text-5xl">Questions</h1>
+        <h1 data-wash-type className="max-w-3xl text-5xl">Questions</h1>
       </Section>
 
-      <Section>
+      <Section ground="shallow" washFrom="teal">
         <ul className="max-w-3xl divide-y divide-ink/10">
           {answered.map((item) => (
             <li key={item.q} className="py-6">
@@ -64,7 +64,7 @@ export default function FaqPage() {
                 <summary className="cursor-pointer font-display text-xl font-bold">
                   {item.q}
                 </summary>
-                <p className="mt-3 text-slate">{item.a}</p>
+                <p className="mt-3 text-[color:var(--muted)]">{item.a}</p>
               </details>
             </li>
           ))}
@@ -74,15 +74,15 @@ export default function FaqPage() {
         {process.env.NODE_ENV !== "production" && (
           <div className="mt-14 max-w-3xl rounded-xl border-2 border-dashed border-slate/30 p-6">
             <h2 className="font-display text-lg font-bold">Open with Tristen</h2>
-            <ul className="mt-3 list-disc space-y-1 pl-5 text-slate">
+            <ul className="mt-3 list-disc space-y-1 pl-5 text-[color:var(--muted)]">
               {open.map((q) => <li key={q}>{q}</li>)}
             </ul>
           </div>
         )}
       </Section>
 
-      <Section ground="ink">
-        <h2 className="max-w-2xl text-4xl text-paper">Still have a question?</h2>
+      <Section ground="ink" washFrom="shallow">
+        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Still have a question?</h2>
         <p className="mt-4 text-white/75">
           Call{" "}
           <A href={business.phone.href} className="underline underline-offset-4">

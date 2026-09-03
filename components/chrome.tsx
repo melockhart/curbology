@@ -48,9 +48,9 @@ export function Nav() {
       className="glass ground-teal sticky top-0 z-50"
       data-stuck="false"
     >
-      <div className="mx-auto w-full max-w-[1600px] px-6 py-4 md:py-5">
+      <div className="relative z-[2] mx-auto w-full max-w-[1600px] px-6 py-4 md:py-5">
         <div className="flex items-center gap-x-5 gap-y-3">
-          <A href="/" className="mr-auto" aria-label={`${business.name} — home`}>
+          <A href="/" className="relative z-[3] mr-auto" aria-label={`${business.name} — home`}>
             <Mark />
           </A>
 
@@ -62,12 +62,12 @@ export function Nav() {
               space, and "(248) 387-9215" stacks into three lines on a phone. */}
           <A
             href={business.phone.href}
-            className="whitespace-nowrap font-medium text-ink underline underline-offset-4"
+            className="relative z-[3] whitespace-nowrap font-medium text-ink underline underline-offset-4"
           >
             {business.phone.display}
           </A>
 
-          <A href="/contact" className="btn btn--ink hidden sm:inline-flex">Get a free quote</A>
+          <A href="/contact" className="btn btn--ink relative z-[3] hidden sm:inline-flex">Get a free quote</A>
 
           {/*
             One menu, at every width — the Opscend minimal-bar-plus-hidden-menu
@@ -80,9 +80,20 @@ export function Nav() {
             the panel is displayed. The site's no-JS behaviour was verified and
             this keeps it.
           */}
-          <details className="group" name="site-menu">
+          {/*
+            The full-screen overlay menu — the third of the four locked
+            hard-blocks. It replaces the glass panel: a panel is a dropdown
+            that happens to be frosted, and the standard asks for the nav to
+            take the viewport so it reads as a place rather than as a list.
+
+            Still a <details>, so it opens and closes with no JavaScript and
+            the open animation is a CSS keyframe that runs when the panel is
+            displayed. The overlay arrives as a wash, because everything on
+            this site that changes state changes it that way.
+          */}
+          <details className="group menu relative z-[2]" name="site-menu">
             <summary
-              className="btn btn--ink list-none [&::-webkit-details-marker]:hidden"
+              className="btn btn--ink relative z-[3] list-none [&::-webkit-details-marker]:hidden"
               aria-label="Menu"
             >
               <span className="flex items-center gap-2.5">
@@ -98,25 +109,16 @@ export function Nav() {
 
             <nav
               aria-label="Main"
-              className={
-                /*
-                 * Full height below the bar on a phone, auto on a laptop.
-                 * A panel that stops halfway down a small screen leaves its own
-                 * bottom edge cutting through a paragraph, and the two sets of
-                 * words fight each other exactly where the eye lands.
-                 */
-                "menu-panel glass glass--strong ground-teal absolute inset-x-0 top-full z-50 " +
-                "h-[calc(100dvh-76px)] overflow-y-auto px-6 py-8 md:h-auto md:overflow-visible " +
-                "shadow-[0_24px_60px_-24px_rgb(9_12_18_/_0.5)]"
-              }
+              className="menu-overlay ground-deep fixed inset-0 z-[1] flex flex-col overflow-y-auto bg-teal-900 px-6 pb-10 pt-28"
             >
-              <div className="mx-auto grid w-full max-w-[1600px] gap-x-16 gap-y-8 md:grid-cols-[minmax(0,1fr)_auto]">
-                <ul className="max-w-xl">
+              <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center gap-y-12 md:flex-row md:items-end md:justify-between md:gap-x-20">
+                <ul className="w-full max-w-3xl">
                   {nav.map((item, i) => (
                     <li key={item.href} data-row style={{ "--i": i } as CSSProperties}>
                       <A
                         href={item.href}
-                        className="block border-b border-ink/15 py-3 font-display text-3xl font-bold leading-tight text-ink"
+                        className="menu-link block border-b py-4 font-display font-black leading-[0.95] text-stone-050"
+                        style={{ borderColor: "var(--rule)", fontSize: "clamp(2.25rem, 7vw, 5.5rem)" }}
                       >
                         {item.label}
                       </A>
@@ -127,17 +129,19 @@ export function Nav() {
                 <div
                   data-row
                   style={{ "--i": nav.length } as CSSProperties}
-                  className="flex flex-col items-start gap-4 md:min-w-[16rem]"
+                  className="flex shrink-0 flex-col items-start gap-5 md:pb-4"
                 >
-                  <p className="eyebrow">Straight to it</p>
-                  <A href="/contact" className="btn btn--ink w-full sm:w-auto">Get a free quote</A>
+                  <p className="font-spec text-xs uppercase tracking-[0.22em] text-stone-400">
+                    Straight to it
+                  </p>
+                  <A href="/contact" className="btn btn--paper">Get a free quote</A>
                   <A
                     href={business.phone.href}
-                    className="whitespace-nowrap font-display text-2xl font-bold text-ink underline underline-offset-4"
+                    className="whitespace-nowrap font-display text-3xl font-bold text-teal-300 underline underline-offset-8"
                   >
                     {business.phone.display}
                   </A>
-                  <p className="max-w-[16rem] text-sm text-[color:var(--muted)]">
+                  <p className="max-w-[18rem] text-sm text-[color:var(--muted)]">
                     Exterior cleaning across {business.serviceArea.county},{" "}
                     {business.serviceArea.stateAbbr}.
                   </p>

@@ -3,7 +3,11 @@ import { PreviewRibbon } from "../components/preview-ribbon";
 import { siteMetadata } from "../lib/document";
 // Self-hosted rather than a fonts.googleapis.com <link>: no third-party request,
 // nothing render-blocking, and it works in a sandbox with no egress.
-import "@fontsource-variable/fraunces";
+// The FULL axis file, not the default import. The default ships wght only, and
+// SOFT/WONK set against it do nothing at all — silently, which is the worst way
+// for a type direction to fail. 121KB vs 36KB on the display face; the axes are
+// the direction.
+import "@fontsource-variable/fraunces/full.css";
 import "@fontsource-variable/instrument-sans";
 import "./globals.css";
 

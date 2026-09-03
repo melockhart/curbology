@@ -32,11 +32,11 @@ export default async function ContactPage({
    */
   if (sent === "ok" || sent === "preview") {
     return (
-      <Section>
+      <Section ground="teal">
         <div className="max-w-xl">
           <Eyebrow>Free quote</Eyebrow>
-          <h1 className="text-5xl">We have it</h1>
-          <p className="mt-6 text-lg text-slate">
+          <h1 data-wash-type className="text-5xl">We have it</h1>
+          <p className="mt-6 text-lg text-[color:var(--muted)]">
             Tristen will come back to you with a real number. If it is urgent,
             calling is faster —{" "}
             <A href={business.phone.href} className="font-medium underline underline-offset-4">
@@ -54,12 +54,12 @@ export default async function ContactPage({
   }
 
   return (
-    <Section>
+    <Section ground="shallow" washFrom="teal">
       <div className="grid gap-14 md:grid-cols-2">
         <div>
           <Eyebrow>Free quote</Eyebrow>
-          <h1 className="text-5xl">Tell us about the job</h1>
-          <p className="mt-6 text-lg text-slate">
+          <h1 data-wash-type className="text-5xl">Tell us about the job</h1>
+          <p className="mt-6 text-lg text-[color:var(--muted)]">
             Send a few details and a photo or two. Most of the time that is enough
             to give you a real number without visiting.
           </p>
@@ -69,7 +69,7 @@ export default async function ContactPage({
               {business.phone.display}
             </A>
           </p>
-          <p className="mt-2 text-slate">
+          <p className="mt-2 text-[color:var(--muted)]">
             Serving {business.serviceArea.county}, {business.serviceArea.state}.
           </p>
         </div>
@@ -109,7 +109,7 @@ export default async function ContactPage({
 
           <div>
             <label htmlFor="photos" className="block font-medium">{f.photos}</label>
-            <p id="photos-hint" className="mt-1 text-sm text-slate">{quoteForm.photosHint}</p>
+            <p id="photos-hint" className="mt-1 text-sm text-[color:var(--muted)]">{quoteForm.photosHint}</p>
             <input
               id="photos" name="photos" type="file" accept="image/*" multiple
               aria-describedby="photos-hint"
@@ -129,7 +129,7 @@ export default async function ContactPage({
 }
 
 function Req() {
-  return <span className="text-slate" aria-hidden="true">*</span>;
+  return <span className="text-[color:var(--muted)]" aria-hidden="true">*</span>;
 }
 
 function Field({

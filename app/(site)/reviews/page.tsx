@@ -25,19 +25,19 @@ export default async function ReviewsPage() {
   return (
     <>
       <Section ground="teal">
-        <h1 className="max-w-3xl text-5xl">What our customers say</h1>
+        <h1 data-wash-type className="max-w-3xl text-5xl">What our customers say</h1>
         <p className="mt-6 text-lg">
           {business.googleRating.value.toFixed(1)} on Google, from{" "}
           {business.googleRating.count} reviews.
         </p>
       </Section>
 
-      <Section>
+      <Section ground="shallow" washFrom="teal">
         {published.length === 0 ? (
           <div className="max-w-xl">
             <Eyebrow>Coming soon</Eyebrow>
             <h2 className="text-3xl">Reviews are moving here</h2>
-            <p className="mt-4 text-slate">
+            <p className="mt-4 text-[color:var(--muted)]">
               We are collecting reviews on our own site so you can read them in
               full. In the meantime, our {business.googleRating.value.toFixed(1)}{" "}
               rating on Google comes from {business.googleRating.count} customers.
@@ -63,8 +63,8 @@ export default async function ReviewsPage() {
       </Section>
 
       {/* Everyone gets the same route. No rating gate, ever. */}
-      <Section ground="ink">
-        <h2 className="max-w-2xl text-4xl text-paper">Worked with us?</h2>
+      <Section ground="ink" washFrom="shallow">
+        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Worked with us?</h2>
         <p className="mt-4 max-w-xl text-white/75">
           We would like to hear how it went — good or bad.
         </p>

@@ -13,7 +13,7 @@ export function PortalShell({
   title, intro, children,
 }: { title: string; intro?: string; children: React.ReactNode }) {
   return (
-    <div className="ground-paper flex min-h-screen flex-col">
+    <div className="ground-paper flex min-h-screen flex-col bg-paper">
       <header className="bg-teal">
         <div className="mx-auto w-full max-w-2xl px-6 py-5">
           <A href="/" aria-label={`${business.name} — home`}>
@@ -31,12 +31,12 @@ export function PortalShell({
       </header>
 
       <main id="main" className="mx-auto w-full max-w-2xl flex-1 px-6 py-14">
-        <h1 className="text-4xl">{title}</h1>
+        <h1 data-wash-type className="text-4xl">{title}</h1>
         {intro && <p className="mt-4 text-lg text-[color:var(--muted)]">{intro}</p>}
         <div className="mt-10">{children}</div>
       </main>
 
-      <footer className="ground-ink bg-ink text-paper">
+      <footer className="ground-ink bg-ink text-stone-050">
         <div className="mx-auto w-full max-w-2xl px-6 py-8 text-sm">
           <p>
             {business.name} · {business.serviceArea.county}, {business.serviceArea.state}

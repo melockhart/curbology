@@ -20,13 +20,13 @@ export default function ServiceAreaPage() {
   return (
     <>
       <Section ground="teal">
-        <h1 className="max-w-3xl text-5xl">
+        <h1 data-wash-type className="max-w-3xl text-5xl">
           Serving {business.serviceArea.county}, {business.serviceArea.state}
         </h1>
       </Section>
 
-      <Section>
-        <h2 className="text-4xl">Towns we work in</h2>
+      <Section ground="shallow" washFrom="teal">
+        <h2 data-wash-type className="text-4xl">Towns we work in</h2>
         <ul className="mt-8 flex flex-wrap gap-3">
           {business.serviceArea.townsNamed.map((town) => (
             <li key={town} className="rounded-lg border border-ink/20 px-4 py-2">
@@ -34,7 +34,7 @@ export default function ServiceAreaPage() {
             </li>
           ))}
         </ul>
-        <p className="mt-8 max-w-xl text-slate">
+        <p className="mt-8 max-w-xl text-[color:var(--muted)]">
           Not listed? We cover {business.serviceArea.county} broadly — ask and
           we will tell you straight away.
         </p>

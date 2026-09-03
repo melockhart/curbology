@@ -1,6 +1,8 @@
 import { Nav, Footer } from "../../components/chrome";
 import { A } from "../../components/link";
 import { siteSettings } from "../../lib/db";
+import { Wash } from "../../components/motion/wash";
+import { Preloader } from "../../components/motion/preloader";
 
 /** Everything that wears the site's chrome. Nested inside the bare root layout. */
 export default async function SiteLayout({ children }: { children: React.ReactNode }) {
@@ -22,6 +24,12 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           {banner}
         </p>
       )}
+      {/* Marketing pages only: the wash reads as a journey here, and Lenis is
+          worth its cost. The portals keep the palette and the type and take
+          neither — a quote form reached from a text message is not the place
+          for a scroll library. */}
+      <Preloader />
+      <Wash smooth />
       <Nav />
       <main id="main">{children}</main>
       <Footer />

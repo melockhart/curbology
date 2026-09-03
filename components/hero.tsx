@@ -19,12 +19,12 @@ import { Kinetic } from "./motion/kinetic";
  */
 export function Hero() {
   return (
-    <section className="grain relative bg-teal text-ink">
+    <section data-wash-section className="ground-teal grain relative isolate bg-teal text-ink">
       <div className="mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-6 py-8 md:py-10">
 
         {/* Top band — the headline, at display scale, allowed to be big */}
         <div className="shrink-0">
-          <h1 className="display-xl max-w-[15ch]" aria-label={home.heroHeading}>
+          <h1 data-wash-type className="display-xl max-w-[15ch]" aria-label={home.heroHeading}>
             <Kinetic text={home.heroHeading} />
           </h1>
         </div>
