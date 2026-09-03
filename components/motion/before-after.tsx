@@ -49,7 +49,7 @@ export function BeforeAfter({
     // ground-paper here put slate on a teal section at 3.07:1.
     return (
       <figure>
-        <div className="flex aspect-[4/3] items-center justify-center rounded-2xl border-2 border-dashed border-current/30 p-6 text-center text-[color:var(--muted,#4a5568)]">
+        <div className="flex items-center justify-center rounded-2xl border border-dashed border-current/25 px-6 py-10 text-center text-[color:var(--muted)]">
           <p className="max-w-xs text-sm">
             <span className="block font-medium">Before and after to come</span>
             {caption ?? "A matched pair — same house, same angle, same light."}

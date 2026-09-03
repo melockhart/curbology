@@ -37,6 +37,9 @@ export default async function ServicePage({
 
   const siblings = services.filter((s) => s.slug !== service.slug);
 
+  const hasIncludes = service.includes.length > 0;
+  const workGround = hasIncludes ? "paper" : "shallow";
+
   return (
     <>
       <Section ground="teal">
@@ -53,7 +56,16 @@ export default async function ServicePage({
         </div>
       </Section>
 
-      {service.includes.length > 0 && (
+      {/*
+        The grounds below are derived from `hasIncludes`, not written twice.
+        They were: one section's ground was conditional while the next section's
+        `washFrom` was a literal, so on a service with nothing to list the edge
+        painted a colour that was not on the page — a 132px band of the wrong
+        ground across the top of the section. A wash edge must name the ground
+        that is actually above it, which means the two have to come from the
+        same expression.
+      */}
+      {hasIncludes && (
         <Section ground="shallow" washFrom="teal">
           <h2 data-wash-type className="text-4xl">What&rsquo;s included</h2>
           <ul className="mt-8 grid gap-4 md:grid-cols-2">
@@ -68,7 +80,7 @@ export default async function ServicePage({
         </Section>
       )}
 
-      <Section ground={service.includes.length > 0 ? "teal" : "paper"}>
+      <Section ground={workGround} washFrom={hasIncludes ? "shallow" : "teal"}>
         <h2 data-wash-type className="text-4xl">The work</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <AwaitingPhoto label="Before." />
@@ -81,7 +93,7 @@ export default async function ServicePage({
         here is a quote Tristen would have to honour or walk back.
       */}
 
-      <Section ground="teal" washFrom="shallow">
+      <Section ground="teal" washFrom={workGround}>
         <h2 data-wash-type className="text-4xl">Other services</h2>
         <ul className="mt-8 grid gap-8 md:grid-cols-3">
           {siblings.map((s) => (

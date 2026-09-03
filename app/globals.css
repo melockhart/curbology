@@ -731,10 +731,27 @@
    * and the mask is repeated at two scales so the edge never reads as a shape
    * being animated — the giveaway that turns an effect into a transition.
    */
+  /*
+   * ⚠️ The edge must never be taller than the section's top padding.
+   *
+   * At 132px it reached past the padding and painted the previous ground
+   * behind the section's own heading — which orphaned the heading from its
+   * list, and worse, put white type on teal at 2.45:1 in one place. The
+   * contrast sweep cannot catch that: it measures an element's background
+   * chain, and the edge is an overlay the chain does not know about.
+   *
+   * So the edge lives entirely inside the padding, and Section adds the
+   * padding to guarantee it. Anything measured is measured against the ground
+   * it is actually on.
+   */
   .wash-edge {
     position: absolute;
     inset-inline: 0;
-    height: clamp(64px, 9vw, 132px);
+    /* 56px max, which fits inside the 56/80px section padding at every
+       width — so the edge stays in the padding without the padding growing to
+       accommodate it. Adding padding instead put a fifth of the page height
+       back. */
+    height: clamp(32px, 4vw, 56px);
     pointer-events: none;
     z-index: 2;
     background: var(--wash-from, transparent);

@@ -10,10 +10,15 @@
 "use client";
 
 import { usePathname } from "next/navigation";
-import { EntryLoader, RouteCover } from "./loader";
+import { RouteCover } from "./loader";
 
 /**
- * Mounts the entry loader and route covers.
+ * Mounts the route covers.
+ *
+ * The entry loader used to mount here too. It does not any more: the P-004
+ * wordmark preloader in (site)/layout.tsx is the locked hard-block, and two
+ * loading screens on one first paint is one loading screen too many. This was
+ * shipping both.
  *
  * A single client boundary at the top of the tree, so every page below it stays
  * a server component. The admin console does not mount this — motion there is
@@ -31,7 +36,6 @@ export function MotionStage() {
 
   return (
     <>
-      <EntryLoader />
       <RouteCover pathname={pathname} />
     </>
   );

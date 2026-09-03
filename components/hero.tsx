@@ -20,7 +20,7 @@ import { Kinetic } from "./motion/kinetic";
 export function Hero() {
   return (
     <section data-wash-section className="ground-teal grain relative isolate bg-teal text-ink">
-      <div className="mx-auto flex min-h-[calc(100svh-5.5rem)] w-full max-w-[1600px] flex-col px-6 py-8 md:py-10">
+      <div className="mx-auto flex min-h-[calc(88svh-5.5rem)] w-full max-w-[1600px] flex-col px-6 py-8 md:py-10">
 
         {/* Top band — the headline, at display scale, allowed to be big */}
         <div className="shrink-0">
@@ -30,7 +30,7 @@ export function Hero() {
         </div>
 
         {/* The open centre */}
-        <div className="relative my-6 min-h-[16vh] flex-1 overflow-hidden rounded-3xl md:my-8">
+        <div className="relative my-5 min-h-[12vh] flex-1 overflow-hidden rounded-3xl md:my-6">
           <HeroMedia label="Curbology cleaning a home exterior in Oakland County" />
         </div>
 

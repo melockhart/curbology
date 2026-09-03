@@ -35,7 +35,7 @@ export type Ground = "paper" | "shallow" | "teal" | "deep" | "ink";
  * the edge paints a colour that is not on the page.
  */
 export function Section({
-  ground = "paper", children, id, grain = false, washFrom, dirty = false, className = "",
+  ground = "paper", children, id, grain = false, washFrom, dirty = false, tall = false, className = "",
 }: {
   ground?: Ground;
   children: ReactNode;
@@ -45,6 +45,12 @@ export function Section({
   washFrom?: Ground;
   /** Carry grime that lifts as the wash passes. */
   dirty?: boolean;
+  /**
+   * Extra room, for a section that earns it. The default is deliberately
+   * tighter than it was: the wash boundary now does the separating that 112px
+   * of padding used to do, and doing both left a quarter of the page empty.
+   */
+  tall?: boolean;
   className?: string;
 }) {
   const grounds: Record<Ground, string> = {
@@ -68,7 +74,9 @@ export function Section({
       data-wash-section=""
       className={`relative isolate ${grounds[ground]} ${grain ? "grain" : ""} ${className}`}
     >
-      {washFrom && (
+      {/* An edge washing a ground onto itself is invisible and costs 132px.
+          Two sections that share a ground simply meet. */}
+      {washFrom && washFrom !== ground && (
         <div
           aria-hidden="true"
           className="wash-edge -top-px"
@@ -76,7 +84,13 @@ export function Section({
         />
       )}
       {dirty && <div aria-hidden="true" className="grime-layer" />}
-      <div className="relative z-[3] mx-auto w-full max-w-6xl px-6 py-20 md:py-28">{children}</div>
+      <div
+        className={`relative z-[3] mx-auto w-full max-w-6xl px-6 ${
+          tall ? "py-20 md:py-28" : "py-14 md:py-20"
+        }`}
+      >
+        {children}
+      </div>
     </section>
   );
 }
@@ -95,18 +109,45 @@ export function Eyebrow({ children }: { children: ReactNode }) {
  * a missing one is worth naming rather than papering over.
  */
 export function AwaitingPhoto({ label, className = "" }: { label: string; className?: string }) {
+  /*
+   * An image slot with no image — sized to what it SAYS, not to the photograph
+   * that is not there.
+   *
+   * It used to be aspect-[4/3], which on this layout is a 745px hole holding
+   * ninety characters. Reserving a photograph's footprint made sense when the
+   * design was photography-led; the direction now is that type and motion carry
+   * the page and photographs improve it later. A slot that reserves space it
+   * cannot fill is just a hole with a caption in it.
+   *
+   * Still honest, still visibly a slot, still never stock — one third the
+   * height and it reads as a note in the layout rather than as a gap in it.
+   */
   return (
     <div
-      className={`flex aspect-[4/3] items-center justify-center rounded-2xl border-2 border-dashed border-current/30 p-6 text-center text-[color:var(--muted)] ${className}`}
+      className={`flex items-start gap-4 rounded-xl border border-dashed p-5 ${className}`}
+      style={{ borderColor: "var(--rule)" }}
     >
-      <p className="max-w-xs text-sm">
-        <span className="block font-medium">Photography to come</span>
-        {label}
-      </p>
+      <span
+        aria-hidden="true"
+        className="mt-0.5 grid h-9 w-9 shrink-0 place-items-center rounded-lg"
+        style={{ background: "color-mix(in srgb, currentColor 10%, transparent)" }}
+      >
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="1.6"
+             className="h-[18px] w-[18px]" aria-hidden="true">
+          <rect x="3" y="5" width="18" height="14" rx="2" />
+          <circle cx="8.5" cy="10" r="1.5" />
+          <path d="m4 17 4.5-4.5 3 3L15 12l5 5" />
+        </svg>
+      </span>
+      <span className="min-w-0">
+        <span className="font-spec block text-[11px] uppercase tracking-[0.2em] text-[color:var(--muted)]">
+          Photography to come
+        </span>
+        <span className="mt-1.5 block text-sm text-[color:var(--muted)]">{label}</span>
+      </span>
     </div>
   );
 }
-
 
 /**
  * The proof band — the fourth locked hard-block, standing in for itself.
@@ -119,8 +160,7 @@ export function AwaitingPhoto({ label, className = "" }: { label: string; classN
  * So this carries only what is checkable — the services actually sold, the
  * county and the towns named on the live site, and the number that carries a
  * real tel: link there. Set as a spec plate rather than as counted stats,
- * because counted stats with nothing to count is precisely the thing that was
- * deleted.
+ * because counted stats with nothing to count is precisely what was deleted.
  *
  * ⚠️ WHAT REPLACES IT. The moment reviews are published and photography lands,
  * this becomes the real proof band — rating, review count, before-and-afters —
@@ -131,21 +171,19 @@ export function ProofBand({
   items,
 }: { items: Array<{ label: string; value: string; note?: string }> }) {
   return (
-    <ul className="grid gap-x-12 gap-y-10 sm:grid-cols-3">
+    <ul className="grid gap-x-12 gap-y-8 sm:grid-cols-3">
       {items.map((item) => (
-        <li key={item.label} className="border-t pt-5" style={{ borderColor: "var(--rule)" }}>
+        <li key={item.label} className="border-t pt-4" style={{ borderColor: "var(--rule)" }}>
           <p className="font-spec text-[11px] uppercase tracking-[0.22em] text-[color:var(--muted)]">
             {item.label}
           </p>
           <p
             data-wash-type
-            className="mt-3 font-display text-3xl font-bold leading-tight md:text-4xl"
+            className="mt-2.5 font-display text-3xl font-bold leading-tight md:text-4xl"
           >
             {item.value}
           </p>
-          {item.note && (
-            <p className="mt-2 text-sm text-[color:var(--muted)]">{item.note}</p>
-          )}
+          {item.note && <p className="mt-2 text-sm text-[color:var(--muted)]">{item.note}</p>}
         </li>
       ))}
     </ul>
