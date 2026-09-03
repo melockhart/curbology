@@ -28,10 +28,14 @@ export default async function SiteLayout({ children }: { children: React.ReactNo
           worth its cost. The portals keep the palette and the type and take
           neither — a quote form reached from a text message is not the place
           for a scroll library. */}
+      {/* The lane. One element, fixed to the viewport, on the angle everything
+          else is built on — the persistent mark, and the reason a still frame
+          of this site has the idea in it. */}
+      <div aria-hidden="true" className="lane" />
       <Preloader />
       <Wash smooth />
       <Nav />
-      <main id="main">{children}</main>
+      <main id="main" className="lane-host">{children}</main>
       <Footer />
     </>
   );

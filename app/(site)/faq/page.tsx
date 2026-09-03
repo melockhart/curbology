@@ -52,11 +52,11 @@ const open = [
 export default function FaqPage() {
   return (
     <>
-      <Section ground="teal">
+      <Section cut={false} ground="teal">
         <h1 data-wash-type className="max-w-3xl text-5xl">Questions</h1>
       </Section>
 
-      <Section ground="shallow" washFrom="teal">
+      <Section cut="l" ground="shallow">
         <ul className="max-w-3xl divide-y divide-ink/10">
           {answered.map((item) => (
             <li key={item.q} className="py-6">
@@ -81,7 +81,7 @@ export default function FaqPage() {
         )}
       </Section>
 
-      <Section ground="ink" washFrom="shallow">
+      <Section cut="r" ground="ink">
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Still have a question?</h2>
         <p className="mt-4 text-white/75">
           Call{" "}

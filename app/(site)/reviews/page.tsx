@@ -24,7 +24,7 @@ export default async function ReviewsPage() {
 
   return (
     <>
-      <Section ground="teal">
+      <Section cut={false} ground="teal">
         <h1 data-wash-type className="max-w-3xl text-5xl">What our customers say</h1>
         <p className="mt-6 text-lg">
           {business.googleRating.value.toFixed(1)} on Google, from{" "}
@@ -32,7 +32,7 @@ export default async function ReviewsPage() {
         </p>
       </Section>
 
-      <Section ground="shallow" washFrom="teal">
+      <Section cut="l" ground="shallow">
         {published.length === 0 ? (
           <div className="max-w-xl">
             <Eyebrow>Coming soon</Eyebrow>
@@ -63,7 +63,7 @@ export default async function ReviewsPage() {
       </Section>
 
       {/* Everyone gets the same route. No rating gate, ever. */}
-      <Section ground="ink" washFrom="shallow">
+      <Section cut="r" ground="ink">
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Worked with us?</h2>
         <p className="mt-4 max-w-xl text-white/75">
           We would like to hear how it went — good or bad.

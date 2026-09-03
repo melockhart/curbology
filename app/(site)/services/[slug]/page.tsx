@@ -42,7 +42,7 @@ export default async function ServicePage({
 
   return (
     <>
-      <Section ground="teal">
+      <Section cut={false} ground="teal">
         <div className="grid items-center gap-12 md:grid-cols-2">
           <div>
             <Eyebrow>
@@ -66,7 +66,7 @@ export default async function ServicePage({
         same expression.
       */}
       {hasIncludes && (
-        <Section ground="shallow" washFrom="teal">
+        <Section cut="l" ground="shallow">
           <h2 data-wash-type className="text-4xl">What&rsquo;s included</h2>
           <ul className="mt-8 grid gap-4 md:grid-cols-2">
             {service.includes.map((item) => (
@@ -80,7 +80,7 @@ export default async function ServicePage({
         </Section>
       )}
 
-      <Section ground={workGround} washFrom={hasIncludes ? "shallow" : "teal"}>
+      <Section cut="r" ground={workGround}>
         <h2 data-wash-type className="text-4xl">The work</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
           <AwaitingPhoto label="Before." />
@@ -93,7 +93,7 @@ export default async function ServicePage({
         here is a quote Tristen would have to honour or walk back.
       */}
 
-      <Section ground="teal" washFrom={workGround}>
+      <Section cut="l" ground="teal">
         <h2 data-wash-type className="text-4xl">Other services</h2>
         <ul className="mt-8 grid gap-8 md:grid-cols-3">
           {siblings.map((s) => (
@@ -108,7 +108,7 @@ export default async function ServicePage({
         </ul>
       </Section>
 
-      <Section ground="ink" washFrom="teal">
+      <Section cut="r" ground="ink">
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">
           Get a free quote for {service.name.toLowerCase()}
         </h2>

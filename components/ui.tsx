@@ -22,35 +22,30 @@ export function Button({
 export type Ground = "paper" | "shallow" | "teal" | "deep" | "ink";
 
 /**
- * A section, and one step of the wash.
+ * A section, cut on the lane's angle.
  *
- * Every section declares the ground it arrives on. The section boundary is not
- * a margin — it is where the page gets cleaner, so each section carries the
- * edge that washes the previous ground away and the grime that lifts as it
- * passes. Both are driven from one scroll-linked value set by the wash driver,
- * so they cannot drift apart.
+ * The boundary between two sections used to be a horizontal wash edge. It is
+ * now a diagonal on the same angle as everything else, and the section climbs
+ * into the one above it so the two interlock with no seam — a clip alone leaves
+ * a wedge of page showing through.
  *
- * `washFrom` is the ground being washed off. It has to be named rather than
- * inferred: a section does not know what precedes it, and guessing wrong means
- * the edge paints a colour that is not on the page.
+ * `cut` alternates the slope. Every boundary falling the same way is a pattern;
+ * alternating is a rhythm.
  */
 export function Section({
-  ground = "paper", children, id, grain = false, washFrom, dirty = false, tall = false, className = "",
+  ground = "paper", children, id, dirty = false, cut = "l", tall = false,
+  margin, className = "",
 }: {
   ground?: Ground;
   children: ReactNode;
   id?: string;
-  grain?: boolean;
-  /** The ground above this one, washed away by the edge. Omit on the first. */
-  washFrom?: Ground;
   /** Carry grime that lifts as the wash passes. */
   dirty?: boolean;
-  /**
-   * Extra room, for a section that earns it. The default is deliberately
-   * tighter than it was: the wash boundary now does the separating that 112px
-   * of padding used to do, and doing both left a quarter of the page empty.
-   */
+  /** Which way the diagonal boundary falls. `false` for the first section. */
+  cut?: "l" | "r" | false;
   tall?: boolean;
+  /** Marginalia, set on the angle down the side. Decorative — never content. */
+  margin?: string;
   className?: string;
 }) {
   const grounds: Record<Ground, string> = {
@@ -60,35 +55,31 @@ export function Section({
     deep: "ground-deep bg-teal-900 text-stone-050",
     ink: "ground-ink bg-ink text-stone-050",
   };
-  const edgeColour: Record<Ground, string> = {
-    paper: "#ffffff",
-    shallow: "var(--color-stone-050)",
-    teal: "var(--color-teal-500)",
-    deep: "var(--color-teal-900)",
-    ink: "var(--color-stone-950)",
-  };
 
   return (
     <section
       id={id}
       data-wash-section=""
-      className={`relative isolate ${grounds[ground]} ${grain ? "grain" : ""} ${className}`}
+      className={`relative isolate ${grounds[ground]} ${
+        cut === "l" ? "cut-top" : cut === "r" ? "cut-top-rev" : ""
+      } ${className}`}
     >
-      {/* An edge washing a ground onto itself is invisible and costs 132px.
-          Two sections that share a ground simply meet. */}
-      {washFrom && washFrom !== ground && (
-        <div
-          aria-hidden="true"
-          className="wash-edge -top-px"
-          style={{ ["--wash-from" as string]: edgeColour[washFrom] }}
-        />
-      )}
       {dirty && <div aria-hidden="true" className="grime-layer" />}
-      <div
-        className={`relative z-[3] mx-auto w-full max-w-6xl px-6 ${
-          tall ? "py-20 md:py-28" : "py-14 md:py-20"
-        }`}
-      >
+
+      {margin && (
+        <p
+          aria-hidden="true"
+          className="font-spec pointer-events-none absolute right-4 top-1/2 hidden -translate-y-1/2 rotate-[-13deg] whitespace-nowrap text-[11px] uppercase tracking-[0.36em] text-[color:var(--muted)] xl:block"
+        >
+          {margin}
+        </p>
+      )}
+
+      <div className="relative z-[3] mx-auto w-full max-w-6xl px-6 pb-12 md:pb-16"
+           /* The cut is deepest on one side only, so content needs to clear
+              --cut and very little more. 3.5rem on top of it was two hundred
+              pixels of nothing at every boundary. */
+           style={{ paddingTop: tall ? "calc(var(--cut) + 3rem)" : "calc(var(--cut) + 1.75rem)" }}>
         {children}
       </div>
     </section>

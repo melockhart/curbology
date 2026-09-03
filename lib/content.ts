@@ -193,3 +193,41 @@ export const quoteForm = {
   messagePlaceholder: "Tell us more about your project, property size, or any specific requirements...",
   submit: "Request my free quote",
 } as const;
+
+/**
+ * Connective copy.
+ *
+ * ⚠️ LANGUAGE, NEVER CLAIMS. Everything in this block is a label, a kicker or a
+ * transition — words that carry the composition. Not one of them asserts a
+ * fact: no counts, no timings, no guarantees, no prices, no testimonials, no
+ * years in business. Every factual string on this site is still verbatim from
+ * the live Wix capture and lives above, in `business`, `services` and `home`.
+ *
+ * The test before adding a line here: could Tristen be held to it? If yes, it
+ * does not belong in this block.
+ */
+export const connective = {
+  hero: {
+    /** Sits on the dirty side of the split. */
+    before: "Before",
+    /** Sits on the washed side. */
+    after: "After",
+    lane: "The clean line",
+  },
+  sections: {
+    services: { kicker: "What we clean", lead: "Four surfaces, one crew, one visit." },
+    proof: { kicker: "Where and what", lead: "Oakland County, and the four things we do in it." },
+    difference: { kicker: "The difference", lead: "The whole argument is the line between the two halves." },
+    method: { kicker: "How it works", lead: "Photograph it, price it, clean it." },
+    about: { kicker: "Who turns up", lead: "One crew, and the same one every time." },
+    area: { kicker: "Where we work", lead: "If you are in the county, you are in the area." },
+    quote: { kicker: "Ready when you are", lead: "Send a photo. Get a real number." },
+  },
+  /** Marginalia — set small on the angle, running down the side of a section. */
+  margin: {
+    services: "Surfaces",
+    difference: "The line",
+    method: "The order of it",
+    quote: "Start here",
+  },
+} as const;

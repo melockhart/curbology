@@ -159,6 +159,21 @@ for (const [route, label] of flat) {
       section.style.setProperty("--wash", "1");
       section.style.setProperty("--grime", "0");
     }
+    /*
+     * The caustics are a WebGL canvas and this file has no scripts, so the
+     * canvas would serialise as an empty box over a flat fill — the preview
+     * would show a different design from the site. Swap each one for the same
+     * still the site itself falls back to; the image inliner downstream turns
+     * it into a data URI like any other.
+     */
+    for (const c of document.querySelectorAll("canvas")) {
+      const img = document.createElement("img");
+      img.src = "/brand/caustics-deep.jpg";
+      img.alt = "";
+      img.setAttribute("aria-hidden", "true");
+      img.className = c.className;
+      c.replaceWith(img);
+    }
     const css = document.querySelector('link[rel="stylesheet"]')?.getAttribute("href") ?? null;
     for (const el of document.querySelectorAll("script, link, meta[http-equiv]")) el.remove();
 

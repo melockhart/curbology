@@ -158,7 +158,7 @@ export function Nav() {
 
 export function Footer() {
   return (
-    <footer className="bg-ink text-paper">
+    <footer className="site-footer ground-ink bg-ink text-stone-050">
       {/* Extra bottom clearance in preview so the fixed ribbon does not sit on
           top of the legal links. It costs nothing anywhere else. */}
       <div className={`mx-auto w-full max-w-6xl px-6 pt-16 ${previewMode() ? "pb-28" : "pb-16"}`}>

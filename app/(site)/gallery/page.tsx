@@ -21,14 +21,14 @@ export function generateMetadata(): Promise<Metadata> {
 export default function GalleryPage() {
   return (
     <>
-      <Section ground="teal">
+      <Section cut={false} ground="teal">
         <h1 data-wash-type className="max-w-3xl text-5xl">Our work</h1>
         <p className="mt-6 max-w-xl text-lg">
           Before and after, across Oakland County.
         </p>
       </Section>
 
-      <Section ground="shallow" washFrom="teal">
+      <Section cut="l" ground="shallow">
         <ul className="grid gap-x-10 gap-y-16 md:grid-cols-2">
           {portfolio.map((item) => (
             <li key={item.n}>
@@ -41,7 +41,7 @@ export default function GalleryPage() {
         </ul>
       </Section>
 
-      <Section ground="ink" washFrom="shallow">
+      <Section cut="r" ground="ink">
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Want yours to look like this?</h2>
         <div className="mt-8"><Button href="/contact">Get a free quote</Button></div>
       </Section>

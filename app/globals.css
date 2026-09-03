@@ -860,3 +860,238 @@
     .preloader { display: none; }
   }
 }
+
+/*
+ * ══════════════════════════════════════════════════════════════════════════
+ *  THE LANE
+ * ══════════════════════════════════════════════════════════════════════════
+ *
+ * One angle, and everything is built on it: the section boundaries, the
+ * composition, the chrome, and the stripe itself.
+ *
+ * The lane is the clean track a washer leaves behind. Previously the wash only
+ * existed while you scrolled, so a screenshot showed a page with no idea in it.
+ * The lane is that same idea standing still — visible at every scroll position,
+ * in the first frame, on a phone with reduced motion, in a share card.
+ *
+ * -13deg because it has to read as a deliberate diagonal at 390px and still
+ * cross the full width of a 1440px page over a normal document height. Shallower
+ * reads as a mistake in the layout; steeper turns every angled boundary into a
+ * wedge that eats a third of a small screen.
+ */
+:root {
+  --lane-angle: -13deg;
+  /* How far the diagonal boundary drops across the page's width. Everything
+     that cuts on the angle uses this, so the whole page shares one slope. */
+  --cut: clamp(28px, 5.5vw, 92px);
+  /* The chamfer on chrome — buttons, cards, fields. The angle, at the scale of
+     a control rather than of a page. */
+  --chamfer: 10px;
+}
+
+@layer components {
+  /*
+   * An angled top edge, and a negative margin so the section climbs into the
+   * one above it. The two together make a diagonal boundary with no seam —
+   * clip alone would leave a wedge of page showing through.
+   */
+  .cut-top {
+    margin-top: calc(var(--cut) * -1);
+    padding-top: var(--cut);
+    clip-path: polygon(0 var(--cut), 100% 0, 100% 100%, 0 100%);
+  }
+  .cut-top-rev {
+    margin-top: calc(var(--cut) * -1);
+    padding-top: var(--cut);
+    clip-path: polygon(0 0, 100% var(--cut), 100% 100%, 0 100%);
+  }
+
+  /*
+   * The chamfer. A cut corner rather than a rotated box: the control keeps its
+   * 44px target, its baseline and its focus ring, and still carries the angle.
+   * Rotating a form field is a decision about how much usability an aesthetic
+   * is worth, and this is the version that costs none.
+   */
+  .chamfer {
+    clip-path: polygon(
+      0 0,
+      100% 0,
+      100% calc(100% - var(--chamfer)),
+      calc(100% - var(--chamfer)) 100%,
+      0 100%
+    );
+  }
+  .chamfer-tl {
+    clip-path: polygon(
+      var(--chamfer) 0,
+      100% 0,
+      100% 100%,
+      0 100%,
+      0 var(--chamfer)
+    );
+  }
+
+  /* Buttons and fields take the angle. .btn keeps its 10px radius on the three
+     square corners and loses the fourth to the chamfer. */
+  .btn { clip-path: polygon(0 0, 100% 0, 100% calc(100% - 9px), calc(100% - 9px) 100%, 0 100%); }
+
+  /*
+   * The stripe.
+   *
+   * Fixed to the viewport, not to the document. A rotated element running the
+   * full document height was the first attempt and it is wrong twice: at 13deg
+   * over a five-thousand-pixel page it drifts a thousand pixels sideways, and
+   * its width in the viewport changes with the length of the page it happens to
+   * be on. Fixed, it is the same track at the same angle on every page — and
+   * the reading is better: the lane stays and the surface moves through it,
+   * which is what actually happens when someone washes a driveway.
+   *
+   * 77deg is the gradient axis for a band at the lane angle: the axis runs
+   * perpendicular to the bands, so 90 - 13.
+   *
+   * `soft-light` so one layer serves every ground — it lifts the deep water and
+   * deepens the paper. `screen` and `multiply` would be two elements to keep in
+   * step and one of them would always be wrong somewhere.
+   */
+  .lane {
+    position: fixed;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    mix-blend-mode: soft-light;
+    background-image:
+      /* the two cut edges, where the washed track meets what has not been done */
+      linear-gradient(77deg,
+        transparent calc(var(--lane-a) - 0.14%), rgb(255 255 255 / 0.8) var(--lane-a),
+        rgb(255 255 255 / 0.8) calc(var(--lane-a) + 0.14%), transparent calc(var(--lane-a) + 0.14%)),
+      linear-gradient(77deg,
+        transparent calc(var(--lane-b) - 0.14%), rgb(255 255 255 / 0.8) var(--lane-b),
+        rgb(255 255 255 / 0.8) calc(var(--lane-b) + 0.14%), transparent calc(var(--lane-b) + 0.14%)),
+      /* the track itself */
+      linear-gradient(77deg,
+        transparent var(--lane-a),
+        rgb(255 255 255 / 0.5) calc(var(--lane-a) + 1.5%),
+        rgb(255 255 255 / 0.34) 50%,
+        rgb(255 255 255 / 0.5) calc(var(--lane-b) - 1.5%),
+        transparent var(--lane-b));
+  }
+
+  :root { --lane-a: 34%; --lane-b: 55%; }
+
+  /*
+   * The hero's headline, cut by the lane.
+   *
+   * Two copies of the same words: one soft and wonky — the surface that has not
+   * been done — and one cut crisp, masked to the track. The mask is the same
+   * 77deg axis and the same two stops as the lane above, so the letterforms
+   * change state exactly on the line rather than near it.
+   *
+   * This is the frame a screenshot gets. Everything else about the wash is a
+   * transition; this states the whole idea standing still.
+   */
+  /*
+   * ⚠️ THE TWO COPIES MUST HAVE IDENTICAL METRICS.
+   *
+   * The first version differed the axes between them — soft and wonky outside
+   * the lane, cut crisp inside it. It does not work, and the reason is worth
+   * writing down: SOFT and WONK change advance widths. The two copies drift
+   * apart across the line and the headline collides with itself into something
+   * illegible. Variable axes are not a spatial split.
+   *
+   * So the split is the SURFACE, not the letterform — which is the better idea
+   * anyway. Same type, same metrics, perfect registration: dull where nothing
+   * has been washed, bright inside the clean track. That is literally what the
+   * business sells, stated on one word, standing still.
+   *
+   * Both states are measured: stone-400 on deep water is 4.50:1 and stone-050
+   * is 11.19:1. The dirty half is dimmer, never unreadable.
+   */
+  .split-dirty,
+  .split-clean {
+    font-variation-settings: "SOFT" 0, "WONK" 0, "opsz" 144;
+  }
+  .split-dirty { color: var(--color-stone-400); }
+  .split-clean {
+    color: var(--color-stone-050);
+    -webkit-mask-image: linear-gradient(77deg, transparent var(--lane-a), #000 var(--lane-a), #000 var(--lane-b), transparent var(--lane-b));
+    mask-image: linear-gradient(77deg, transparent var(--lane-a), #000 var(--lane-a), #000 var(--lane-b), transparent var(--lane-b));
+  }
+
+  /* Angled cuts overhang; the page must clip sideways or they add scrollable
+     nothing to the right of the layout. */
+  .lane-host { position: relative; overflow-x: clip; }
+
+  @media (prefers-reduced-motion: reduce) {
+    /* The lane stays. It is the design at rest, not an animation. */
+    .lane { opacity: 0.9; }
+  }
+}
+
+@layer components {
+  /* Grain as its own layer, so it can sit over a canvas rather than being a
+     background on the element that owns one. */
+  .grain-layer {
+    pointer-events: none;
+    opacity: 0.5;
+    mix-blend-mode: overlay;
+    background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='160' height='160'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.85' numOctaves='3' stitchTiles='stitch'/%3E%3CfeColorMatrix type='saturate' values='0'/%3E%3C/filter%3E%3Crect width='160' height='160' filter='url(%23n)'/%3E%3C/svg%3E");
+    background-size: 160px 160px;
+  }
+}
+
+@layer components {
+  /*
+   * Chrome on the angle.
+   *
+   * The header's bottom edge and the footer's top edge are cut on the lane's
+   * slope, and controls take it as a chamfer. Fields get the cut corner rather
+   * than a rotation: a rotated input loses its 44px target, its baseline and a
+   * predictable focus ring, and buys nothing the chamfer does not.
+   */
+  /*
+   * The header's cut is shallow — 0.28 of the page's, not 0.55. At the page
+   * slope it removed the bottom-left corner, which is exactly where the mark
+   * sits, and clipped the logo. Shallower plus a little bottom clearance keeps
+   * the angle and keeps the mark; going deeper would have meant a taller
+   * header, and the mobile header height was measured for a reason.
+   */
+  .glass {
+    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - var(--cut) * 0.28));
+    padding-bottom: calc(var(--cut) * 0.28);
+  }
+  .site-footer {
+    clip-path: polygon(0 calc(var(--cut) * 0.55), 100% 0, 100% 100%, 0 100%);
+    margin-top: calc(var(--cut) * -0.55);
+    padding-top: calc(var(--cut) * 0.55);
+  }
+  .field {
+    clip-path: polygon(
+      0 0, 100% 0, 100% calc(100% - var(--chamfer)),
+      calc(100% - var(--chamfer)) 100%, 0 100%
+    );
+  }
+
+  /* The menu overlay is a full-screen plane; it takes the angle on its lower
+     edge so it reads as part of the same system when it opens. */
+  .menu-overlay { clip-path: polygon(0 0, 100% 0, 100% 100%, 0 100%); }
+}
+
+@layer components {
+  /* The oversized step figure: ornament, in generated content, hanging out past
+     the text column into the margin. It is the clearest overlap on the page. */
+  .step::before {
+    content: attr(data-n);
+    position: absolute;
+    left: -0.5rem;
+    top: -1.5rem;
+    font-family: var(--font-display);
+    font-weight: 900;
+    font-size: 7rem;
+    line-height: 1;
+    color: color-mix(in srgb, var(--ink) 7%, transparent);
+    pointer-events: none;
+  }
+  @media (min-width: 768px) {
+    .step::before { left: -6rem; font-size: 10rem; }
+  }
+}

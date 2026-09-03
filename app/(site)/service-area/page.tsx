@@ -19,13 +19,13 @@ export function generateMetadata(): Promise<Metadata> {
 export default function ServiceAreaPage() {
   return (
     <>
-      <Section ground="teal">
+      <Section cut={false} ground="teal">
         <h1 data-wash-type className="max-w-3xl text-5xl">
           Serving {business.serviceArea.county}, {business.serviceArea.state}
         </h1>
       </Section>
 
-      <Section ground="shallow" washFrom="teal">
+      <Section cut="l" ground="shallow">
         <h2 data-wash-type className="text-4xl">Towns we work in</h2>
         <ul className="mt-8 flex flex-wrap gap-3">
           {business.serviceArea.townsNamed.map((town) => (

@@ -32,7 +32,7 @@ export default async function ContactPage({
    */
   if (sent === "ok" || sent === "preview") {
     return (
-      <Section ground="teal">
+      <Section cut={false} ground="teal">
         <div className="max-w-xl">
           <Eyebrow>Free quote</Eyebrow>
           <h1 data-wash-type className="text-5xl">We have it</h1>
@@ -54,7 +54,7 @@ export default async function ContactPage({
   }
 
   return (
-    <Section ground="shallow" washFrom="teal">
+    <Section cut="l" ground="shallow">
       <div className="grid gap-14 md:grid-cols-2">
         <div>
           <Eyebrow>Free quote</Eyebrow>

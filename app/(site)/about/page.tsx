@@ -21,11 +21,11 @@ export default async function AboutPage() {
 
   return (
     <>
-      <Section ground="teal">
+      <Section cut={false} ground="teal">
         <h1 data-wash-type className="max-w-3xl text-5xl">{home.aboutHeading}</h1>
       </Section>
 
-      <Section ground="shallow" washFrom="teal">
+      <Section cut="l" ground="shallow">
         <div className="grid gap-12 md:grid-cols-2">
           <div>
             <p className="text-lg text-[color:var(--muted)]">{home.aboutBody}</p>
@@ -44,7 +44,7 @@ export default async function AboutPage() {
       {/* Only the people published in the console. Nobody is invented to fill
           the row, so an empty team means this section is simply absent. */}
       {team.length > 0 && (
-        <Section ground="teal" washFrom="shallow">
+        <Section cut="r" ground="teal">
           <Eyebrow>Who turns up</Eyebrow>
           <ul className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((person) => (
@@ -68,7 +68,7 @@ export default async function AboutPage() {
         </Section>
       )}
 
-      <Section ground="ink" washFrom="teal">
+      <Section cut="l" ground="ink">
         <Eyebrow>Ready when you are</Eyebrow>
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Get a free quote</h2>
         <div className="mt-8"><Button href="/contact">Request a quote</Button></div>
