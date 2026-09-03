@@ -1,3 +1,12 @@
+/*
+ * Motion, and the homage.
+ *
+ * The Opscend/OpSite motion vocabulary is reverse-engineered from the
+ * techniques behind motionsites.ai — techniques only; every figure, every
+ * line of copy and every timing here is original to this build. The standard
+ * asks that the inspiration be credited wherever the work ships, so it is
+ * credited here and in the README rather than nowhere.
+ */
 "use client";
 
 import { usePathname } from "next/navigation";

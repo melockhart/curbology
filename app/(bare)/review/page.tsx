@@ -65,7 +65,7 @@ export default async function ReviewPortal({
           <p className="mt-4">
             <A
               href={googleUrl}
-              className="inline-block min-h-[44px] rounded-full bg-teal px-5 py-2.5 font-medium text-ink"
+              className="btn btn--ink"
               rel="noopener"
             >
               Leave a Google review
@@ -102,7 +102,7 @@ export default async function ReviewPortal({
           <legend className="font-medium">How would you rate the work?</legend>
           <div className="mt-3 flex flex-wrap gap-2">
             {[5, 4, 3, 2, 1].map((n) => (
-              <label key={n} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-full border border-ink/25 px-4">
+              <label key={n} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg border border-ink/25 px-4">
                 <input type="radio" name="rating" value={n} required />
                 <span>{n} {n === 1 ? "star" : "stars"}</span>
               </label>
@@ -157,7 +157,7 @@ export default async function ReviewPortal({
           <p className="mt-4">
             <A
               href={googleUrl}
-              className="inline-block min-h-[44px] rounded-full bg-teal px-5 py-2.5 font-medium text-ink"
+              className="btn btn--ink"
               rel="noopener"
             >
               Leave a Google review

@@ -1,4 +1,6 @@
+import type { CSSProperties } from "react";
 import { business, nav } from "../lib/content";
+import { HeaderBehaviour } from "./motion/header";
 import { A } from "./link";
 import { previewMode } from "../lib/preview";
 
@@ -41,17 +43,21 @@ function Mark({ onDark = false }: { onDark?: boolean }) {
 
 export function Nav() {
   return (
-    <header className="bg-teal">
+    <header
+      id="site-header"
+      className="glass ground-teal sticky top-0 z-50"
+      data-stuck="false"
+    >
       <div className="mx-auto w-full max-w-[1600px] px-6 py-4 md:py-5">
-        <div className="flex items-center gap-x-6 gap-y-3">
+        <div className="flex items-center gap-x-5 gap-y-3">
           <A href="/" className="mr-auto" aria-label={`${business.name} — home`}>
             <Mark />
           </A>
 
-          {/* Click-to-call stays visible at every width. For a local service
-              business it is the highest-intent action on the page, and burying
-              it behind a menu on the devices most likely to place the call
-              would be the wrong economy. */}
+          {/* Click-to-call stays out of the menu at every width. For a local
+              service business it is the highest-intent action on the page, and
+              putting it one tap further away on the devices most likely to
+              place the call would be the wrong economy. */}
           {/* nowrap: without it a formatted number breaks at the hyphen and the
               space, and "(248) 387-9215" stacks into three lines on a phone. */}
           <A
@@ -61,50 +67,87 @@ export function Nav() {
             {business.phone.display}
           </A>
 
-          {/* Desktop: the links inline. */}
-          <nav aria-label="Main" className="hidden md:block">
-            <ul className="flex flex-wrap items-center gap-x-6 gap-y-2">
-              {nav.map((item) => (
-                <li key={item.href}>
-                  <A href={item.href} className="text-ink hover:underline hover:underline-offset-4">
-                    {item.label}
-                  </A>
-                </li>
-              ))}
-            </ul>
-          </nav>
-
-          <A href="/contact" className="btn btn--ink hidden md:inline-flex">Get a free quote</A>
+          <A href="/contact" className="btn btn--ink hidden sm:inline-flex">Get a free quote</A>
 
           {/*
-            Mobile: a <details> disclosure rather than a scripted menu.
-            It opens and closes with no JavaScript at all, which matters on the
-            devices this audience actually uses — and it meant the header stopped
-            eating 430px of an 844px screen before the headline began.
+            One menu, at every width — the Opscend minimal-bar-plus-hidden-menu
+            pattern rather than a row of desktop links that becomes a hamburger
+            below a breakpoint. A single control behaves the same on a laptop and
+            on a phone, and there is only one of it to get wrong.
+
+            <details> rather than a scripted disclosure: it opens and closes with
+            no JavaScript, and the open animation is a CSS keyframe that runs when
+            the panel is displayed. The site's no-JS behaviour was verified and
+            this keeps it.
           */}
-          <details className="group md:hidden">
+          <details className="group" name="site-menu">
             <summary
               className="btn btn--ink list-none [&::-webkit-details-marker]:hidden"
-              aria-label="Open menu"
+              aria-label="Menu"
             >
-              Menu
+              <span className="flex items-center gap-2.5">
+                <span aria-hidden="true" className="grid gap-[3px]">
+                  <span className="block h-[2px] w-4 bg-current transition-transform duration-200 group-open:translate-y-[5px] group-open:rotate-45" />
+                  <span className="block h-[2px] w-4 bg-current transition-opacity duration-200 group-open:opacity-0" />
+                  <span className="block h-[2px] w-4 bg-current transition-transform duration-200 group-open:-translate-y-[5px] group-open:-rotate-45" />
+                </span>
+                <span className="group-open:hidden">Menu</span>
+                <span className="hidden group-open:inline">Close</span>
+              </span>
             </summary>
+
             <nav
               aria-label="Main"
-              className="absolute inset-x-0 z-50 mt-3 border-y border-ink/15 bg-teal px-6 py-5"
+              className={
+                /*
+                 * Full height below the bar on a phone, auto on a laptop.
+                 * A panel that stops halfway down a small screen leaves its own
+                 * bottom edge cutting through a paragraph, and the two sets of
+                 * words fight each other exactly where the eye lands.
+                 */
+                "menu-panel glass glass--strong ground-teal absolute inset-x-0 top-full z-50 " +
+                "h-[calc(100dvh-76px)] overflow-y-auto px-6 py-8 md:h-auto md:overflow-visible " +
+                "shadow-[0_24px_60px_-24px_rgb(9_12_18_/_0.5)]"
+              }
             >
-              <ul className="space-y-3">
-                {nav.map((item) => (
-                  <li key={item.href}>
-                    <A href={item.href} className="text-lg text-ink">{item.label}</A>
-                  </li>
-                ))}
-              </ul>
-              <A href="/contact" className="btn btn--ink mt-5 w-full">Get a free quote</A>
+              <div className="mx-auto grid w-full max-w-[1600px] gap-x-16 gap-y-8 md:grid-cols-[minmax(0,1fr)_auto]">
+                <ul className="max-w-xl">
+                  {nav.map((item, i) => (
+                    <li key={item.href} data-row style={{ "--i": i } as CSSProperties}>
+                      <A
+                        href={item.href}
+                        className="block border-b border-ink/15 py-3 font-display text-3xl font-bold leading-tight text-ink"
+                      >
+                        {item.label}
+                      </A>
+                    </li>
+                  ))}
+                </ul>
+
+                <div
+                  data-row
+                  style={{ "--i": nav.length } as CSSProperties}
+                  className="flex flex-col items-start gap-4 md:min-w-[16rem]"
+                >
+                  <p className="eyebrow">Straight to it</p>
+                  <A href="/contact" className="btn btn--ink w-full sm:w-auto">Get a free quote</A>
+                  <A
+                    href={business.phone.href}
+                    className="whitespace-nowrap font-display text-2xl font-bold text-ink underline underline-offset-4"
+                  >
+                    {business.phone.display}
+                  </A>
+                  <p className="max-w-[16rem] text-sm text-[color:var(--muted)]">
+                    Exterior cleaning across {business.serviceArea.county},{" "}
+                    {business.serviceArea.stateAbbr}.
+                  </p>
+                </div>
+              </div>
             </nav>
           </details>
         </div>
       </div>
+      <HeaderBehaviour />
     </header>
   );
 }

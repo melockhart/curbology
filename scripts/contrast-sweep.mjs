@@ -52,8 +52,23 @@ if (email) {
   await Promise.all([p.waitForURL("**/admin"), p.click("form button")]);
 }
 
-for (const route of routes) {
-  await p.goto(BASE + route, { waitUntil: "networkidle" });
+/*
+ * The menu is a <details>, so when it is closed its panel is display:none and
+ * every check below skips it — a whole navigation measured by nothing. These
+ * routes open it first. Two of them, because the panel is glass: what it reads
+ * against depends on what is behind it.
+ */
+const OPEN_MENU = new Set(["/", "/faq"]);
+
+for (const route of [...routes, "/#menu", "/faq#menu"]) {
+  const path = route.replace(/#menu$/, "");
+  const openMenu = route.endsWith("#menu");
+  await p.goto(BASE + path, { waitUntil: "networkidle" });
+  if (openMenu) {
+    if (!OPEN_MENU.has(path)) continue;
+    await p.click("#site-header summary");
+    await p.waitForTimeout(600);
+  }
   const results = await p.evaluate(() => {
     /*
      * Chromium serialises computed colours as oklab() and its canvas 2D context
@@ -129,11 +144,11 @@ for (const route of routes) {
   const failing = results.filter(x => !x.pass);
   if (failing.length) {
     fails += failing.length;
-    console.log(`\n✗ ${route}`);
+    console.log(`\n✗ ${route}${openMenu ? " (menu open)" : ""}`);
     for (const f of failing) console.log(`    ${f.r} (need ${f.need}) ${f.size}px — "${f.text}"`);
   }
 }
 
 await b.close();
-console.log(`\n${checked} text elements across ${routes.length} routes — ${fails} below WCAG AA`);
+console.log(`\n${checked} text elements across ${routes.length + 2} routes — ${fails} below WCAG AA`);
 process.exit(fails > 0 ? 1 : 0);

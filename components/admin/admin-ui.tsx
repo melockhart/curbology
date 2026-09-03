@@ -55,21 +55,30 @@ export function Stat({ label, value, hint }: { label: string; value: ReactNode; 
 
 export type Tone = "default" | "accent" | "success" | "warn" | "muted";
 
+const DOT: Record<Tone, string> = {
+  default: "#1a202c",
+  accent: "#04b8ba",
+  success: "#0f7a3d",
+  warn: "#7a2e12",
+  muted: "#4a5568",
+};
+
 /**
- * Tones are semantic, and each one is a pair that passes AA at 12px.
- * `accent` is ink on teal (6.66) — teal on white is 2.45 and is never used for
- * text anywhere in this build.
+ * A status label.
+ *
+ * ⚖️ Opscend Design Law, declared 2026-07-10: no capsule shapes, any property,
+ * any iteration — and status capsules are named in it. The law's own
+ * replacement is "mono colored text with a preceding color dot: the information
+ * survives, the capsule doesn't", so that is what this is.
+ *
+ * The dot is decoration and carries no meaning on its own; the word beside it
+ * is the state, which is also why colour alone never distinguishes two states
+ * here.
  */
 export function Pill({ tone = "default", children }: { tone?: Tone; children: ReactNode }) {
-  const tones: Record<Tone, string> = {
-    default: "bg-ink text-paper",
-    accent: "bg-teal text-ink",
-    success: "bg-ink/8 text-ink ring-1 ring-inset ring-ink/20",
-    warn: "bg-[#7a2e12] text-paper",
-    muted: "bg-ink/[0.06] text-[color:var(--muted)]",
-  };
   return (
-    <span className={`inline-block whitespace-nowrap rounded-full px-2.5 py-0.5 text-xs font-medium ${tones[tone]}`}>
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap font-mono text-[11px] font-medium uppercase tracking-wide text-ink">
+      <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: DOT[tone] }} />
       {children}
     </span>
   );

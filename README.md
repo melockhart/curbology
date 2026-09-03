@@ -135,3 +135,17 @@ placeholder — each has an honest empty state in the build right now:
 - The Google review link — the portal shows it to everyone identically once
   `reviews.googleUrl` is set, and offers nothing rather than a wrong link now.
 - Tristen's email address, for `ADMIN_EMAILS`.
+
+## Provenance
+
+The motion vocabulary — the reveal cadence, the pinned method section, the
+kinetic hero — follows the Opscend/OpSite convention of reverse-engineering
+*techniques* from [motionsites.ai](https://motionsites.ai) and shipping original
+copy and figures. Nothing is reproduced verbatim.
+
+The glass header follows the Opscend liquid-glass pattern spec: the border is a
+gradient-masked `::before`, never a `border` rule.
+
+Buttons, chips and status labels obey the Opscend Design Law of 2026-07-10 — no
+capsule shapes anywhere. Buttons are 10px rects; status labels are mono text
+with a preceding colour dot.

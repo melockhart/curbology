@@ -29,7 +29,7 @@ export default function ServiceAreaPage() {
         <h2 className="text-4xl">Towns we work in</h2>
         <ul className="mt-8 flex flex-wrap gap-3">
           {business.serviceArea.townsNamed.map((town) => (
-            <li key={town} className="rounded-full border border-ink/20 px-4 py-2">
+            <li key={town} className="rounded-lg border border-ink/20 px-4 py-2">
               {town}, {business.serviceArea.stateAbbr}
             </li>
           ))}

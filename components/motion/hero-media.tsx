@@ -114,7 +114,7 @@ export function HeroMedia({
 
       {!videoSrc && (
         <div className="absolute inset-0 flex items-end justify-center p-6">
-          <p className="rounded-full bg-ink/85 px-4 py-2 text-sm text-paper">
+          <p className="rounded-lg bg-ink/85 px-4 py-2 text-sm text-paper">
             Footage to come — a slow, close loop of the work
           </p>
         </div>

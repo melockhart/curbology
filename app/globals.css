@@ -128,7 +128,12 @@
     justify-content: center;
     min-height: 44px;
     padding: 0.75rem 1.75rem;
-    border-radius: 999px;
+    /*
+     * ⚖️ Opscend Design Law, declared 2026-07-10: no capsule shapes, any
+     * property, any iteration. Buttons are small-radius rects (6–12px). This
+     * was 999px and every button on the site was a capsule.
+     */
+    border-radius: 10px;
     font-weight: 500;
     line-height: 1;
     isolation: isolate;
@@ -336,5 +341,145 @@
 
   @media (prefers-reduced-motion: reduce) {
     .shake { animation: none; outline: 2px solid var(--color-teal); outline-offset: 2px; }
+  }
+}
+
+/*
+ * ══ The glass bar ══
+ *
+ * The Opscend liquid-glass recipe, from the reusable pattern spec: the border
+ * is drawn by a gradient-masked ::before, never a `border` — a flat 1px line
+ * around frosted glass reads as a sticker on top of the page rather than a
+ * pane of it.
+ *
+ * Adapted from the reference, which assumes white text over dark video. This
+ * bar sits over a teal hero and carries ink text, so the tint is the brand teal
+ * rather than white, and it is deliberately NOT fully transparent:
+ *
+ *   Over the hero it is the same hue as what is behind it, so it reads as
+ *   glass with nothing in it — which is the effect.
+ *
+ *   Over anything else — a white section, the ink footer — 0.86 alpha
+ *   guarantees the ground under the ink text. Composited over ink, the worst
+ *   case, that is #07a1a5 and ink on it measures 5.2:1. A truly transparent bar
+ *   would be unreadable there, and it would be unreadable only while scrolling,
+ *   which is the hardest kind of bug to be told about.
+ */
+@layer components {
+  .glass {
+    position: relative;
+    isolation: isolate;
+    background: rgb(4 184 186 / 0.86);
+    -webkit-backdrop-filter: blur(14px) saturate(1.4);
+    backdrop-filter: blur(14px) saturate(1.4);
+    border: none;
+  }
+
+  .glass::before {
+    content: "";
+    position: absolute;
+    inset: 0;
+    padding: 1.4px;
+    background: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.45) 0%,
+      rgb(255 255 255 / 0.15) 20%,
+      transparent 40%,
+      transparent 60%,
+      rgb(255 255 255 / 0.15) 80%,
+      rgb(255 255 255 / 0.45) 100%
+    );
+    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
+    -webkit-mask-composite: xor;
+    mask-composite: exclude;
+    pointer-events: none;
+  }
+
+  /*
+   * The strong tier, for the panel.
+   *
+   * The spec's two tiers exist for a reason and the first attempt ignored it:
+   * the light tier under a menu opened over the hero left the display headline
+   * ghosting straight through the links. blur(4px) is for pills and small
+   * floating things; a panel overlaid on content needs blur(50px), and the
+   * alpha has to finish the job the blur starts.
+   *
+   * 0.96, not the reference's 0.01: that assumes glass over video, where blur
+   * alone is enough. Blur spreads crisp dark text, it does not fade it — at
+   * 0.94 the hero headline was still legible through the menu on a phone, where
+   * the type is proportionally largest. Over the teal hero the alpha is
+   * invisible anyway, because the tint and the ground are the same colour.
+   *
+   * Worst case, composited over the ink footer: #05b5b7, and ink on it measures
+   * 6.2:1.
+   */
+  .glass--strong {
+    background: rgb(4 184 186 / 0.96);
+    -webkit-backdrop-filter: blur(50px) saturate(1.4);
+    backdrop-filter: blur(50px) saturate(1.4);
+  }
+  /*
+   * On a phone the panel IS the screen — it covers the viewport, so there is
+   * nothing around it to see through and the translucency buys only a ghost of
+   * the headline behind the largest type on the site. The glass reads through
+   * the blur, the gradient edge and the bar above it; on this one surface the
+   * tint finishes the job. On a laptop the page is still visible around the
+   * panel, which is where seeing through it means something.
+   */
+  @media (max-width: 767px) {
+    .glass--strong { background: rgb(4 184 186 / 0.98); }
+  }
+
+  .glass--strong::before {
+    background: linear-gradient(
+      180deg,
+      rgb(255 255 255 / 0.5) 0%,
+      rgb(255 255 255 / 0.2) 20%,
+      transparent 40%,
+      transparent 60%,
+      rgb(255 255 255 / 0.2) 80%,
+      rgb(255 255 255 / 0.5) 100%
+    );
+  }
+
+  /* Once the page has moved under it, the bar earns a shadow. Progressive:
+     without JS the bar is still glass, it just never lifts. */
+  .glass[data-stuck="true"] {
+    box-shadow: 0 1px 0 rgb(26 32 44 / 0.10), 0 10px 30px -12px rgb(9 12 18 / 0.45);
+  }
+
+  /*
+   * The menu, opening.
+   *
+   * A <details> element, so it opens and closes with no JavaScript at all — and
+   * a CSS animation that runs the moment the panel is displayed, which is what
+   * makes "animation on open" work without a scripted state machine. Closing is
+   * instant; that is the honest cost of not shipping a framework for a menu.
+   *
+   * The rows arrive after the panel, one behind the next, so the eye lands on
+   * the first item rather than on six things at once.
+   */
+  @keyframes menu-in {
+    from { opacity: 0; transform: translateY(-10px) scaleY(0.97); }
+    to   { opacity: 1; transform: translateY(0) scaleY(1); }
+  }
+  @keyframes menu-row-in {
+    from { opacity: 0; transform: translateY(8px); }
+    to   { opacity: 1; transform: translateY(0); }
+  }
+
+  .menu-panel {
+    transform-origin: top center;
+    animation: menu-in var(--dur-base) var(--ease-out) both;
+  }
+  .menu-panel [data-row] {
+    animation: menu-row-in var(--dur-base) var(--ease-spring) both;
+    animation-delay: calc(70ms + var(--i, 0) * 45ms);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .menu-panel,
+    .menu-panel [data-row] { animation: none; }
   }
 }
