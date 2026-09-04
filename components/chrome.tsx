@@ -45,10 +45,10 @@ export function Nav() {
   return (
     <header
       id="site-header"
-      className="glass ground-teal sticky top-0 z-50"
+      className="glass ground-paper"
       data-stuck="false"
     >
-      <div className="relative z-[2] mx-auto w-full max-w-[1600px] px-6 py-4 md:py-5">
+      <div className="relative z-[2] mx-auto w-full max-w-[1600px] px-4 py-3 md:px-5 md:py-3.5">
         <div className="flex items-center gap-x-5 gap-y-3">
           <A href="/" className="relative z-[3] mr-auto" aria-label={`${business.name} — home`}>
             <Mark />
@@ -62,7 +62,7 @@ export function Nav() {
               space, and "(248) 387-9215" stacks into three lines on a phone. */}
           <A
             href={business.phone.href}
-            className="relative z-[3] whitespace-nowrap font-medium text-ink underline underline-offset-4"
+            className="bar-ink relative z-[3] whitespace-nowrap font-medium underline underline-offset-4"
           >
             {business.phone.display}
           </A>
@@ -109,7 +109,10 @@ export function Nav() {
 
             <nav
               aria-label="Main"
-              className="menu-overlay ground-deep fixed inset-0 z-[1] flex flex-col overflow-y-auto bg-teal-900 px-6 pb-10 pt-28"
+              className="menu-overlay ground-deep fixed inset-x-0 bottom-0 z-[1] flex flex-col overflow-y-auto bg-teal-900 px-6 pb-10 pt-10"
+              /* Starts below the floating bar rather than under it, so the bar
+                 keeps its own glass ground and its ink stays ink. */
+              style={{ top: "var(--bar-space)" }}
             >
               <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center gap-y-12 md:flex-row md:items-end md:justify-between md:gap-x-20">
                 <ul className="w-full max-w-3xl">

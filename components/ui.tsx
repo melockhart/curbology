@@ -79,7 +79,14 @@ export function Section({
            /* The cut is deepest on one side only, so content needs to clear
               --cut and very little more. 3.5rem on top of it was two hundred
               pixels of nothing at every boundary. */
-           style={{ paddingTop: tall ? "calc(var(--cut) + 3rem)" : "calc(var(--cut) + 1.75rem)" }}>
+           style={{
+             paddingTop:
+               cut === false
+                 ? "calc(var(--bar-space) + 2rem)"
+                 : tall
+                   ? "calc(var(--cut) + 3rem)"
+                   : "calc(var(--cut) + 1.75rem)",
+           }}>
         {children}
       </div>
     </section>

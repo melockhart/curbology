@@ -39,11 +39,14 @@ export function Hero() {
       <div aria-hidden="true" className="grain-layer absolute inset-0 z-[1]" />
 
       <div
-        className="relative z-[3] mx-auto flex min-h-[calc(92svh-5.5rem)] w-full max-w-[1600px] flex-col justify-between px-6 pt-16 md:pt-24"
+        className="relative z-[3] mx-auto flex min-h-[calc(92svh-5.5rem)] w-full max-w-[1600px] flex-col justify-between px-6"
         /* The next section climbs into this one by --cut. Without clearance the
            overlap covers the phone number and the quote button — the two things
            on the page that must never be covered. */
-        style={{ paddingBottom: "calc(var(--cut) + 3rem)" }}
+        style={{
+          paddingTop: "calc(var(--bar-space) + 2.5rem)",
+          paddingBottom: "calc(var(--cut) + 3rem)",
+        }}
       >
         {/* Marginalia on the angle — the label for the line itself. */}
         <p

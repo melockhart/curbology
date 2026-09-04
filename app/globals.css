@@ -466,55 +466,92 @@
  *   which is the hardest kind of bug to be told about.
  */
 @layer components {
+  /*
+   * The floating bar.
+   *
+   * Clear white glass, inset from every edge, hovering over the page rather
+   * than sitting on it. The blur is the effect; the tint only exists to make
+   * the type legible over whatever is passing underneath.
+   *
+   * ⚠️ 0.55 IS NOT A TASTE DECISION. A floating bar crosses every ground on the
+   * site, so its worst case is the darkest one, and the contrast sweep cannot
+   * see that — it measures an element against its DOM ancestors, and a fixed
+   * bar has no idea what is behind it. Computed by hand against all five:
+   *
+   *   white 0.45 over ink ...... 4.48  ← under AA
+   *   white 0.55 over ink ...... 6.06  ← this
+   *   white 0.62 over ink ...... 7.37
+   *   white 0.72 over ink ...... 9.53  (a slab, not glass)
+   *
+   * The obvious alternative — invert to dark glass over dark sections — was
+   * measured and dropped: dark glass at 0.55 is 3.89 over paper, so the
+   * inverted state fails where the plain one is strongest. One tint, ink type,
+   * safe everywhere.
+   *
+   * NO clip-path and NO overflow on this element. The full-screen menu overlay
+   * is a descendant, and both would clip it — which is exactly what the angled
+   * cut that used to live here was quietly doing.
+   */
   .glass {
-    position: relative;
+    position: fixed;
+    top: clamp(10px, 1.2vw, 18px);
+    left: clamp(10px, 1.6vw, 24px);
+    right: clamp(10px, 1.6vw, 24px);
+    z-index: 50;
+    border-radius: 16px;
     background: transparent;
     border: none;
   }
 
-  /*
-   * ⚠️ The filter lives on the pseudo-element, NOT on .glass itself, and this
-   * is load-bearing rather than tidiness.
-   *
-   * `backdrop-filter` makes an element a containing block for fixed-position
-   * descendants. With the filter on the header, the full-screen menu inside it
-   * was positioned against the bar instead of the viewport — it rendered as a
-   * dark band across the top and covered its own Close control. Moving the
-   * filter one level down fixes it and changes nothing about how it looks.
-   */
   .glass::before {
     content: "";
     position: absolute;
     inset: 0;
     z-index: -1;
-    background: rgb(4 184 186 / 0.86);
-    -webkit-backdrop-filter: blur(14px) saturate(1.4);
-    backdrop-filter: blur(14px) saturate(1.4);
+    border-radius: inherit;
+    background: rgb(255 255 255 / 0.55);
+    -webkit-backdrop-filter: blur(20px) saturate(1.7);
+    backdrop-filter: blur(20px) saturate(1.7);
     pointer-events: none;
   }
 
-  /* The border: a gradient the mask cuts to a hairline. Never a `border` rule —
-     a flat line around frosted glass reads as a sticker on the page rather
-     than a pane of it. */
+  /* A hairline of light along the top edge and a soft one below — the two
+     things that stop frosted glass reading as a flat translucent rectangle. */
   .glass::after {
     content: "";
     position: absolute;
     inset: 0;
-    padding: 1.4px;
-    background: linear-gradient(
-      180deg,
-      rgb(255 255 255 / 0.45) 0%,
-      rgb(255 255 255 / 0.15) 20%,
-      transparent 40%,
-      transparent 60%,
-      rgb(255 255 255 / 0.15) 80%,
-      rgb(255 255 255 / 0.45) 100%
-    );
-    -webkit-mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    mask: linear-gradient(#fff 0 0) content-box, linear-gradient(#fff 0 0);
-    -webkit-mask-composite: xor;
-    mask-composite: exclude;
+    z-index: -1;
+    border-radius: inherit;
     pointer-events: none;
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.75),
+      inset 0 0 0 1px rgb(255 255 255 / 0.34),
+      0 1px 2px rgb(5 60 64 / 0.10),
+      0 18px 40px -22px rgb(5 60 64 / 0.45);
+  }
+
+  /*
+   * The bar's ink never changes, because the menu no longer covers the bar.
+   *
+   * The first fix flipped the text light when the disclosure opened, because
+   * the overlay was painting over the glass and leaving ink on deep water. It
+   * worked and it was the wrong fix: a floating bar should stay floating, and
+   * the overlay starting below it means the bar keeps its own ground in every
+   * state. One less thing to keep in step, and one less state to measure.
+   */
+  .bar-ink { color: var(--color-stone-950); }
+
+  /* Once the page has moved under it, the glass firms up very slightly and the
+     shadow deepens — the bar reads as lifting off a page that is now moving
+     beneath it. */
+  .glass[data-stuck="true"]::before { background: rgb(255 255 255 / 0.66); }
+  .glass[data-stuck="true"]::after {
+    box-shadow:
+      inset 0 1px 0 rgb(255 255 255 / 0.8),
+      inset 0 0 0 1px rgb(255 255 255 / 0.4),
+      0 2px 4px rgb(5 60 64 / 0.12),
+      0 26px 56px -26px rgb(5 60 64 / 0.55);
   }
 
   /*
@@ -880,6 +917,9 @@
  * wedge that eats a third of a small screen.
  */
 :root {
+  /* The floating bar is out of flow, so anything that must not start
+     underneath it clears this instead of the bar's own height. */
+  --bar-space: clamp(84px, 8vw, 104px);
   --lane-angle: -13deg;
   /* How far the diagonal boundary drops across the page's width. Everything
      that cuts on the angle uses this, so the whole page shares one slope. */
@@ -1048,17 +1088,6 @@
    * than a rotation: a rotated input loses its 44px target, its baseline and a
    * predictable focus ring, and buys nothing the chamfer does not.
    */
-  /*
-   * The header's cut is shallow — 0.28 of the page's, not 0.55. At the page
-   * slope it removed the bottom-left corner, which is exactly where the mark
-   * sits, and clipped the logo. Shallower plus a little bottom clearance keeps
-   * the angle and keeps the mark; going deeper would have meant a taller
-   * header, and the mobile header height was measured for a reason.
-   */
-  .glass {
-    clip-path: polygon(0 0, 100% 0, 100% 100%, 0 calc(100% - var(--cut) * 0.28));
-    padding-bottom: calc(var(--cut) * 0.28);
-  }
   .site-footer {
     clip-path: polygon(0 calc(var(--cut) * 0.55), 100% 0, 100% 100%, 0 100%);
     margin-top: calc(var(--cut) * -0.55);
