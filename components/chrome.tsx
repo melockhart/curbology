@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { business, nav } from "../lib/content";
+import { business, nav, services } from "../lib/content";
 import { HeaderBehaviour } from "./motion/header";
 import { A } from "./link";
 import { previewMode } from "../lib/preview";
@@ -33,10 +33,10 @@ function Mark({ onDark = false }: { onDark?: boolean }) {
       alt="Curbology Exterior Services"
       width={82}
       height={52}
-      /* Below ~50px the badge's "EXTERIOR SERVICES" bar mushes — it carries a
-         lot of fine detail for its size. A vector original would fix that
-         properly; this is the largest raster that exists. */
-      className="h-11 w-auto md:h-[52px]"
+      /* Height comes from --mark-h so the bar can resize the mark by flipping
+         one attribute. See .bar-mark in globals.css for the legibility trade
+         the slim bar makes here. */
+      className="bar-mark"
     />
   );
 }
@@ -48,12 +48,39 @@ export function Nav() {
       className="glass ground-paper"
       data-stuck="false"
     >
-      <div className="relative z-[2] mx-auto w-full max-w-[1600px] px-4 py-3 md:px-5 md:py-3.5">
-        <div className="flex items-center gap-x-5 gap-y-3">
-          <A href="/" className="relative z-[3] mr-auto" aria-label={`${business.name} — home`}>
-            <Mark />
-          </A>
+      <div className="bar-row relative z-[2] mx-auto flex w-full max-w-[1600px] items-center px-4 md:px-5">
+        {/* flex, not inline: an inline <img> sits on a baseline and drags the
+            row's height up by its descender space — 2px at rest, and the bar is
+            budgeted to the pixel. */}
+        <A href="/" className="relative z-[3] flex shrink-0" aria-label={`${business.name} — home`}>
+          <Mark />
+        </A>
 
+        {/*
+          The section links, inline, from lg up.
+
+          They are not a replacement for the menu — the overlay stays at every
+          width, so this is a shortcut to the five places people go most, not
+          the navigation itself. That is why the list here is `nav` and the
+          overlay carries `nav` plus the services plus the conversion column:
+          the bar is the fast path, the overlay is the index.
+
+          Below lg the row cannot hold five links, the phone number and two
+          controls without wrapping, and the number does not get shortened to
+          make room for a link that is one tap away in the menu.
+        */}
+        <nav
+          aria-label="Sections"
+          className="relative z-[3] ml-7 hidden items-center gap-x-6 lg:flex"
+        >
+          {nav.map((item) => (
+            <A key={item.href} href={item.href} className="bar-link">
+              {item.label}
+            </A>
+          ))}
+        </nav>
+
+        <div className="relative z-[3] ml-auto flex items-center gap-x-4 md:gap-x-5">
           {/* Click-to-call stays out of the menu at every width. For a local
               service business it is the highest-intent action on the page, and
               putting it one tap further away on the devices most likely to
@@ -62,38 +89,33 @@ export function Nav() {
               space, and "(248) 387-9215" stacks into three lines on a phone. */}
           <A
             href={business.phone.href}
-            className="bar-ink relative z-[3] whitespace-nowrap font-medium underline underline-offset-4"
+            className="bar-ink whitespace-nowrap text-sm font-medium underline underline-offset-4 md:text-[0.9375rem]"
           >
             {business.phone.display}
           </A>
 
-          <A href="/contact" className="btn btn--ink relative z-[3] hidden sm:inline-flex">Get a free quote</A>
+          <A href="/contact" className="btn btn--ink btn--bar hidden sm:inline-flex">
+            Get a free quote
+          </A>
 
-          {/*
-            One menu, at every width — the Opscend minimal-bar-plus-hidden-menu
-            pattern rather than a row of desktop links that becomes a hamburger
-            below a breakpoint. A single control behaves the same on a laptop and
-            on a phone, and there is only one of it to get wrong.
-
-            <details> rather than a scripted disclosure: it opens and closes with
-            no JavaScript, and the open animation is a CSS keyframe that runs when
-            the panel is displayed. The site's no-JS behaviour was verified and
-            this keeps it.
-          */}
           {/*
             The full-screen overlay menu — the third of the four locked
-            hard-blocks. It replaces the glass panel: a panel is a dropdown
-            that happens to be frosted, and the standard asks for the nav to
-            take the viewport so it reads as a place rather than as a list.
+            hard-blocks, and kept at every width even now that the links are
+            inline. Two ways to navigate rather than a control that changes
+            meaning at a breakpoint: on a laptop it is the index, on a phone it
+            is the navigation.
 
-            Still a <details>, so it opens and closes with no JavaScript and
-            the open animation is a CSS keyframe that runs when the panel is
-            displayed. The overlay arrives as a wash, because everything on
-            this site that changes state changes it that way.
+            <details> rather than a scripted disclosure: it opens and closes
+            with no JavaScript, and the open animation is a CSS keyframe that
+            runs when the panel is displayed. The site's no-JS behaviour was
+            verified and this keeps it.
           */}
-          <details className="group menu relative z-[2]" name="site-menu">
+          {/* flex: the summary is an inline-flex .btn, and inside a block <details>
+              that makes a line box whose descender space adds a few pixels to
+              the bar. Same reason the mark's anchor is flex. */}
+          <details className="group menu relative z-[2] flex" name="site-menu">
             <summary
-              className="btn btn--ink relative z-[3] list-none [&::-webkit-details-marker]:hidden"
+              className="btn btn--ink btn--bar relative z-[3] list-none [&::-webkit-details-marker]:hidden"
               aria-label="Menu"
             >
               <span className="flex items-center gap-2.5">
@@ -108,20 +130,28 @@ export function Nav() {
             </summary>
 
             <nav
-              aria-label="Main"
-              className="menu-overlay ground-deep fixed inset-x-0 bottom-0 z-[1] flex flex-col overflow-y-auto bg-teal-900 px-6 pb-10 pt-10"
+              aria-label="All pages"
+              /* Extra bottom clearance in preview, for the same reason the
+                 footer has it: the fixed ribbon otherwise sits on top of the
+                 phone number at the end of the menu on a phone. */
+              className={`menu-overlay ground-deep fixed inset-x-0 bottom-0 z-[1] flex flex-col overflow-y-auto bg-teal-900 px-6 pt-10 ${previewMode() ? "pb-24" : "pb-10"}`}
               /* Starts below the floating bar rather than under it, so the bar
                  keeps its own glass ground and its ink stays ink. */
               style={{ top: "var(--bar-space)" }}
             >
-              <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center gap-y-12 md:flex-row md:items-end md:justify-between md:gap-x-20">
-                <ul className="w-full max-w-3xl">
+              {/* items-center, not items-end. With three columns of very
+                  different heights, bottom-aligning them parks the whole menu
+                  in the lower third and leaves a dead half-screen of teal
+                  above — the exact blank space this design spent a round
+                  removing from the page. */}
+              <div className="mx-auto flex w-full max-w-[1400px] flex-1 flex-col justify-center gap-y-12 lg:flex-row lg:items-center lg:justify-between lg:gap-x-16">
+                <ul className="w-full max-w-2xl">
                   {nav.map((item, i) => (
                     <li key={item.href} data-row style={{ "--i": i } as CSSProperties}>
                       <A
                         href={item.href}
                         className="menu-link block border-b py-4 font-display font-black leading-[0.95] text-stone-050"
-                        style={{ borderColor: "var(--rule)", fontSize: "clamp(2.25rem, 7vw, 5.5rem)" }}
+                        style={{ borderColor: "var(--rule)", fontSize: "clamp(2.25rem, 6vw, 5rem)" }}
                       >
                         {item.label}
                       </A>
@@ -129,10 +159,38 @@ export function Nav() {
                   ))}
                 </ul>
 
+                {/*
+                  The services, spelled out. With the top-level sections now in
+                  the bar, an overlay that only repeated them would be a second
+                  copy of the same five words. This is the part the bar cannot
+                  carry: what the business actually sells, one link each.
+                */}
                 <div
                   data-row
                   style={{ "--i": nav.length } as CSSProperties}
-                  className="flex shrink-0 flex-col items-start gap-5 md:pb-4"
+                  className="shrink-0 lg:pb-4"
+                >
+                  <h2 className="font-spec text-xs uppercase tracking-[0.22em] text-stone-400">
+                    Services
+                  </h2>
+                  <ul className="mt-4 space-y-2.5">
+                    {services.map((service) => (
+                      <li key={service.slug}>
+                        <A
+                          href={`/services/${service.slug}`}
+                          className="text-base text-stone-050 underline-offset-4 hover:underline md:text-lg"
+                        >
+                          {service.name}
+                        </A>
+                      </li>
+                    ))}
+                  </ul>
+                </div>
+
+                <div
+                  data-row
+                  style={{ "--i": nav.length + 1 } as CSSProperties}
+                  className="flex shrink-0 flex-col items-start gap-5 lg:pb-4"
                 >
                   <p className="font-spec text-xs uppercase tracking-[0.22em] text-stone-400">
                     Straight to it

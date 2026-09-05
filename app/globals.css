@@ -336,6 +336,10 @@
    * for a flatter-looking site.
    */
   .btn:hover, .btn:active { transform: none; }
+  /* The bar still condenses — that is layout, not decoration, and someone who
+     asked for less motion still wants the screen back. It just arrives at
+     once instead of easing. */
+  .glass, .bar-row, .bar-mark, .btn--bar, .bar-link::after { transition: none; }
   [data-reveal].is-armed { opacity: 1; transform: none; }
 }
 
@@ -494,14 +498,115 @@
    */
   .glass {
     position: fixed;
-    top: clamp(10px, 1.2vw, 18px);
+    top: var(--bar-inset);
     left: clamp(10px, 1.6vw, 24px);
     right: clamp(10px, 1.6vw, 24px);
     z-index: 50;
     border-radius: 16px;
     background: transparent;
     border: none;
+
+    /*
+     * The bar has two sizes, and they are four numbers.
+     *
+     * At the top of the page it is full height, because that is where it is
+     * part of the hero rather than furniture on top of it. Once the page moves
+     * it condenses: the inset closes, the padding closes, the mark reduces and
+     * the controls shorten. Everything that changes is a custom property read
+     * by a descendant, so the whole bar resizes from one attribute flip and
+     * there is no second source of truth to drift.
+     *
+     * Resting row: 40px of content + 2×8px = 56px, under an 18px inset.
+     * Condensed:   34px of content + 2×6px = 46px, under a 10px inset.
+     * --bar-space clears the larger of the two; see :root.
+     */
+    --bar-inset: clamp(10px, 1.2vw, 18px);
+    --bar-pad-y: 8px;
+    --mark-h: 40px;
+    --bar-ctl-h: 40px;
+    transition: top var(--dur-base) var(--ease-out);
   }
+
+  /* The row, the mark and the bar controls each read one of those numbers and
+     transition on it. Nothing here animates layout outside the bar: the page
+     below clears --bar-space, which is constant. */
+  .bar-row {
+    padding-block: var(--bar-pad-y);
+    transition: padding-block var(--dur-base) var(--ease-out);
+  }
+
+  /*
+   * ⚠️ The badge is a 223×142 raster and its "EXTERIOR SERVICES" strip stops
+   * resolving below ~50px — at 40px it is texture, and at 32px it is a smudge
+   * of one colour. That is a knowing trade, not an oversight: the slim bar was
+   * the ask, the alt text carries the full name, and the wordmark is spelled
+   * out in the footer and in the menu. A vector original fixes it properly and
+   * is on the outstanding-inputs list.
+   */
+  .bar-mark {
+    height: var(--mark-h, 44px);
+    width: auto;
+    transition: height var(--dur-base) var(--ease-out);
+  }
+
+  /*
+   * Bar-sized buttons. .btn is built for a 44px page control; two of them in a
+   * 56px bar is the whole reason the bar was 80px tall. These keep the same
+   * face, gloss, chamfer and press — only the box shrinks.
+   *
+   * 34px condensed is above the 24×24 WCAG 2.5.8 AA target minimum. It is
+   * below the 44×44 AAA figure, which the phone link and every in-page CTA
+   * still meet; a persistent floating bar is the one place where taking the
+   * AAA size costs more than it buys.
+   */
+  .btn--bar {
+    min-height: var(--bar-ctl-h);
+    padding: 0 0.95rem;
+    font-size: 0.875rem;
+    transition:
+      min-height var(--dur-base) var(--ease-out),
+      transform var(--dur-fast) var(--ease-out),
+      box-shadow var(--dur-fast) var(--ease-out),
+      filter var(--dur-fast) var(--ease-out);
+  }
+
+  /*
+   * The inline section links — the half of the ask that was "or it needs to
+   * have the hyperlinks at the top".
+   *
+   * Same ink as the phone number, so there is one measured colour on the glass
+   * rather than two. The rule under them grows from the left on hover: the
+   * underline is already the site's link idiom (the phone number wears one
+   * permanently), so this is that idiom arriving rather than a new one.
+   *
+   * They appear at lg and up. Below that the row cannot hold five links plus
+   * the number plus two controls without either wrapping or shrinking the
+   * number, and the number is the page's highest-intent element.
+   */
+  .bar-link {
+    position: relative;
+    color: var(--color-stone-950);
+    font-size: 0.875rem;
+    font-weight: 500;
+    white-space: nowrap;
+    /* Kept under the condensed control height (34px) so the links are never
+       what sets the bar's height — the controls are. */
+    padding-block: 0.3rem;
+  }
+  .bar-link::after {
+    content: "";
+    position: absolute;
+    left: 0;
+    right: 0;
+    bottom: 0.1rem;
+    height: 2px;
+    background: currentColor;
+    transform: scaleX(0);
+    transform-origin: left center;
+    transition: transform var(--dur-fast) var(--ease-out);
+  }
+  .bar-link:hover::after,
+  .bar-link:focus-visible::after { transform: scaleX(1); }
 
   .glass::before {
     content: "";
@@ -605,6 +710,11 @@
      without JS the bar is still glass, it just never lifts. */
   .glass[data-stuck="true"] {
     box-shadow: 0 1px 0 rgb(26 32 44 / 0.10), 0 10px 30px -12px rgb(9 12 18 / 0.45);
+    /* The condensed set. One attribute, four numbers, everything follows. */
+    --bar-inset: clamp(6px, 0.7vw, 10px);
+    --bar-pad-y: 6px;
+    --mark-h: 32px;
+    --bar-ctl-h: 34px;
   }
 
   /*
@@ -919,7 +1029,11 @@
 :root {
   /* The floating bar is out of flow, so anything that must not start
      underneath it clears this instead of the bar's own height. */
-  --bar-space: clamp(84px, 8vw, 104px);
+  /* Clears the RESTING bar, which is the taller of its two states: an 18px
+     inset over a 56px row is 74px at the widest viewport, and 66px at the
+     narrowest. The floor sits above both so nothing ever starts underneath it
+     mid-condense. Was clamp(84px, 8vw, 104px), for an 80px row. */
+  --bar-space: clamp(80px, 5vw, 92px);
   --lane-angle: -13deg;
   /* How far the diagonal boundary drops across the page's width. Everything
      that cuts on the angle uses this, so the whole page shares one slope. */

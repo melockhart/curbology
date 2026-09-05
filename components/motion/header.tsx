@@ -9,9 +9,12 @@ import { useEffect } from "react";
  * component the bar is still glass and the menu still opens and closes, because
  * it is a <details> element and that is the whole point of using one.
  *
- *   1. The lift. Once the page has moved underneath it, the bar earns a shadow.
- *      At rest over the hero it has none, so it reads as part of the hero
- *      rather than as a bar sitting on top of one.
+ *   1. The condense. Once the page has moved underneath it, the bar earns a
+ *      shadow and gives back roughly 28px of screen — the inset closes, the
+ *      padding closes, the mark reduces, the controls shorten. At rest over the
+ *      hero it has full height and no shadow, so it reads as part of the hero
+ *      rather than as a bar sitting on top of one. All four sizes are custom
+ *      properties on .glass; this sets one attribute and CSS does the rest.
  *
  *   2. Escape, and clicking away. A menu that only closes by pressing the same
  *      control again is the kind of thing nobody reports and everybody resents.
@@ -24,13 +27,24 @@ export function HeaderBehaviour() {
 
     // Read once per frame at most. A scroll handler that touches the DOM on
     // every event is the classic way to make a smooth page feel cheap.
+    //
+    // Two thresholds, not one. The flag now drives the bar's height as well as
+    // its shadow, so a single boundary at 8px meant a page resting there — a
+    // trackpad nudge, a focus scroll, momentum settling — could sit on the edge
+    // and flip the bar open and shut. It condenses past 28px and only expands
+    // again below 6px, so the two states cannot chatter.
     let queued = false;
+    let stuck = false;
     const onScroll = () => {
       if (queued) return;
       queued = true;
       requestAnimationFrame(() => {
         queued = false;
-        header.dataset.stuck = String(window.scrollY > 8);
+        const y = window.scrollY;
+        const next = stuck ? y > 6 : y > 28;
+        if (next === stuck) return;
+        stuck = next;
+        header.dataset.stuck = String(stuck);
       });
     };
     onScroll();
