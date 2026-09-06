@@ -226,6 +226,21 @@ export function Caustics({
       aria-hidden="true"
       className={`absolute inset-0 h-full w-full ${className}`}
       style={{ background: ground }}
+      /*
+       * The canvas describes itself.
+       *
+       * Anything that meets this element without React — the hosted preview is
+       * the live case — otherwise has a blank box and no way to know what was
+       * meant to be drawn in it, and has to be told separately. Told separately
+       * means told wrong the first time somebody changes a colour here. These
+       * are the same four values the effect above sends to the shader.
+       */
+      data-caustics=""
+      data-ground={ground}
+      data-light={light}
+      data-intensity={intensity}
+      data-scale={scale}
+      data-still={staticSrc}
     />
   );
 }
