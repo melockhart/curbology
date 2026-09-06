@@ -1,26 +1,13 @@
 # Curbology Exterior Cleaning — site
 
-> **Staged here, not home.** This belongs in `melockhart/curbology`. Repository
-> creation has been attempted twice and returns `403 Resource not accessible by
-> integration` — the Claude GitHub App has read/write on the repositories it is
-> granted, but not `Administration: write` on the account, which is what creating
-> one needs. Nobody can fix that from inside a session.
->
-> **To move it:** create an empty private `melockhart/curbology` on github.com
-> (no README, no .gitignore — the first push carries everything), then grant the
-> Claude GitHub App access to it. After that it is one push:
->
-> ```
-> cd clients/curbology
-> git init && git add -A && git commit -m "Curbology — site, console, portals, email"
-> git remote add origin https://github.com/melockhart/curbology.git
-> git push -u origin main
-> ```
->
-> Nothing in this directory depends on living inside the design library.
+Next 16 + vinext + Cloudflare Workers + Supabase. No IDs or secrets in source
+control: runtime config comes from the deploy target, and locally from a
+gitignored `.dev.vars`.
 
-Next 16 + vinext + Cloudflare Workers + Supabase, matching the design library's
-posture. No IDs or secrets in source control.
+Built with the `/site-build` skill, which lives in `melockhart/design-library`.
+That repository is the tool; this one is the client's. Nothing here depends on
+it — a fresh clone installs, builds, lints and passes the contrast sweep on its
+own, and that is checked rather than assumed.
 
 ## What is real and what is not
 
