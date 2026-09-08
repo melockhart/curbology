@@ -1,5 +1,6 @@
 /** Cloudflare Worker entry point for the Curbology site. */
 import handler from "vinext/server/app-router-entry";
+import { previewMode } from "../lib/preview";
 
 interface Env {
   /**
@@ -19,8 +20,30 @@ interface ExecutionContext {
 }
 
 const worker = {
-  fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
-    return handler.fetch(request, env, ctx);
+  async fetch(request: Request, env: Env, ctx: ExecutionContext): Promise<Response> {
+    const response = await handler.fetch(request, env, ctx);
+
+    /*
+     * A preview deployment is not indexable. Ever.
+     *
+     * Individual routes set their own robots metadata, and the console and the
+     * portals already do — but a preview serves the whole public site too, and
+     * relying on every page to remember is how one of them does not. This is
+     * the header, at the edge, on every response, so there is nothing to
+     * forget and nothing to keep in step.
+     *
+     * previewMode() rather than reading the flag here: it refuses to return
+     * true when SUPABASE_URL is set, so production can never accidentally
+     * serve a noindex header, and the interlock stays defined in one place.
+     */
+    if (!previewMode()) return response;
+    const headers = new Headers(response.headers);
+    headers.set("X-Robots-Tag", "noindex, nofollow");
+    return new Response(response.body, {
+      status: response.status,
+      statusText: response.statusText,
+      headers,
+    });
   },
 };
 

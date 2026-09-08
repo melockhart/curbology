@@ -9,6 +9,23 @@ That repository is the tool; this one is the client's. Nothing here depends on
 it — a fresh clone installs, builds, lints and passes the contrast sweep on its
 own, and that is checked rather than assumed.
 
+## Where it is served
+
+**https://curbology.preview.op-site.net** — the preview. Not the client's
+production site; there isn't one yet, and this hostname stays the only place
+this is served from until there is a Supabase project and real content.
+
+It runs in preview mode: a fixed set of sample rows in place of every read, a
+ribbon on every page saying so, and `X-Robots-Tag: noindex, nofollow` on every
+response from the Worker. Preview mode refuses to switch on when `SUPABASE_URL`
+is set, so adding a database is what turns all of that off.
+
+`.github/workflows/deploy-preview.yml` deploys it on every push to `main`, after
+`tsc`, lint and build pass, and then checks that the URL answers 200 and that
+the noindex header is actually on it. The Cloudflare token lives in this
+repository's Actions secrets — see the header of that file for the three
+required secrets and the token scopes.
+
 ## What is real and what is not
 
 Every string in `lib/content.ts` is verbatim from the live Wix site, captured

@@ -5,5 +5,23 @@
   "compatibility_flags": ["nodejs_compat"],
   // Runtime config (SUPABASE_URL, SUPABASE_SECRET_KEY) comes from the deploy
   // target and locally from a gitignored .dev.vars. No IDs or secrets here.
+  // The preview deployment. Curbology is not live yet: this hostname is where
+  // Tristen and Marcel look at the build, and it is the only place it is
+  // served from until there is a Supabase project and real content.
+  //
+  // custom_domain, not a route pattern: it makes Cloudflare create and own the
+  // DNS record for the hostname, so the deploy is the only step. A route
+  // pattern would need a matching record to already exist.
+  "routes": [{ "pattern": "curbology.preview.op-site.net", "custom_domain": true }],
+
+  // Preview mode, on at the edge. It refuses to switch on when SUPABASE_URL is
+  // set (lib/preview.ts), so this cannot leak into a real deployment: adding a
+  // database is what turns it off. PREVIEW_PASSWORD is a secret and is set with
+  // `wrangler secret put`, never here.
+  "vars": {
+    "PREVIEW_MODE": "1",
+    "SITE_HOST": "curbology.preview.op-site.net"
+  },
+
   "observability": { "enabled": true }
 }
