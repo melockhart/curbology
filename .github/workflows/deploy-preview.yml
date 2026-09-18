@@ -73,6 +73,56 @@ jobs:
       - run: npm run lint
       - run: npm run build
 
+      # Wrangler reports every credential problem as the same sentence —
+      # "Authentication error [code: 10000]" — whether the token lacks a
+      # permission, is scoped to a different account, or the account id is
+      # simply the wrong identifier. This asks Cloudflare directly and says
+      # which, so a failure costs one run rather than a guessing game.
+      #
+      # It prints account NAMES and a match/no-match verdict, never the token
+      # and never a full identifier.
+      - name: Diagnose the Cloudflare credentials
+        env:
+          CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
+          CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
+        run: |
+          api() { curl -sS -H "Authorization: Bearer $CLOUDFLARE_API_TOKEN" "https://api.cloudflare.com/client/v4/$1"; }
+
+          echo "--- Is the token itself valid? ---"
+          verify=$(api user/tokens/verify)
+          if [ "$(jq -r '.success' <<<"$verify")" != "true" ]; then
+            echo "$verify" | jq -r '.errors[]? | "  [\(.code)] \(.message)"'
+            echo "::error::CLOUDFLARE_API_TOKEN is not a valid token. Create a new one and replace the secret."
+            exit 1
+          fi
+          echo "  Valid. Status: $(jq -r '.result.status' <<<"$verify")"
+
+          echo "--- Which accounts can this token see? ---"
+          accounts=$(api accounts)
+          if [ "$(jq -r '.success' <<<"$accounts")" != "true" ]; then
+            echo "$accounts" | jq -r '.errors[]? | "  [\(.code)] \(.message)"'
+            echo "::error::The token cannot list accounts. Its Account Resources are probably scoped to nothing, or it is missing Account Settings: Read."
+            exit 1
+          fi
+          jq -r '.result[] | "  - \(.name)"' <<<"$accounts"
+
+          echo "--- Does CLOUDFLARE_ACCOUNT_ID match one of them? ---"
+          if jq -e --arg id "$CLOUDFLARE_ACCOUNT_ID" 'any(.result[]; .id == $id)' <<<"$accounts" >/dev/null; then
+            echo "  Yes — $(jq -r --arg id "$CLOUDFLARE_ACCOUNT_ID" '.result[] | select(.id == $id) | .name' <<<"$accounts")"
+          else
+            echo "::error::CLOUDFLARE_ACCOUNT_ID is not one of the accounts this token can reach. The most common cause is pasting the ZONE ID by mistake — both sit in the same API box on the zone's Overview page, Zone ID first. Copy the one labelled Account ID."
+            exit 1
+          fi
+
+          echo "--- Can it actually write Workers? ---"
+          workers=$(api "accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts")
+          if [ "$(jq -r '.success' <<<"$workers")" != "true" ]; then
+            echo "$workers" | jq -r '.errors[]? | "  [\(.code)] \(.message)"'
+            echo "::error::The token reaches the account but not Workers. Add the permission Account · Workers Scripts · Edit to the token."
+            exit 1
+          fi
+          echo "  Yes. Workers API reachable."
+
       # dist/server/wrangler.json is the resolved config the Cloudflare plugin
       # writes at build time — it already carries the custom domain and the
       # vars from wrangler.jsonc. Deploying against it rather than against
