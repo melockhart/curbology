@@ -104,21 +104,32 @@ jobs:
             echo "::error::The token cannot list accounts. Its Account Resources are probably scoped to nothing, or it is missing Account Settings: Read."
             exit 1
           fi
+          count=$(jq -r '.result | length' <<<"$accounts")
           jq -r '.result[] | "  - \(.name)"' <<<"$accounts"
 
-          echo "--- Does CLOUDFLARE_ACCOUNT_ID match one of them? ---"
-          if jq -e --arg id "$CLOUDFLARE_ACCOUNT_ID" 'any(.result[]; .id == $id)' <<<"$accounts" >/dev/null; then
-            echo "  Yes — $(jq -r --arg id "$CLOUDFLARE_ACCOUNT_ID" '.result[] | select(.id == $id) | .name' <<<"$accounts")"
+          # An empty list is its own diagnosis, and a different one from a
+          # mismatch. A token carrying only Zone-scoped permissions can call
+          # this endpoint and see nothing, so zero accounts means the token has
+          # no account-scoped permission — not that the id is wrong. Warn and
+          # let the Workers check below be decisive, rather than failing a
+          # token that might be fine and cannot list.
+          if [ "$count" = "0" ]; then
+            echo "::warning::This token can see no accounts, which means it has no account-scoped permission. The Workers Scripts row was almost certainly added under Zone instead of Account. Skipping the id match — the Workers check below decides."
           else
-            echo "::error::CLOUDFLARE_ACCOUNT_ID is not one of the accounts this token can reach. The most common cause is pasting the ZONE ID by mistake — both sit in the same API box on the zone's Overview page, Zone ID first. Copy the one labelled Account ID."
-            exit 1
+            echo "--- Does CLOUDFLARE_ACCOUNT_ID match one of them? ---"
+            if jq -e --arg id "$CLOUDFLARE_ACCOUNT_ID" 'any(.result[]; .id == $id)' <<<"$accounts" >/dev/null; then
+              echo "  Yes — $(jq -r --arg id "$CLOUDFLARE_ACCOUNT_ID" '.result[] | select(.id == $id) | .name' <<<"$accounts")"
+            else
+              echo "::error::CLOUDFLARE_ACCOUNT_ID is not one of the accounts this token can reach. A common cause is pasting the ZONE ID by mistake — both sit in the same API box on the zone's Overview page, Zone ID first. Copy the one labelled Account ID."
+              exit 1
+            fi
           fi
 
           echo "--- Can it actually write Workers? ---"
           workers=$(api "accounts/$CLOUDFLARE_ACCOUNT_ID/workers/scripts")
           if [ "$(jq -r '.success' <<<"$workers")" != "true" ]; then
             echo "$workers" | jq -r '.errors[]? | "  [\(.code)] \(.message)"'
-            echo "::error::The token reaches the account but not Workers. Add the permission Account · Workers Scripts · Edit to the token."
+            echo "::error::The token cannot reach the Workers API for this account. Add the permission row Account · Workers Scripts · Edit — the first dropdown must read Account, not Zone. If it already does, check the token's Account Resources includes the account that owns op-site.net, and that CLOUDFLARE_ACCOUNT_ID is the Account ID rather than the Zone ID."
             exit 1
           fi
           echo "  Yes. Workers API reachable."
