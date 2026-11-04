@@ -1,6 +1,6 @@
 import assert from "node:assert/strict";
 import { test } from "node:test";
-import { DRAFT_RATE_CARD, type QuoteResult } from "./pricing.ts";
+import { DRAFT_RATE_CARD, priceQuote, type QuoteResult } from "./pricing.ts";
 import { publicQuote, readGeocoderReply, readRateCard, readSubmission, sniffPhoto, type QuoteRow } from "./rules.ts";
 
 const county = (GEOID: string) => ({
@@ -49,6 +49,19 @@ test("a browser cannot claim its size was measured", () => {
   });
   assert.ok(!("error" in result));
   assert.equal(result.items[0]?.source, "customer");
+});
+
+test("a blank size means not sure, and reaches the owner", () => {
+  const result = readSubmission({ ...SUBMIT, items: [{ item: "roof", quantity: "" }] });
+  assert.ok(!("error" in result));
+  assert.equal(result.items[0]?.quantity, null);
+  const priced = priceQuote(
+    { items: result.items, condition: "light", confidence: "high", stories: 1, flags: [], usablePhotos: 2 },
+    { ...DRAFT_RATE_CARD, approvedAt: "2026-11-03" },
+  );
+  assert.equal(priced.outcome, "review");
+  assert.ok(priced.reasons.includes("invalid_size"));
+  assert.equal(priced.totalCents, null);
 });
 
 test("text consent needs a real yes", () => {
@@ -111,7 +124,8 @@ const ROW: QuoteRow = {
 
 test("a quote under review shows no money and no reasons", () => {
   for (const status of ["draft", "reading", "review", "declined", "outside"] as const) {
-    const shown = JSON.stringify(publicQuote({ ...ROW, status, price_cents: 99900 }));
+    const shown = JSON.stringify(publicQuote({ ...ROW, status, price_cents: 99900, photo_read: { summary: "private" } }));
+    assert.ok(!shown.includes("private"), status);
     assert.ok(!shown.includes("30000"), status);
     assert.ok(!shown.includes("99900"), status);
     assert.ok(!shown.includes("low_confidence"), status);
@@ -125,6 +139,8 @@ test("a priced quote shows its price and lines but no rate", () => {
   assert.equal(shown.priceCents, 30000);
   assert.equal(shown.lines[0]?.totalCents, 30000);
   assert.ok(!JSON.stringify(shown).includes("rateCents"));
+  const seen = publicQuote({ ...ROW, status: "priced", price_cents: 30000, photo_read: { summary: "Clean drive." } });
+  assert.ok("seen" in seen && seen.seen === "Clean drive.");
 });
 
 test("a released quote shows the owner's price without the old lines", () => {

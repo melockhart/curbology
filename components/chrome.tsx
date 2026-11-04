@@ -94,7 +94,7 @@ export function Nav() {
             {business.phone.display}
           </A>
 
-          <A href="/contact" className="btn btn--ink btn--bar hidden sm:inline-flex">
+          <A href="/quote" className="btn btn--ink btn--bar hidden sm:inline-flex">
             Get a free quote
           </A>
 
@@ -195,7 +195,7 @@ export function Nav() {
                   <p className="font-spec text-xs uppercase tracking-[0.22em] text-stone-400">
                     Straight to it
                   </p>
-                  <A href="/contact" className="btn btn--paper">Get a free quote</A>
+                  <A href="/quote" className="btn btn--paper">Get a free quote</A>
                   <A
                     href={business.phone.href}
                     className="whitespace-nowrap font-display text-3xl font-bold text-teal-300 underline underline-offset-8"

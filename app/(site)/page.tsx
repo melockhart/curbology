@@ -233,7 +233,7 @@ export default function HomePage() {
             <h2 data-wash-type className="display-lg mt-4 max-w-[14ch]">{home.quoteHeading}</h2>
             <p className="mt-6 max-w-md text-lg text-stone-050/85">{home.quoteSub}</p>
             <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-              <A href="/contact" className="btn btn--paper">Get a free quote</A>
+              <A href="/quote" className="btn btn--paper">Get a free quote</A>
               <A href={business.phone.href}
                  className="font-display text-2xl font-bold text-teal-300 underline underline-offset-8">
                 {business.phone.display}

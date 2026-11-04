@@ -188,6 +188,30 @@ export async function fetchPhoto(path: string): Promise<Uint8Array | null> {
   return new Uint8Array(await response.arrayBuffer());
 }
 
+/* ---------------------------------------------------------------- the console */
+
+export type ConsoleQuote = StoredQuote & {
+  created_at: string;
+  name: string | null;
+  email: string | null;
+  phone: string | null;
+  message: string | null;
+  items: { item: string; quantity: number | null }[];
+  photo_read: PhotoReadRow | null;
+  submitted_at: string | null;
+};
+type PhotoReadRow = { condition?: string; confidence?: string; stories?: number | null; flags?: string[]; summary?: string };
+
+/** Submitted quotes, newest first. The token hash and IP hash stay in the database. */
+export async function listQuotes(): Promise<ConsoleQuote[]> {
+  const response = await supabase(
+    "/rest/v1/quotes?submitted_at=not.is.null&order=created_at.desc&limit=200" +
+      "&select=id,created_at,submitted_at,status,address,matched_address,area,service,photo_paths,name,email,phone,message,items,photo_read,result,price_cents,deposit_cents,owner_note",
+  );
+  if (!response.ok) return [];
+  return (await response.json()) as ConsoleQuote[];
+}
+
 /* ---------------------------------------------------------------- rate card */
 
 /** The newest saved card. With none saved, the draft, which can price nothing for a customer. */

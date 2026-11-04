@@ -58,7 +58,8 @@ export const DRAFT_RATE_CARD: RateCard = {
 export type SizeSource = "aerial" | "customer";
 
 export type QuoteInput = {
-  items: { item: Item; quantity: number; source: SizeSource }[];
+  /** A null quantity means the customer did not know. The owner measures it. */
+  items: { item: Item; quantity: number | null; source: SizeSource }[];
   condition: Condition | null;
   confidence: Confidence | null;
   stories: number | null;
@@ -129,15 +130,17 @@ export function priceQuote(input: QuoteInput, card: RateCard): QuoteResult {
   }
   if (input.flags.length > 0) stop("flagged");
 
-  const valid = input.items.filter(
-    (line) =>
-      Object.hasOwn(ITEMS, line.item) &&
-      Number.isFinite(line.quantity) &&
-      line.quantity > 0 &&
-      line.quantity <= MAX_QUANTITY,
+  const valid = input.items.flatMap(({ item, quantity }) =>
+    Object.hasOwn(ITEMS, item) &&
+    quantity !== null &&
+    Number.isFinite(quantity) &&
+    quantity > 0 &&
+    quantity <= MAX_QUANTITY
+      ? [{ item, quantity }]
+      : [],
   );
   if (valid.length !== input.items.length) stop("invalid_size");
-  if (valid.some((line) => line.source !== "aerial")) stop("size_unverified");
+  if (input.items.some((line) => line.source !== "aerial")) stop("size_unverified");
 
   const heavy = input.condition === "heavy";
   const tall = (input.stories ?? 1) >= 2;

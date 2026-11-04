@@ -52,7 +52,7 @@ export default function ServicesIndex() {
           Send a photo with your quote request. Most of the time that is enough to
           price the job without visiting.
         </p>
-        <div className="mt-8"><Button href="/contact" variant="onTeal">Get a free quote</Button></div>
+        <div className="mt-8"><Button href="/quote" variant="onTeal">Get a free quote</Button></div>
       </Section>
     </>
   );

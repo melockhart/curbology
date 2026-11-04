@@ -22,7 +22,7 @@ export const metadata: Metadata = {
 const actions = [
   { label: "Call us", href: business.phone.href, sub: business.phone.display, primary: true },
   { label: "Text us", href: `sms:${business.phone.href.replace("tel:", "")}`, sub: "Fastest for a quick question" },
-  { label: "Get a free quote", href: "/contact", sub: "Send a photo, get a real number" },
+  { label: "Get a free quote", href: "/quote", sub: "Send a photo, get a real number" },
   { label: "Leave a review", href: "/review", sub: "Tell us how we did" },
   { label: "See our work", href: "/gallery", sub: "Before and after" },
 ];

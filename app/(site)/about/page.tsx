@@ -71,7 +71,7 @@ export default async function AboutPage() {
       <Section cut="l" ground="ink">
         <Eyebrow>Ready when you are</Eyebrow>
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Get a free quote</h2>
-        <div className="mt-8"><Button href="/contact">Request a quote</Button></div>
+        <div className="mt-8"><Button href="/quote">Request a quote</Button></div>
       </Section>
     </>
   );

@@ -47,6 +47,8 @@ export const NAV_GROUPS: NavGroup[] = [
   {
     label: "Work",
     items: [
+      { to: "/admin/quotes", label: "Quotes", icon: I.IconForms, hint: "AI prices, and what still needs you" },
+      { to: "/admin/rates", label: "Rates", icon: I.IconAnalytics, hint: "What the quote calculator prices with" },
       { to: "/admin/leads", label: "Leads", icon: I.IconLeads, hint: "Quote requests and where each one stands" },
       { to: "/admin/reviews", label: "Reviews", icon: I.IconReviews, hint: "The inbox, and what shows on the site" },
       { to: "/admin/bookings", label: "Bookings", icon: I.IconBookings, hint: "Video testimonial queue" },

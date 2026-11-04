@@ -1,4 +1,5 @@
 import { runtimeEnv } from "./env";
+import type { ConsoleQuote } from "./quote/store";
 import type { Lead, Review, Booking, TeamMember, Activity, AdminUser, SeoOverride, Redirect } from "./db";
 
 /**
@@ -61,6 +62,22 @@ export const previewLeads: Lead[] = [
   { id: "p-lead-5", created_at: hoursAgo(740), updated_at: hoursAgo(726), name: "Grace Lindqvist",
     email: "grace@example.com", phone: null, address: null, town: "Troy", service: "Pressure Washing",
     message: null, photo_paths: [], source_page: "/contact", status: "lost", quoted_amount: 280, notes: null },
+];
+
+/** Sample quotes for the console walk-through. No photos, since nothing is stored. */
+export const previewQuotes: ConsoleQuote[] = [
+  { id: "p-quote-1", created_at: hoursAgo(3), submitted_at: hoursAgo(3), status: "review", token_hash: "", address: "88 Sample Ave, Birmingham",
+    matched_address: null, area: "inside", service: "gutter-cleaning", photo_paths: [], name: "Priya Raman", email: "priya@example.com", phone: "(248) 555-0112",
+    message: "Two storeys at the back.", items: [{ item: "gutters", quantity: 220 }],
+    photo_read: { condition: "moderate", confidence: "low", stories: 2, flags: ["Back of the house is not visible"], summary: "Front gutters show tiger striping. The back is not in the photos." },
+    result: { outcome: "review", reasons: ["rates_not_approved", "size_unverified", "low_confidence", "flagged"], lines: [], subtotalCents: 41250, discountCents: 0, minimumApplied: false, totalCents: 41250, depositCents: 5000 },
+    price_cents: null, deposit_cents: null, owner_note: null },
+  { id: "p-quote-2", created_at: hoursAgo(30), submitted_at: hoursAgo(30), status: "released", token_hash: "", address: "142 Maple Ct, Rochester Hills",
+    matched_address: null, area: "inside", service: "pressure-washing", photo_paths: [], name: "Dana Whitcomb", email: "dana@example.com", phone: "(248) 555-0134",
+    message: null, items: [{ item: "flatwork", quantity: 1300 }, { item: "curb", quantity: 60 }],
+    photo_read: { condition: "moderate", confidence: "high", stories: 1, flags: [], summary: "Grime across the driveway and an oil stain near the garage." },
+    result: { outcome: "review", reasons: ["size_unverified"], lines: [], subtotalCents: 42900, discountCents: 4290, minimumApplied: false, totalCents: 38610, depositCents: 5000 },
+    price_cents: 40000, deposit_cents: 5000, owner_note: "Includes the oil stain treatment." },
 ];
 
 export const previewReviews: Review[] = [

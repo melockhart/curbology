@@ -45,7 +45,7 @@ export default function NotFound() {
                 <li><A href="/service-area" className="underline underline-offset-4">Service area</A></li>
                 <li><A href="/faq" className="underline underline-offset-4">Questions</A></li>
                 <li><A href="/about" className="underline underline-offset-4">About</A></li>
-                <li><A href="/contact" className="underline underline-offset-4">Get a free quote</A></li>
+                <li><A href="/quote" className="underline underline-offset-4">Get a free quote</A></li>
               </ul>
             </div>
           </div>

@@ -13,7 +13,7 @@ import { chromium } from "playwright";
 
 const BASE = process.env.CONTRAST_BASE || "http://localhost:3000";
 
-const publicRoutes = ["/", "/services", "/services/pressure-washing", "/services/house-siding-washing",
+const publicRoutes = ["/", "/quote", "/services", "/services/pressure-washing", "/services/house-siding-washing",
   "/services/gutter-cleaning", "/services/roof-cleaning", "/about", "/contact", "/reviews",
   "/service-area", "/gallery", "/faq", "/hub", "/review", "/testimonial", "/email-unsubscribe?id=demo", "/nope-404",
   // The confirmation screens. Every form redirects to one of these, and until
@@ -28,7 +28,7 @@ const publicRoutes = ["/", "/services", "/services/pressure-washing", "/services
  * credentials are supplied; without them the public sweep runs as before rather
  * than silently measuring sixteen copies of the sign-in page.
  */
-const adminRoutes = ["/sign-in", "/admin", "/admin/analytics", "/admin/activity", "/admin/leads",
+const adminRoutes = ["/sign-in", "/admin", "/admin/analytics", "/admin/activity", "/admin/quotes", "/admin/rates", "/admin/leads",
   "/admin/reviews", "/admin/bookings", "/admin/content", "/admin/forms", "/admin/seo",
   "/admin/theme", "/admin/settings", "/admin/team", "/admin/team-access", "/admin/users",
   "/admin/domain", "/admin/account"];
@@ -41,7 +41,7 @@ const email = process.env.CONTRAST_ADMIN_EMAIL;
 const password = process.env.CONTRAST_ADMIN_PASSWORD;
 const routes = email ? [...publicRoutes, ...adminRoutes] : publicRoutes;
 
-const b = await chromium.launch({ executablePath: "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
+const b = await chromium.launch({ executablePath: process.env.CONTRAST_CHROME || "/opt/pw-browsers/chromium-1194/chrome-linux/chrome" });
 const p = await b.newPage({ viewport: { width: 1440, height: 900 } });
 let fails = 0, checked = 0;
 

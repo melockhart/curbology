@@ -63,7 +63,7 @@ export type Submission = {
   message: string | null;
   textConsent: boolean;
   /** Always "customer" here. Only a measuring service can mark a size as aerial. */
-  items: { item: Item; quantity: number; source: "customer" }[];
+  items: { item: Item; quantity: number | null; source: "customer" }[];
 };
 
 const EMAIL = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -84,9 +84,11 @@ export function readSubmission(body: unknown): Submission | { error: string } {
   const items: Submission["items"] = [];
   for (const entry of raw.items as Record<string, unknown>[]) {
     const item = entry?.item;
-    const quantity = Number(entry?.quantity);
+    // Blank means "not sure", which is allowed: the owner measures it.
+    const blank = entry?.quantity === null || entry?.quantity === undefined || entry?.quantity === "";
+    const quantity = blank ? null : Number(entry.quantity);
     if (typeof item !== "string" || !Object.hasOwn(ITEMS, item)) return { error: "Please choose a service." };
-    if (!Number.isFinite(quantity) || quantity <= 0) return { error: "Please check the size." };
+    if (quantity !== null && (!Number.isFinite(quantity) || quantity <= 0)) return { error: "Please check the size." };
     // The source is set here and never read from the request, so a browser
     // cannot claim its typed number was measured.
     items.push({ item: item as Item, quantity, source: "customer" });
@@ -145,6 +147,7 @@ export type QuoteRow = {
   price_cents: number | null;
   deposit_cents: number | null;
   owner_note: string | null;
+  photo_read?: { summary?: string } | null;
 };
 
 /**
@@ -171,6 +174,7 @@ export function publicQuote(row: QuoteRow) {
             }))
           : [],
       note: row.status === "released" ? row.owner_note : null,
+      seen: row.status === "priced" ? (row.photo_read?.summary ?? null) : null,
     };
   }
   return base;

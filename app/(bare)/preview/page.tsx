@@ -37,6 +37,7 @@ export default function PreviewIndex() {
         ["/reviews", "Reviews", "Only what has been published from the console"],
         ["/service-area", "Service area", "Oakland County, and the towns named on the live site"],
         ["/faq", "Questions & pricing", "Answers drawn only from what the live site states"],
+        ["/quote", "Get your price", "Address, size, photos, contact, then a price or Tristen"],
         ["/contact", "Get a free quote", "One form, with photo upload"],
       ],
     },

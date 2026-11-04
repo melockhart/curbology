@@ -38,7 +38,7 @@ export default function ServiceAreaPage() {
           Not listed? We cover {business.serviceArea.county} broadly — ask and
           we will tell you straight away.
         </p>
-        <div className="mt-8"><Button href="/contact">Check your address</Button></div>
+        <div className="mt-8"><Button href="/quote">Check your address</Button></div>
       </Section>
     </>
   );

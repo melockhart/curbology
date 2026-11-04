@@ -22,7 +22,7 @@ const PhotoRead = z.object({
   flags: z
     .array(z.string())
     .describe("Short notes on anything the owner should see before pricing. Empty when there is nothing."),
-  summary: z.string().describe("Two sentences for the owner on what the photos show."),
+  summary: z.string().describe("Two plain sentences on what the photos show. The customer may read this, so state only what is visible, with no price."),
 });
 
 export type PhotoRead = z.infer<typeof PhotoRead>;

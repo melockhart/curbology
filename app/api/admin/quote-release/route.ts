@@ -1,9 +1,10 @@
 import { handle, rpc } from "../../../../lib/admin-route";
 
 export async function POST(request: Request) {
-  return handle(request, "/admin/leads", async (form, session) => {
-    const price = Number(form.get("price_cents"));
-    const deposit = Number(form.get("deposit_cents"));
+  return handle(request, "/admin/quotes", async (form, session) => {
+    // Typed in dollars, stored in cents.
+    const price = Math.round(Number(form.get("price")) * 100);
+    const deposit = Math.round(Number(form.get("deposit")) * 100);
     if (!Number.isInteger(price) || price <= 0) throw new Error("That price is not a number");
     if (!Number.isInteger(deposit) || deposit < 0) throw new Error("That deposit is not a number");
     await rpc(

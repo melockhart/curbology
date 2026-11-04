@@ -88,7 +88,7 @@ export function Hero() {
                className="whitespace-nowrap text-lg font-medium text-teal-300 underline underline-offset-4">
               {business.phone.display}
             </A>
-            <A href="/contact" className="btn btn--paper">Get a free quote</A>
+            <A href="/quote" className="btn btn--paper">Get a free quote</A>
           </div>
         </div>
       </div>

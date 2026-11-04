@@ -50,7 +50,7 @@ export default async function ServicePage({
             </Eyebrow>
             <h1 data-wash-type className="text-5xl">{service.name}</h1>
             <p className="mt-6 text-lg">{service.intro}</p>
-            <div className="mt-8"><Button href="/contact" variant="onTeal">{service.cta}</Button></div>
+            <div className="mt-8"><Button href={`/quote?service=${service.slug}`} variant="onTeal">{service.cta}</Button></div>
           </div>
           <AwaitingPhoto label={`${service.name} — a real job, before and after.`} />
         </div>
@@ -119,7 +119,7 @@ export default async function ServicePage({
           </A>
           .
         </p>
-        <div className="mt-8"><Button href="/contact">Request a quote</Button></div>
+        <div className="mt-8"><Button href={`/quote?service=${service.slug}`}>Request a quote</Button></div>
       </Section>
     </>
   );

@@ -43,7 +43,7 @@ export default function GalleryPage() {
 
       <Section cut="r" ground="ink">
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Want yours to look like this?</h2>
-        <div className="mt-8"><Button href="/contact">Get a free quote</Button></div>
+        <div className="mt-8"><Button href="/quote">Get a free quote</Button></div>
       </Section>
     </>
   );
