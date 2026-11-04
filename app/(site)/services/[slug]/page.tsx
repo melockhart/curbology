@@ -1,17 +1,19 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
-import { business, services } from "../../../../lib/content";
+import { siteContent } from "../../../../lib/cms";
 import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../../components/ui";
 import { A } from "../../../../components/link";
 import { pageMetadata } from "../../../../lib/seo";
 
-export function generateStaticParams() {
+export async function generateStaticParams() {
+  const { services } = await siteContent();
   return services.map((s) => ({ slug: s.slug }));
 }
 
 export async function generateMetadata({
   params,
 }: { params: Promise<{ slug: string }> }): Promise<Metadata> {
+  const { business, services } = await siteContent();
   const { slug } = await params;
   const service = services.find((s) => s.slug === slug);
   if (!service) return {};
@@ -31,6 +33,7 @@ export async function generateMetadata({
 export default async function ServicePage({
   params,
 }: { params: Promise<{ slug: string }> }) {
+  const { business, services, pages, images } = await siteContent();
   const { slug } = await params;
   const service = services.find((s) => s.slug === slug);
   if (!service) notFound();
@@ -52,7 +55,7 @@ export default async function ServicePage({
             <p className="mt-6 text-lg">{service.intro}</p>
             <div className="mt-8"><Button href={`/quote?service=${service.slug}`} variant="onTeal">{service.cta}</Button></div>
           </div>
-          <AwaitingPhoto label={`${service.name} — a real job, before and after.`} />
+          <AwaitingPhoto label={`${service.name} — a real job, before and after.`} image={images[`service.${service.slug}`]} />
         </div>
       </Section>
 
@@ -67,7 +70,7 @@ export default async function ServicePage({
       */}
       {hasIncludes && (
         <Section cut="l" ground="shallow">
-          <h2 data-wash-type className="text-4xl">What&rsquo;s included</h2>
+          <h2 data-wash-type className="text-4xl">{pages.servicePage.whatSIncluded}</h2>
           <ul className="mt-8 grid gap-4 md:grid-cols-2">
             {service.includes.map((item) => (
               <li key={item} className="flex gap-3 border-t border-ink/10 pt-4">
@@ -81,10 +84,10 @@ export default async function ServicePage({
       )}
 
       <Section cut="r" ground={workGround}>
-        <h2 data-wash-type className="text-4xl">The work</h2>
+        <h2 data-wash-type className="text-4xl">{pages.servicePage.theWork}</h2>
         <div className="mt-10 grid gap-6 md:grid-cols-2">
-          <AwaitingPhoto label="Before." />
-          <AwaitingPhoto label="After." />
+          <AwaitingPhoto label={pages.servicePage.before} />
+          <AwaitingPhoto label={pages.servicePage.after} />
         </div>
       </Section>
 
@@ -94,7 +97,7 @@ export default async function ServicePage({
       */}
 
       <Section cut="l" ground="teal">
-        <h2 data-wash-type className="text-4xl">Other services</h2>
+        <h2 data-wash-type className="text-4xl">{pages.servicePage.otherServices}</h2>
         <ul className="mt-8 grid gap-8 md:grid-cols-3">
           {siblings.map((s) => (
             <li key={s.slug} className="border-t border-ink/10 pt-5">
@@ -110,16 +113,16 @@ export default async function ServicePage({
 
       <Section cut="r" ground="ink">
         <h2 data-wash-type className="max-w-2xl text-4xl text-paper">
-          Get a free quote for {service.name.toLowerCase()}
+          {pages.servicePage.getAFreeQuote}{" "}{service.name.toLowerCase()}
         </h2>
         <p className="mt-4 text-white/75">
-          Or call{" "}
+          {pages.servicePage.orCall}{" "}
           <A href={business.phone.href} className="underline underline-offset-4">
             {business.phone.display}
           </A>
           .
         </p>
-        <div className="mt-8"><Button href={`/quote?service=${service.slug}`}>Request a quote</Button></div>
+        <div className="mt-8"><Button href={`/quote?service=${service.slug}`}>{pages.servicePage.requestAQuote}</Button></div>
       </Section>
     </>
   );

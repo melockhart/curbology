@@ -1,4 +1,4 @@
-import { business, home, connective } from "../lib/content";
+import { siteContent } from "../lib/cms";
 import { A } from "./link";
 import { Caustics } from "./motion/caustics";
 
@@ -20,7 +20,8 @@ import { Caustics } from "./motion/caustics";
  * Everything that converts is still in the server HTML and still out of the
  * lane's way: the phone number and the quote button never wait on the canvas.
  */
-export function Hero() {
+export async function Hero() {
+  const { business, home, connective, pages } = await siteContent();
   return (
     <section
       data-wash-section
@@ -88,7 +89,7 @@ export function Hero() {
                className="whitespace-nowrap text-lg font-medium text-teal-300 underline underline-offset-4">
               {business.phone.display}
             </A>
-            <A href="/quote" className="btn btn--paper">Get a free quote</A>
+            <A href="/quote" className="btn btn--paper">{pages.hero.getAFreeQuote}</A>
           </div>
         </div>
       </div>

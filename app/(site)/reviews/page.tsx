@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "../../../lib/seo";
-import { business } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { publishedReviews } from "../../../lib/db";
 import { Button, Section, Eyebrow } from "../../../components/ui";
 
@@ -18,6 +18,7 @@ export function generateMetadata(): Promise<Metadata> {
  * attributable author does not go on a page.
  */
 export default async function ReviewsPage() {
+  const { business, pages } = await siteContent();
   // Only rows the owner marked published in the console. Returns [] with no
   // database, so the page renders its empty state rather than throwing.
   const published = await publishedReviews();
@@ -25,22 +26,21 @@ export default async function ReviewsPage() {
   return (
     <>
       <Section cut={false} ground="teal">
-        <h1 data-wash-type className="max-w-3xl text-5xl">What our customers say</h1>
+        <h1 data-wash-type className="max-w-3xl text-5xl">{pages.reviews.whatOurCustomersSay}</h1>
         <p className="mt-6 text-lg">
-          {business.googleRating.value.toFixed(1)} on Google, from{" "}
-          {business.googleRating.count} reviews.
+          {business.googleRating.value.toFixed(1)} {pages.reviews.onGoogleFrom}{" "}
+          {business.googleRating.count} {pages.reviews.reviews}
         </p>
       </Section>
 
       <Section cut="l" ground="shallow">
         {published.length === 0 ? (
           <div className="max-w-xl">
-            <Eyebrow>Coming soon</Eyebrow>
-            <h2 className="text-3xl">Reviews are moving here</h2>
+            <Eyebrow>{pages.reviews.comingSoon}</Eyebrow>
+            <h2 className="text-3xl">{pages.reviews.reviewsAreMovingHere}</h2>
             <p className="mt-4 text-[color:var(--muted)]">
-              We are collecting reviews on our own site so you can read them in
-              full. In the meantime, our {business.googleRating.value.toFixed(1)}{" "}
-              rating on Google comes from {business.googleRating.count} customers.
+              {pages.reviews.weAreCollectingReviews}{" "}{business.googleRating.value.toFixed(1)}{" "}
+              {pages.reviews.ratingOnGoogleComes}{" "}{business.googleRating.count} {pages.reviews.customers}
             </p>
           </div>
         ) : (
@@ -50,7 +50,7 @@ export default async function ReviewsPage() {
                 <blockquote className="text-lg">{r.body}</blockquote>
                 {r.owner_reply && (
                   <p className="mt-3 border-l-2 border-teal pl-4 text-[color:var(--muted)]">
-                    <span className="font-medium text-ink">Curbology:</span> {r.owner_reply}
+                    <span className="font-medium text-ink">{pages.reviews.curbology}</span> {r.owner_reply}
                   </p>
                 )}
                 <p className="mt-4 text-[color:var(--muted)]">
@@ -64,11 +64,11 @@ export default async function ReviewsPage() {
 
       {/* Everyone gets the same route. No rating gate, ever. */}
       <Section cut="r" ground="ink">
-        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Worked with us?</h2>
+        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">{pages.reviews.workedWithUs}</h2>
         <p className="mt-4 max-w-xl text-white/75">
-          We would like to hear how it went — good or bad.
+          {pages.reviews.weWouldLikeTo}
         </p>
-        <div className="mt-8"><Button href="/review">Leave a review</Button></div>
+        <div className="mt-8"><Button href="/review">{pages.reviews.leaveAReview}</Button></div>
       </Section>
     </>
   );

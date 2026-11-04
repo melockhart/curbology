@@ -106,7 +106,14 @@ export function Eyebrow({ children }: { children: ReactNode }) {
  * broken image. On an exterior-cleaning site the photograph is the argument, so
  * a missing one is worth naming rather than papering over.
  */
-export function AwaitingPhoto({ label, className = "" }: { label: string; className?: string }) {
+export function AwaitingPhoto({
+  label, className = "", image,
+}: { label: string; className?: string; image?: { url: string; alt: string } }) {
+  // Once a picture is set for this slot it takes the panel's place.
+  if (image) {
+    // eslint-disable-next-line @next/next/no-img-element -- sized by the uploaded file, stored off-site
+    return <img src={image.url} alt={image.alt} loading="lazy" className={`w-full rounded-xl object-cover ${className}`} />;
+  }
   /*
    * An image slot with no image — sized to what it SAYS, not to the photograph
    * that is not there.

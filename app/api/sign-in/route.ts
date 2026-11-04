@@ -1,19 +1,22 @@
 import { signIn, SESSION_COOKIE } from "../../../lib/session";
+import { safePath } from "../../../lib/safe-path";
 
 export async function POST(request: Request) {
   const form = await request.formData();
   const email = String(form.get("email") ?? "");
   const password = String(form.get("password") ?? "");
   const origin = new URL(request.url).origin;
+  const back = safePath(form.get("redirect"));
 
   const result = await signIn(email, password);
   if ("error" in result && result.error) {
     const url = new URL("/sign-in", origin);
     url.searchParams.set("error", result.error);
+    if (back !== "/admin") url.searchParams.set("redirect", back);
     return Response.redirect(url.toString(), 303);
   }
 
-  const headers = new Headers({ Location: new URL("/admin", origin).toString() });
+  const headers = new Headers({ Location: new URL(back, origin).toString() });
   // HttpOnly so script cannot read it; SameSite=Lax so it does not ride along
   // on a cross-site POST; Secure because this only ever runs over HTTPS.
   headers.append(

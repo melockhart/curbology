@@ -1,3 +1,4 @@
+import { siteContent } from "../../../lib/cms";
 import type { Metadata } from "next";
 import { PortalShell, Field, Submit, SubmitNotice, type SubmitState } from "../../../components/portal";
 import { A } from "../../../components/link";
@@ -16,15 +17,16 @@ export const metadata: Metadata = { title: "Book a video testimonial" };
 export default async function TestimonialPortal({
   searchParams,
 }: { searchParams: Promise<{ sent?: string }> }) {
+  const { pages } = await siteContent();
   const { sent } = await searchParams;
   const settings = await siteSettings();
   if (settings["portal.testimonialOpen"] === false) {
     return (
       <PortalShell
-        title="Not booking right now"
-        intro="We have paused filming for a bit. The page stays up so the link we sent you still works — ask us and we will let you know when it reopens."
+        title={pages.testimonial.notBookingRightNow}
+        intro={pages.testimonial.weHavePausedFilming}
       >
-        <A href="/contact" className="underline underline-offset-4">Get in touch</A>
+        <A href="/contact" className="underline underline-offset-4">{pages.testimonial.getInTouch}</A>
       </PortalShell>
     );
   }
@@ -32,12 +34,12 @@ export default async function TestimonialPortal({
   if (sent === "ok" || sent === "preview") {
     return (
       <PortalShell
-        title="Got it — we will be in touch"
-        intro="Tristen will come back to you with a time from the ones you offered. Nothing is booked until he does."
+        title={pages.testimonial.gotItWeWill}
+        intro={pages.testimonial.tristenWillComeBack}
       >
         <SubmitNotice state={sent as SubmitState} />
         <p className="mt-8">
-          <A href="/" className="underline underline-offset-4">Back to the site</A>
+          <A href="/" className="underline underline-offset-4">{pages.testimonial.backToTheSite}</A>
         </p>
       </PortalShell>
     );
@@ -45,17 +47,17 @@ export default async function TestimonialPortal({
 
   return (
     <PortalShell
-      title="Say it on camera?"
-      intro="A short video — a minute, maybe two — about the work we did. We come to you, or you record it on your phone. Your call."
+      title={pages.testimonial.sayItOnCamera}
+      intro={pages.testimonial.aShortVideoA}
     >
       <SubmitNotice state={sent as SubmitState} />
       <form action="/api/bookings" method="post" className="space-y-5">
-        <Field name="name" label="Your name" required autoComplete="name" />
-        <Field name="email" label="Email" type="email" required autoComplete="email" />
-        <Field name="phone" label="Phone" type="tel" required autoComplete="tel" />
+        <Field name="name" label={pages.testimonial.yourName} required autoComplete="name" />
+        <Field name="email" label={pages.testimonial.email} type="email" required autoComplete="email" />
+        <Field name="phone" label={pages.testimonial.phone} type="tel" required autoComplete="tel" />
 
         <fieldset>
-          <legend className="font-medium">How would you rather do it?</legend>
+          <legend className="font-medium">{pages.testimonial.howWouldYouRather}</legend>
           <div className="mt-3 space-y-2">
             {[
               ["in-person", "You come to me"],
@@ -72,10 +74,10 @@ export default async function TestimonialPortal({
 
         <div>
           <label htmlFor="slots" className="block font-medium">
-            When suits you? <span className="text-[color:var(--muted)]" aria-hidden="true">*</span>
+            {pages.testimonial.whenSuitsYou}{" "}<span className="text-[color:var(--muted)]" aria-hidden="true">*</span>
           </label>
           <p id="slots-hint" className="mt-1 text-sm text-[color:var(--muted)]">
-            In your own words — &ldquo;weekday evenings&rdquo; is as useful as a date.
+            {pages.testimonial.inYourOwnWords}
           </p>
           <textarea
             id="slots" name="slots" rows={3} required aria-describedby="slots-hint"
@@ -84,14 +86,14 @@ export default async function TestimonialPortal({
         </div>
 
         <div>
-          <label htmlFor="notes" className="block font-medium">Anything else?</label>
+          <label htmlFor="notes" className="block font-medium">{pages.testimonial.anythingElse}</label>
           <textarea id="notes" name="notes" rows={3}
             className="mt-2 w-full rounded-lg border border-ink/25 bg-paper px-3 py-2" />
         </div>
 
-        <Submit>Request a time</Submit>
+        <Submit>{pages.testimonial.requestATime}</Submit>
         <p className="text-sm text-[color:var(--muted)]">
-          We will confirm by email or text. Nothing is booked until we do.
+          {pages.testimonial.weWillConfirmBy}
         </p>
       </form>
     </PortalShell>

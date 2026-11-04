@@ -1,5 +1,5 @@
 import { A } from "./link";
-import { business } from "../lib/content";
+import { siteContent } from "../lib/cms";
 
 /**
  * The shell for pages someone arrives at from an email, a text or a QR code with
@@ -9,9 +9,10 @@ import { business } from "../lib/content";
  * "unsubscribe" should not be sold four services on the way. There is one route
  * back to the site, at the bottom, for anyone who wants it.
  */
-export function PortalShell({
+export async function PortalShell({
   title, intro, children,
 }: { title: string; intro?: string; children: React.ReactNode }) {
+  const { business, pages } = await siteContent();
   return (
     <div className="ground-paper flex min-h-screen flex-col bg-paper">
       <header className="bg-teal">
@@ -46,7 +47,7 @@ export function PortalShell({
               {business.phone.display}
             </A>
             {" · "}
-            <A href="/" className="underline underline-offset-4">Back to the site</A>
+            <A href="/" className="underline underline-offset-4">{pages.portal.backToTheSite}</A>
           </p>
         </div>
       </footer>
@@ -92,15 +93,10 @@ export function Submit({ children }: { children: React.ReactNode }) {
  */
 export type SubmitState = "ok" | "preview" | "missing" | "failed" | "unconfigured" | undefined;
 
-const MESSAGES: Record<string, { tone: "good" | "bad"; text: string }> = {
-  missing: { tone: "bad", text: "Some of it did not come through. Have a look below and send it again." },
-  failed: { tone: "bad", text: "Something went wrong on our end. Please call us instead — we would rather hear from you than lose it." },
-  unconfigured: { tone: "bad", text: "We could not save that just now. Please call us — the number is at the bottom of this page." },
-  preview: { tone: "good", text: "This is a preview, so nothing was stored — on the real site this is where it would land." },
-};
-
-export function SubmitNotice({ state }: { state: SubmitState }) {
-  const message = state ? MESSAGES[state] : undefined;
+export async function SubmitNotice({ state }: { state: SubmitState }) {
+  const { pages } = await siteContent();
+  const messages: Partial<Record<NonNullable<SubmitState>, { tone: string; text: string }>> = pages.portal.MESSAGES;
+  const message = state ? messages[state] : undefined;
   if (!message) return null;
   return (
     <p

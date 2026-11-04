@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PortalShell, Field, Submit, SubmitNotice, type SubmitState } from "../../../components/portal";
 import { A } from "../../../components/link";
-import { services } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { siteSettings } from "../../../lib/db";
 
 export const metadata: Metadata = { title: "Leave a review" };
@@ -21,6 +21,7 @@ export const metadata: Metadata = { title: "Leave a review" };
 export default async function ReviewPortal({
   searchParams,
 }: { searchParams: Promise<{ sent?: string }> }) {
+  const { services, pages } = await siteContent();
   const { sent } = await searchParams;
   const settings = await siteSettings();
   const open = settings["portal.reviewOpen"] !== false;
@@ -31,10 +32,10 @@ export default async function ReviewPortal({
   if (!open) {
     return (
       <PortalShell
-        title="Reviews are closed for now"
-        intro="We are not collecting reviews at the moment. The page is still here so the link in your email does not break — try again in a few days, or just call us."
+        title={pages.review.reviewsAreClosedFor}
+        intro={pages.review.weAreNotCollecting}
       >
-        <A href="/contact" className="underline underline-offset-4">Get in touch instead</A>
+        <A href="/contact" className="underline underline-offset-4">{pages.review.getInTouchInstead}</A>
       </PortalShell>
     );
   }
@@ -42,8 +43,8 @@ export default async function ReviewPortal({
   if (sent === "ok" || sent === "preview") {
     return (
       <PortalShell
-        title="Thank you — we have it"
-        intro="Tristen reads every one of these himself. If something went wrong, expect to hear from him."
+        title={pages.review.thankYouWeHave}
+        intro={pages.review.tristenReadsEveryOne}
       >
         <SubmitNotice state={sent as SubmitState} />
       {/*
@@ -52,9 +53,9 @@ export default async function ReviewPortal({
         the road based on sentiment.
       */}
       <div className="mt-12 border-t border-ink/10 pt-8">
-        <h2 className="font-display text-xl font-bold">Would you post it on Google too?</h2>
+        <h2 className="font-display text-xl font-bold">{pages.review.wouldYouPostIt}</h2>
         <p className="mt-2 text-[color:var(--muted)]">
-          It helps other people in Oakland County find us — whatever you have to say.
+          {pages.review.itHelpsOtherPeople}
         </p>
         {/*
           The link comes from Settings, and is absent until it is set. Curbology's
@@ -68,20 +69,20 @@ export default async function ReviewPortal({
               className="btn btn--ink"
               rel="noopener"
             >
-              Leave a Google review
+              {pages.review.leaveAGoogleReview}
             </A>
           </p>
         ) : (
           <p className="mt-4 text-sm text-[color:var(--muted)]">
             <A href="/contact" className="underline underline-offset-4">
-              Ask us for the Google link
+              {pages.review.askUsForThe}
             </A>{" "}
-            — we are still setting it up.
+            {pages.review.weAreStillSetting}
           </p>
         )}
       </div>
         <p className="mt-10">
-          <A href="/" className="underline underline-offset-4">Back to the site</A>
+          <A href="/" className="underline underline-offset-4">{pages.review.backToTheSite}</A>
         </p>
       </PortalShell>
     );
@@ -89,17 +90,17 @@ export default async function ReviewPortal({
 
   return (
     <PortalShell
-      title="How did we do?"
-      intro="Good or bad, we want to hear it. It takes about a minute."
+      title={pages.review.howDidWeDo}
+      intro={pages.review.goodOrBadWe}
     >
       <SubmitNotice state={sent as SubmitState} />
       <form action="/api/reviews" method="post" className="space-y-5">
-        <Field name="name" label="Your name" required autoComplete="name" />
-        <Field name="email" label="Email" type="email" required autoComplete="email"
-          hint="So we can follow up if something went wrong. Not published." />
+        <Field name="name" label={pages.review.yourName} required autoComplete="name" />
+        <Field name="email" label={pages.review.email} type="email" required autoComplete="email"
+          hint={pages.review.soWeCanFollow} />
 
         <fieldset>
-          <legend className="font-medium">How would you rate the work?</legend>
+          <legend className="font-medium">{pages.review.howWouldYouRate}</legend>
           <div className="mt-3 flex flex-wrap gap-2">
             {[5, 4, 3, 2, 1].map((n) => (
               <label key={n} className="flex min-h-[44px] cursor-pointer items-center gap-2 rounded-lg border border-ink/25 px-4">
@@ -111,18 +112,18 @@ export default async function ReviewPortal({
         </fieldset>
 
         <div>
-          <label htmlFor="service" className="block font-medium">What did we do?</label>
+          <label htmlFor="service" className="block font-medium">{pages.review.whatDidWeDo}</label>
           <select id="service" name="service"
             className="mt-2 min-h-[44px] w-full rounded-lg border border-ink/25 bg-paper px-3 py-2">
-            <option value="">Select a service</option>
+            <option value="">{pages.review.selectAService}</option>
             {services.map((s) => <option key={s.slug} value={s.slug}>{s.name}</option>)}
           </select>
         </div>
 
         <div>
-          <label htmlFor="body" className="block font-medium">Your review</label>
+          <label htmlFor="body" className="block font-medium">{pages.review.yourReview}</label>
           <textarea id="body" name="body" rows={5} required
-            placeholder="What we did, how it went, anything we could do better."
+            placeholder={pages.review.whatWeDidHow}
             className="mt-2 w-full rounded-lg border border-ink/25 bg-paper px-3 py-2" />
         </div>
 
@@ -130,12 +131,12 @@ export default async function ReviewPortal({
           <label className="flex items-start gap-3">
             <input type="checkbox" name="consent" value="yes" className="mt-1" />
             <span className="text-sm">
-              You may publish my first name and review on the Curbology website.
+              {pages.review.youMayPublishMy}
             </span>
           </label>
         </div>
 
-        <Submit>Send my review</Submit>
+        <Submit>{pages.review.sendMyReview}</Submit>
       </form>
 
       {/*
@@ -144,9 +145,9 @@ export default async function ReviewPortal({
         the road based on sentiment.
       */}
       <div className="mt-12 border-t border-ink/10 pt-8">
-        <h2 className="font-display text-xl font-bold">Would you post it on Google too?</h2>
+        <h2 className="font-display text-xl font-bold">{pages.review.wouldYouPostIt}</h2>
         <p className="mt-2 text-[color:var(--muted)]">
-          It helps other people in Oakland County find us — whatever you have to say.
+          {pages.review.itHelpsOtherPeople}
         </p>
         {/*
           The link comes from Settings, and is absent until it is set. Curbology's
@@ -160,15 +161,15 @@ export default async function ReviewPortal({
               className="btn btn--ink"
               rel="noopener"
             >
-              Leave a Google review
+              {pages.review.leaveAGoogleReview}
             </A>
           </p>
         ) : (
           <p className="mt-4 text-sm text-[color:var(--muted)]">
             <A href="/contact" className="underline underline-offset-4">
-              Ask us for the Google link
+              {pages.review.askUsForThe}
             </A>{" "}
-            — we are still setting it up.
+            {pages.review.weAreStillSetting}
           </p>
         )}
       </div>

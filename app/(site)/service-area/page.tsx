@@ -1,9 +1,10 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "../../../lib/seo";
-import { business } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { Button, Section } from "../../../components/ui";
 
-export function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
+  const { business } = await siteContent();
   return pageMetadata("/service-area", {
   title: `Service area — ${business.serviceArea.county}, ${business.serviceArea.stateAbbr}`,
 });
@@ -16,17 +17,18 @@ export function generateMetadata(): Promise<Metadata> {
  * town listed. A plausible list of Oakland County towns would be invented, and
  * per-town pages built on invented content are a doorway-page pattern.
  */
-export default function ServiceAreaPage() {
+export default async function ServiceAreaPage() {
+  const { business, pages } = await siteContent();
   return (
     <>
       <Section cut={false} ground="teal">
         <h1 data-wash-type className="max-w-3xl text-5xl">
-          Serving {business.serviceArea.county}, {business.serviceArea.state}
+          {pages.serviceArea.serving}{" "}{business.serviceArea.county}, {business.serviceArea.state}
         </h1>
       </Section>
 
       <Section cut="l" ground="shallow">
-        <h2 data-wash-type className="text-4xl">Towns we work in</h2>
+        <h2 data-wash-type className="text-4xl">{pages.serviceArea.townsWeWorkIn}</h2>
         <ul className="mt-8 flex flex-wrap gap-3">
           {business.serviceArea.townsNamed.map((town) => (
             <li key={town} className="rounded-lg border border-ink/20 px-4 py-2">
@@ -35,10 +37,9 @@ export default function ServiceAreaPage() {
           ))}
         </ul>
         <p className="mt-8 max-w-xl text-[color:var(--muted)]">
-          Not listed? We cover {business.serviceArea.county} broadly — ask and
-          we will tell you straight away.
+          {pages.serviceArea.notListedWeCover}{" "}{business.serviceArea.county} {pages.serviceArea.broadlyAskAndWe}
         </p>
-        <div className="mt-8"><Button href="/quote">Check your address</Button></div>
+        <div className="mt-8"><Button href="/quote">{pages.serviceArea.checkYourAddress}</Button></div>
       </Section>
     </>
   );

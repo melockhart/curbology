@@ -23,5 +23,21 @@
     "SITE_HOST": "curbology.preview.op-site.net"
   },
 
-  "observability": { "enabled": true }
+  // Headless Chrome for the MCP screenshot tool. A binding needs no token or ID.
+  "browser": { "binding": "BROWSER" },
+
+  "observability": { "enabled": true },
+
+  // Production. A separate Worker, built with CLOUDFLARE_ENV=production. No
+  // PREVIEW_MODE here, and SUPABASE_URL set as a secret keeps preview mode off.
+  // Wrangler does not inherit vars, routes or bindings into an environment, so
+  // they are repeated here.
+  "env": {
+    "production": {
+      "routes": [{ "pattern": "curbology.op-site.net", "custom_domain": true }],
+      "vars": { "SITE_HOST": "curbology.op-site.net" },
+      "browser": { "binding": "BROWSER" },
+      "observability": { "enabled": true }
+    }
+  }
 }

@@ -1,20 +1,21 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "../../../lib/seo";
-import { services } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { Button, Section, Eyebrow } from "../../../components/ui";
 import { A } from "../../../components/link";
 
-export function generateMetadata(): Promise<Metadata> {
+export async function generateMetadata(): Promise<Metadata> {
   return pageMetadata("/services", { title: "Services" });
 }
 
-export default function ServicesIndex() {
+export default async function ServicesIndex() {
+  const { services, pages } = await siteContent();
   return (
     <>
       <Section cut={false} ground="teal">
-        <h1 data-wash-type className="max-w-3xl text-5xl">Exterior cleaning services</h1>
+        <h1 data-wash-type className="max-w-3xl text-5xl">{pages.servicesIndex.exteriorCleaningServices}</h1>
         <p className="mt-6 max-w-xl text-lg">
-          Four services across Oakland County. Every one starts with a free quote.
+          {pages.servicesIndex.fourServicesAcrossOakland}
         </p>
       </Section>
 
@@ -47,12 +48,11 @@ export default function ServicesIndex() {
       </Section>
 
       <Section cut="r" ground="teal">
-        <h2 data-wash-type className="max-w-2xl text-4xl">Not sure which one you need?</h2>
+        <h2 data-wash-type className="max-w-2xl text-4xl">{pages.servicesIndex.notSureWhichOne}</h2>
         <p className="mt-4 max-w-xl text-lg">
-          Send a photo with your quote request. Most of the time that is enough to
-          price the job without visiting.
+          {pages.servicesIndex.sendAPhotoWith}
         </p>
-        <div className="mt-8"><Button href="/quote" variant="onTeal">Get a free quote</Button></div>
+        <div className="mt-8"><Button href="/quote" variant="onTeal">{pages.servicesIndex.getAFreeQuote}</Button></div>
       </Section>
     </>
   );

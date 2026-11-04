@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "../../../lib/seo";
-import { business, home } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { publishedTeam } from "../../../lib/db";
 import { Button, Section, Eyebrow, AwaitingPhoto } from "../../../components/ui";
 
@@ -17,6 +17,7 @@ export function generateMetadata(): Promise<Metadata> {
  * No "3+ Years of Expertise" here. That was one of the unsourced stats.
  */
 export default async function AboutPage() {
+  const { business, home, pages } = await siteContent();
   const team = await publishedTeam();
 
   return (
@@ -30,14 +31,14 @@ export default async function AboutPage() {
           <div>
             <p className="text-lg text-[color:var(--muted)]">{home.aboutBody}</p>
             <p className="mt-6 text-lg text-[color:var(--muted)]">
-              We work across {business.serviceArea.county},{" "}
+              {pages.about.weWorkAcross}{" "}{business.serviceArea.county},{" "}
               {business.serviceArea.state}
               {business.serviceArea.townsNamed.length > 0 &&
                 `, including ${business.serviceArea.townsNamed.join(", ")}`}
               .
             </p>
           </div>
-          <AwaitingPhoto label="The owner. This is the single most valuable photo on the site — a face is why a stranger lets someone onto their property with a pressure washer." />
+          <AwaitingPhoto label={pages.about.theOwnerThisIs} />
         </div>
       </Section>
 
@@ -45,7 +46,7 @@ export default async function AboutPage() {
           the row, so an empty team means this section is simply absent. */}
       {team.length > 0 && (
         <Section cut="r" ground="teal">
-          <Eyebrow>Who turns up</Eyebrow>
+          <Eyebrow>{pages.about.whoTurnsUp}</Eyebrow>
           <ul className="mt-8 grid gap-10 sm:grid-cols-2 lg:grid-cols-3">
             {team.map((person) => (
               <li key={person.id}>
@@ -69,9 +70,9 @@ export default async function AboutPage() {
       )}
 
       <Section cut="l" ground="ink">
-        <Eyebrow>Ready when you are</Eyebrow>
-        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">Get a free quote</h2>
-        <div className="mt-8"><Button href="/quote">Request a quote</Button></div>
+        <Eyebrow>{pages.about.readyWhenYouAre}</Eyebrow>
+        <h2 data-wash-type className="max-w-2xl text-4xl text-paper">{pages.about.getAFreeQuote}</h2>
+        <div className="mt-8"><Button href="/quote">{pages.about.requestAQuote}</Button></div>
       </Section>
     </>
   );

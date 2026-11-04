@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "../../lib/seo";
-import { business, home, services, connective } from "../../lib/content";
+import { siteContent } from "../../lib/cms";
 import { Hero } from "../../components/hero";
 import { Section, ProofBand, AwaitingPhoto } from "../../components/ui";
 import { A } from "../../components/link";
@@ -12,38 +12,8 @@ export function generateMetadata(): Promise<Metadata> {
   return pageMetadata("/", {});
 }
 
-/**
- * The home page, composed on the lane's angle.
- *
- * What changed, and why. The previous version was seven full-width bands, each
- * a solid fill with its content in the same centred box, every heading starting
- * at the same left margin. That is a template with a good palette on it — the
- * structure did not change when the design did.
- *
- * This is built on three moves instead:
- *
- *   THE ANGLE. Every boundary is cut on the lane's slope, alternating, and
- *   sections climb into the one above so they interlock rather than stack.
- *
- *   OVERLAP. Plates and figures cross the boundaries. The proof plate hangs
- *   into the hero; the step numerals run out past the text column; the closing
- *   headline starts on one ground and finishes on the next. Nothing sits
- *   politely inside its own band.
- *
- *   ASYMMETRY. Content spans odd tracks of a twelve-column grid and changes
- *   alignment down the page, so the eye is led rather than marched.
- *
- * The copy is unchanged where it is factual — every claim is still verbatim
- * from the live Wix capture. The kickers and leads are new and are language
- * only: nothing in `connective` asserts anything Tristen could be held to.
- */
-const steps = [
-  { n: "01", title: "Send a photo", body: "A picture of the driveway, the siding, the roofline — whatever needs doing. Most of the time that is enough to price it." },
-  { n: "02", title: "Get a real number", body: "Not a range designed to change once we arrive. If we do need to see it first, we will say so." },
-  { n: "03", title: "We clean it", body: "You do not need to be home. We leave when it looks the way it did the day it was built." },
-];
-
-export default function HomePage() {
+export default async function HomePage() {
+  const { business, home, services, connective, pages } = await siteContent();
   return (
     <>
       <Hero />
@@ -82,7 +52,7 @@ export default function HomePage() {
             <p className="font-spec text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
               {connective.sections.services.kicker}
             </p>
-            <h2 data-wash-type className="display-lg mt-4">Four services,<br />one crew</h2>
+            <h2 data-wash-type className="display-lg mt-4">{pages.home.fourServices}<br />{pages.home.oneCrew}</h2>
             <p className="mt-5 max-w-xs text-[color:var(--muted)]">
               {connective.sections.services.lead}
             </p>
@@ -129,14 +99,14 @@ export default function HomePage() {
             </p>
             <h2 data-wash-type
                 className="display-lg mt-4 -ml-[6vw] whitespace-nowrap md:-ml-[8vw]">
-              Before<br />and after
+              {pages.home.before}<br />{pages.home.andAfter}
             </h2>
             <p className="mt-6 max-w-sm text-stone-050/85">
               {connective.sections.difference.lead}
             </p>
             <p className="mt-8">
               <A href="/gallery" className="text-teal-300 underline underline-offset-8">
-                See more of our work
+                {pages.home.seeMoreOfOur}
               </A>
             </p>
           </div>
@@ -161,14 +131,14 @@ export default function HomePage() {
             <p className="font-spec text-[11px] uppercase tracking-[0.24em] text-[color:var(--muted)]">
               {connective.sections.method.kicker}
             </p>
-            <h2 data-wash-type className="display-lg mt-4">Three steps,<br />no surprises</h2>
+            <h2 data-wash-type className="display-lg mt-4">{pages.home.threeSteps}<br />{pages.home.noSurprises}</h2>
             <p className="mt-5 max-w-xs text-[color:var(--muted)]">
               {connective.sections.method.lead}
             </p>
           </div>
 
           <ol className="col-span-12 mt-12 md:col-span-6 md:col-start-7 md:mt-0">
-            {steps.map((step, i) => (
+            {pages.home.steps.map((step, i) => (
               <Reveal key={step.n} delay={i * 90}>
                 {/*
                   The numeral is generated content, not a DOM node. It is pure
@@ -199,11 +169,11 @@ export default function HomePage() {
             <h2 data-wash-type className="display-lg mt-4 max-w-[13ch]">{home.aboutHeading}</h2>
             <p className="mt-6 max-w-xl text-lg">{home.aboutBody}</p>
             <p className="mt-8">
-              <A href="/about" className="underline underline-offset-8">More about us</A>
+              <A href="/about" className="underline underline-offset-8">{pages.home.moreAboutUs}</A>
             </p>
           </div>
           <div className="col-span-12 self-center lg:col-span-4 lg:col-start-9">
-            <AwaitingPhoto label="The owner, on a job. A face is why a stranger lets someone onto their property." />
+            <AwaitingPhoto label={pages.home.theOwnerOnA} />
             <p className="font-spec mt-6 text-[11px] uppercase tracking-[0.24em]">
               {connective.sections.area.kicker}
             </p>
@@ -233,7 +203,7 @@ export default function HomePage() {
             <h2 data-wash-type className="display-lg mt-4 max-w-[14ch]">{home.quoteHeading}</h2>
             <p className="mt-6 max-w-md text-lg text-stone-050/85">{home.quoteSub}</p>
             <div className="mt-10 flex flex-wrap items-center gap-x-8 gap-y-4">
-              <A href="/quote" className="btn btn--paper">Get a free quote</A>
+              <A href="/quote" className="btn btn--paper">{pages.home.getAFreeQuote}</A>
               <A href={business.phone.href}
                  className="font-display text-2xl font-bold text-teal-300 underline underline-offset-8">
                 {business.phone.display}

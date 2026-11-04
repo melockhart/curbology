@@ -2,9 +2,9 @@
    and scoped, so the rest of the site's older styles and these cannot collide.
    Base rules are the phone screen; the two media queries are tablet and desktop. */
 .qf {
-  --ink: #0c2448; --ink2: #3d5070; --blue: #1890d0; --bluet: #0d659f; --wash: #f1f4f6; --line: #d3dbe3;
+  --ink: #0c2448; --ink2: #3d5070; --blue: #1890d0; --bluet: #0d659f; --q-wash: #f1f4f6; --line: #d3dbe3;
   --q-pad: 20px; --q-h1: 40px; --q-body: 16px; --q-lead: 18px; --q-top: 24px; --q-price: 72px; --q-card: 18px;
-  min-height: 100dvh; background: var(--wash); color: var(--ink);
+  min-height: 100dvh; background: var(--q-wash); color: var(--ink);
   font: 400 var(--q-body)/1.55 "Instrument Sans Variable", "Instrument Sans", sans-serif;
   -webkit-font-smoothing: antialiased;
 }
@@ -59,7 +59,7 @@
 .qf-btn:active { transform: translateY(1px); }
 .qf-btn[disabled] { opacity: .55; cursor: not-allowed; }
 .qf-btn.alt { background: #fff; color: var(--ink) !important; border-color: var(--line); }
-.qf-btn.alt:hover { background: var(--wash); }
+.qf-btn.alt:hover { background: var(--q-wash); }
 .qf-btn.full { width: 100%; }
 .qf :focus-visible { outline: 3px solid var(--blue); outline-offset: 2px; }
 .qf-f { display: flex; flex-direction: column; gap: 8px; }
@@ -103,3 +103,32 @@
   .qf-spin { animation: qf-spin 1s linear infinite; }
   @keyframes qf-spin { to { transform: rotate(360deg); } }
 }
+
+/* The consent and connections screens, in the same system. */
+.qf-center { display: flex; flex-direction: column; align-items: center; padding: 32px 16px; }
+@media (min-width: 700px) { .qf-center { justify-content: center; } }
+.qf-grant { width: 100%; max-width: 440px; background: #fff; border: 1px solid var(--line); border-radius: 16px; padding: 24px; }
+.qf-grant.qf-wide { max-width: 620px; }
+.qf-kicker { font-weight: 600; font-size: 15px; color: var(--bluet); margin-bottom: 16px !important; }
+.qf h1.qf-h-grant { font-size: 34px; line-height: 1.05; margin-bottom: 8px; }
+.qf h1.qf-h-conn { font-size: 30px; line-height: 1.05; margin-bottom: 6px; }
+.qf-grant-body { font-size: 16px; line-height: 1.5; color: var(--ink2); margin-bottom: 16px !important; }
+.qf-kv { border-top: 1px solid var(--line); padding: 12px 0; display: flex; justify-content: space-between; gap: 12px; font-size: 14px; }
+.qf-kv > span:first-child { color: var(--ink2); }
+.qf-kv strong { font-weight: 600; overflow-wrap: anywhere; text-align: right; }
+.qf-grant-actions { display: grid; grid-template-columns: 1fr 2fr; gap: 8px; margin-top: 8px; }
+.qf-grant-actions .qf-btn { min-height: 50px; padding: 0 12px; }
+.qf-grant .qf-err { margin: 8px 0; }
+.qf-conn-sub { font-size: 15px; color: var(--ink2); margin-bottom: 18px !important; }
+.qf-conn-h { font-weight: 600; font-size: 15px; margin-bottom: 6px !important; }
+.qf-conn-h.qf-mt { margin-top: 18px !important; }
+.qf-conn-p { font-size: 14px; color: var(--ink2); margin-bottom: 8px !important; }
+.qf-conn-note { font-size: 13px; color: var(--ink2); margin-top: 6px !important; }
+.qf-copy { border: 1px solid #8796a8; border-radius: 12px; padding: 11px 14px; display: flex; justify-content: space-between; align-items: flex-start; gap: 10px; }
+.qf-copy code { font-family: ui-monospace, Menlo, monospace; font-size: 13px; line-height: 1.5; overflow-wrap: anywhere; min-width: 0; }
+.qf-copy button { background: none; border: 0; padding: 0; color: var(--bluet); font: inherit; font-size: 14px; font-weight: 600; cursor: pointer; flex: none; min-height: 24px; }
+.qf-conn-who { display: flex; flex-direction: column; color: var(--ink) !important; min-width: 0; }
+.qf-conn-who strong { text-align: left; }
+.qf-conn-who span { color: var(--ink2); }
+.qf-conn-when { text-align: right; color: var(--ink2); flex: none; }
+.qf-conn-off { background: none; border: 0; border-top: 1px solid var(--line); width: 100%; text-align: left; padding: 12px 0; font: inherit; font-size: 14px; font-weight: 600; color: #a32f2f; cursor: pointer; }

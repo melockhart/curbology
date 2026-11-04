@@ -28,7 +28,7 @@ const publicRoutes = ["/", "/quote", "/services", "/services/pressure-washing", 
  * credentials are supplied; without them the public sweep runs as before rather
  * than silently measuring sixteen copies of the sign-in page.
  */
-const adminRoutes = ["/sign-in", "/admin", "/admin/analytics", "/admin/activity", "/admin/quotes", "/admin/rates", "/admin/leads",
+const adminRoutes = ["/sign-in", "/admin", "/admin/analytics", "/admin/activity", "/connections", "/admin/quotes", "/admin/rates", "/admin/leads",
   "/admin/reviews", "/admin/bookings", "/admin/content", "/admin/forms", "/admin/seo",
   "/admin/theme", "/admin/settings", "/admin/team", "/admin/team-access", "/admin/users",
   "/admin/domain", "/admin/account"];

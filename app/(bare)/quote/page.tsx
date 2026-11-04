@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { QuoteFlow } from "../../../components/quote/quote-flow";
-import { business, services } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 
 export const metadata: Metadata = {
   title: "Get your price",
@@ -11,10 +11,12 @@ export const metadata: Metadata = {
  * One address for the whole flow. The steps are states of one screen, so a
  * half-finished quote cannot be deep-linked into a step whose data is missing.
  */
-export default function QuotePage() {
+export default async function QuotePage() {
+  const { business, services, pages } = await siteContent();
   return (
     <QuoteFlow
       phone={{ display: business.phone.display, href: business.phone.href }}
+      copy={pages.quote}
       services={services.map((service) => ({ slug: service.slug, name: service.name }))}
     />
   );

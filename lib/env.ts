@@ -43,11 +43,18 @@ type RuntimeEnv = {
   PREVIEW_MODE?: string;
   /** The password that opens the preview console. No value, no console. */
   PREVIEW_PASSWORD?: string;
+  /** Signs draft preview links. Without it drafts can be edited but not previewed. */
+  CMS_SIGNING_SECRET?: string;
   /** Reads quote photos. Without it every quote goes to the owner unread. */
   ANTHROPIC_API_KEY?: string;
   /** Salts the stored IP hash behind the quote rate limit. Quotes refuse to start without it. */
   QUOTE_HASH_SALT?: string;
 };
+
+/** Cloudflare's headless browser, for MCP screenshots. Absent outside a deployed Worker. */
+export function browserBinding(): unknown {
+  return (workersEnv as unknown as { BROWSER?: unknown } | null)?.BROWSER ?? null;
+}
 
 let workersEnv: Record<string, string | undefined> | null = null;
 try {

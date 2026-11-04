@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { PortalShell, Submit, SubmitNotice, type SubmitState } from "../../../components/portal";
 import { A } from "../../../components/link";
-import { business } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 
 export const metadata: Metadata = {
   title: "Unsubscribe",
@@ -28,6 +28,7 @@ export const metadata: Metadata = {
 export default async function UnsubscribePage({
   searchParams,
 }: { searchParams: Promise<{ id?: string; done?: string }> }) {
+  const { business, pages } = await siteContent();
   const { id, done } = await searchParams;
 
   // Done means done. Showing the form again after a successful opt-out invites
@@ -36,12 +37,12 @@ export default async function UnsubscribePage({
   if (done === "ok" || done === "preview") {
     return (
       <PortalShell
-        title="You are unsubscribed"
-        intro="We will not email you again. You will still hear from us about a job you have booked — that is not marketing, and turning it off would mean you missed your own appointment."
+        title={pages.unsubscribe.youAreUnsubscribed}
+        intro={pages.unsubscribe.weWillNotEmail}
       >
         <SubmitNotice state={done as SubmitState} />
         <p className="mt-8">
-          <A href="/" className="underline underline-offset-4">Back to the site</A>
+          <A href="/" className="underline underline-offset-4">{pages.unsubscribe.backToTheSite}</A>
         </p>
       </PortalShell>
     );
@@ -50,13 +51,13 @@ export default async function UnsubscribePage({
   if (!id) {
     return (
       <PortalShell
-        title="We need the link from your email"
-        intro="This page needs the personalised link we sent you, so we know which address to remove."
+        title={pages.unsubscribe.weNeedTheLink}
+        intro={pages.unsubscribe.thisPageNeedsThe}
       >
         <p>
-          Open the email again and use its unsubscribe link, or{" "}
-          <A href="/contact" className="underline underline-offset-4">ask us to remove you</A>{" "}
-          and we will do it by hand.
+          {pages.unsubscribe.openTheEmailAgain}{" "}
+          <A href="/contact" className="underline underline-offset-4">{pages.unsubscribe.askUsToRemove}</A>{" "}
+          {pages.unsubscribe.andWeWillDo}
         </p>
       </PortalShell>
     );
@@ -64,8 +65,8 @@ export default async function UnsubscribePage({
 
   return (
     <PortalShell
-      title="Unsubscribe from our emails"
-      intro="One click and we stop emailing you. You will still hear from us about a job you have booked."
+      title={pages.unsubscribe.unsubscribeFromOurEmails}
+      intro={pages.unsubscribe.oneClickAndWe}
     >
       <SubmitNotice state={done as SubmitState} />
       <form action="/api/unsubscribe" method="post" className="space-y-6">
@@ -73,18 +74,17 @@ export default async function UnsubscribePage({
 
         <div>
           <label htmlFor="reason" className="block font-medium">
-            Anything we got wrong? <span className="text-[color:var(--muted)]">(optional)</span>
+            {pages.unsubscribe.anythingWeGotWrong}{" "}<span className="text-[color:var(--muted)]">{pages.unsubscribe.optional}</span>
           </label>
           <textarea id="reason" name="reason" rows={3}
             className="mt-2 w-full rounded-lg border border-ink/25 bg-paper px-3 py-2" />
         </div>
 
-        <Submit>Unsubscribe me</Submit>
+        <Submit>{pages.unsubscribe.unsubscribeMe}</Submit>
       </form>
 
       <p className="mt-8 text-sm text-[color:var(--muted)]">
-        Changed your mind? Just close this page — nothing happens until you press
-        the button. Or call{" "}
+        {pages.unsubscribe.changedYourMindJust}{" "}
         <A href={business.phone.href} className="underline underline-offset-4">
           {business.phone.display}
         </A>

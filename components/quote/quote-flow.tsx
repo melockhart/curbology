@@ -5,9 +5,11 @@ import "@fontsource-variable/archivo/wdth.css";
 import { A } from "../link";
 import { ITEMS, type Item } from "../../lib/quote/pricing";
 import { MAX_PHOTOS, MAX_PHOTO_BYTES, TEXT_CONSENT_WORDING } from "../../lib/quote/rules";
+import type { SiteContent } from "../../lib/cms/core";
 import "./quote.css";
 
 type Step = "address" | "size" | "photos" | "details" | "working" | "price" | "review" | "outside";
+type QuoteCopy = SiteContent["pages"]["quote"];
 type Service = { slug: string; name: string };
 type Photo = { key: string; url: string; state: "uploading" | "saved" | "failed" };
 type Line = { label: string; quantity: number; unit: string; totalCents: number };
@@ -29,7 +31,6 @@ const SERVICE_ITEMS: Record<string, Item[]> = {
 };
 
 const STEPS: Step[] = ["address", "size", "photos", "details", "price"];
-const STEP_NAMES = ["Address", "Size", "Photos", "Details", "Quote"];
 const STORE = "curbology-quote";
 
 const money = (cents: number) =>
@@ -82,7 +83,7 @@ const PhoneIcon = () => (
   <svg className="qf-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M5 4h4l2 5-2.5 1.5a11 11 0 0 0 5 5L15 13l5 2v4a2 2 0 0 1-2 2A15 15 0 0 1 3 6a2 2 0 0 1 2-2Z" /></svg>
 );
 
-export function QuoteFlow({ phone, services }: { phone: { display: string; href: string }; services: Service[] }) {
+export function QuoteFlow({ phone, services, copy }: { phone: { display: string; href: string }; services: Service[]; copy: QuoteCopy }) {
   const [step, setStep] = useState<Step>("address");
   const [quote, setQuote] = useState<{ id: string; token: string } | null>(null);
   const [preview, setPreview] = useState(false);
@@ -292,7 +293,7 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
   );
   const problem = error && <p className="qf-err" role="alert">{error}</p>;
   const previewNote = preview && (
-    <p className="qf-note" role="status">Preview: nothing here is saved, and no photos leave this device.</p>
+    <p className="qf-note" role="status">{copy.previewNothingHereIs}</p>
   );
 
   let body: ReactNode = null;
@@ -300,32 +301,32 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
   if (step === "address") {
     body = (
       <>
-        {head("Get your price", "Add your address and photos. We price the job, or Tristen checks it and gets back to you.")}
+        {head(copy.getYourPrice, copy.addYourAddressAnd)}
         <form className="qf-card qf-pad qf-stack qf-g16" onSubmit={startQuote} noValidate>
           <div className="qf-f">
-            <label htmlFor="q-address">Property address</label>
-            <span className="qf-hint">Street, town and ZIP.</span>
+            <label htmlFor="q-address">{copy.propertyAddress}</label>
+            <span className="qf-hint">{copy.streetTownAndZip}</span>
             <input id="q-address" autoComplete="street-address" value={address} onChange={(e) => setAddress(e.target.value)} />
           </div>
           <div className="qf-stack qf-g8">
-            <span className="qf-lb">What needs washing?</span>
+            <span className="qf-lb">{copy.whatNeedsWashing}</span>
             <div className="qf-opts">
               {services.map((service) => {
                 const on = selected.includes(service.slug);
                 return (
                   <button key={service.slug} type="button" className={`qf-opt ${on ? "on" : ""}`} aria-pressed={on} onClick={() => toggle(service.slug)}>
                     <strong>{service.name}</strong>
-                    <span className="qf-hint">{on ? "Selected" : "Add to this quote"}</span>
+                    <span className="qf-hint">{on ? copy.selected : copy.addToThisQuote}</span>
                   </button>
                 );
               })}
             </div>
-            <span className="qf-hint">Pick more than one to quote them together.</span>
+            <span className="qf-hint">{copy.pickMoreThanOne}</span>
           </div>
           {problem}
-          <button className="qf-btn full" disabled={busy}>{busy ? "Checking your address" : "Continue"}</button>
+          <button className="qf-btn full" disabled={busy}>{busy ? copy.checkingYourAddress : copy.continue}</button>
         </form>
-        <p className="qf-hint">No account needed. Outside Oakland County? We will tell you on the next step.</p>
+        <p className="qf-hint">{copy.noAccountNeededOutside}</p>
       </>
     );
   }
@@ -333,14 +334,14 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
   if (step === "outside") {
     body = (
       <>
-        {head("That address looks outside our area", "We serve Oakland County, Michigan. If you think we got this wrong, tell us.")}
+        {head(copy.thatAddressLooksOutside, copy.weServeOaklandCounty)}
         <div className="qf-card qf-pad qf-stack qf-g16">
           <div className="qf-f">
-            <label htmlFor="q-address-out">Property address</label>
+            <label htmlFor="q-address-out">{copy.propertyAddress}</label>
             <input id="q-address-out" readOnly value={address} />
           </div>
-          <button type="button" className="qf-btn alt full" onClick={() => go("address")}>Try a different address</button>
-          <A className="qf-btn full" href="/contact">Ask us anyway</A>
+          <button type="button" className="qf-btn alt full" onClick={() => go("address")}>{copy.tryADifferentAddress}</button>
+          <A className="qf-btn full" href="/contact">{copy.askUsAnyway}</A>
         </div>
       </>
     );
@@ -351,7 +352,7 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
     body = (
       <>
         {previewNote}
-        {head("How big is the job?", "A rough size is fine. Not sure? Leave it blank and Tristen will measure it.")}
+        {head(copy.howBigIsThe, copy.aRoughSizeIs)}
         <div className="qf-card qf-pad qf-stack qf-g16">
           {items.map((item) => (
             <div className="qf-f" key={item}>
@@ -362,8 +363,8 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
           ))}
         </div>
         <div className="qf-row qf-btw qf-wr qf-g12">
-          <button type="button" className="qf-lk" onClick={() => go("address")}>Back</button>
-          <button type="button" className="qf-btn" onClick={() => go("photos")}>Continue</button>
+          <button type="button" className="qf-lk" onClick={() => go("address")}>{copy.back}</button>
+          <button type="button" className="qf-btn" onClick={() => go("photos")}>{copy.continue}</button>
         </div>
       </>
     );
@@ -373,41 +374,41 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
     body = (
       <>
         {previewNote}
-        {head("Add photos of the job", "Photos show condition, so the price fits your job. Three or four is plenty.")}
+        {head(copy.addPhotosOfThe, copy.photosShowConditionSo)}
         <label className="qf-drop">
           <svg className="qf-i" viewBox="0 0 24 24" aria-hidden="true"><path d="M4 8h3l2-3h6l2 3h3a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1H4a1 1 0 0 1-1-1V9a1 1 0 0 1 1-1Z" /><circle cx="12" cy="13.5" r="3.5" /></svg>
           <span className="qf-stack">
-            <strong>Take or add photos</strong>
-            <span className="qf-hint">Up to {MAX_PHOTOS} photos</span>
+            <strong>{copy.takeOrAddPhotos}</strong>
+            <span className="qf-hint">{copy.upTo}{" "}{MAX_PHOTOS}{copy.photos}</span>
           </span>
-          <input type="file" accept="image/*" multiple onChange={addPhotos} aria-label="Take or add photos" />
+          <input type="file" accept="image/*" multiple onChange={addPhotos} aria-label={copy.takeOrAddPhotos} />
         </label>
-        {savedPhotos > 0 && <p className="qf-sm qf-mut">{savedPhotos} photo{savedPhotos === 1 ? "" : "s"} already saved on this quote.</p>}
+        {savedPhotos > 0 && <p className="qf-sm qf-mut">{savedPhotos}{copy.photo}{savedPhotos === 1 ? "" : "s"}{copy.alreadySavedOnThis}</p>}
         {photos.length > 0 && (
           <div className="qf-shots">
             {photos.map((photo) => (
               <div key={photo.key} className={`qf-shot ${photo.state === "uploading" ? "up" : ""}`}>
                 {/* eslint-disable-next-line @next/next/no-img-element -- a local preview of the customer's own file */}
-                <img src={photo.url} alt="Your photo" />
-                {photo.state !== "saved" && <span>{photo.state === "uploading" ? "Saving" : "Not saved"}</span>}
+                <img src={photo.url} alt={copy.yourPhoto} />
+                {photo.state !== "saved" && <span>{photo.state === "uploading" ? copy.saving : copy.notSaved}</span>}
               </div>
             ))}
           </div>
         )}
         {problem}
         <div className="qf-card qf-pad18 qf-stack qf-g8">
-          <p className="qf-lb">What helps most</p>
-          {["The whole area, from far back", "The dirtiest spot, close up", "Anything fragile nearby", "Stains you want gone"].map((tip) => (
+          <p className="qf-lb">{copy.whatHelpsMost}</p>
+          {copy.tips.map((tip) => (
             <div className="qf-chk qf-sm" key={tip}><Check /><span>{tip}</span></div>
           ))}
         </div>
         <div className="qf-f">
-          <label htmlFor="q-note">Anything we should know?</label>
-          <textarea id="q-note" placeholder="Gate code, oil stains, areas to avoid" value={note} onChange={(e) => setNote(e.target.value)} />
+          <label htmlFor="q-note">{copy.anythingWeShouldKnow}</label>
+          <textarea id="q-note" placeholder={copy.gateCodeOilStains} value={note} onChange={(e) => setNote(e.target.value)} />
         </div>
         <div className="qf-row qf-btw qf-wr qf-g12">
-          <button type="button" className="qf-lk" onClick={() => go("size")}>Back</button>
-          <button type="button" className="qf-btn" disabled={uploading} onClick={() => go("details")}>{uploading ? "Saving photos" : "Continue"}</button>
+          <button type="button" className="qf-lk" onClick={() => go("size")}>{copy.back}</button>
+          <button type="button" className="qf-btn" disabled={uploading} onClick={() => go("details")}>{uploading ? copy.savingPhotos : copy.continue}</button>
         </div>
       </>
     );
@@ -417,20 +418,20 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
     body = (
       <>
         {previewNote}
-        {head("Where should we send your price?", "If we can price it now, your price appears on the next screen.")}
+        {head(copy.whereShouldWeSend, copy.ifWeCanPrice)}
         <form className="qf-card qf-pad qf-stack qf-g16" onSubmit={submit} noValidate>
           <div className="qf-two">
             <div className="qf-f">
-              <label htmlFor="q-name">Full name</label>
+              <label htmlFor="q-name">{copy.fullName}</label>
               <input id="q-name" autoComplete="name" value={name} onChange={(e) => setName(e.target.value)} />
             </div>
             <div className="qf-f">
-              <label htmlFor="q-mobile">Mobile number</label>
+              <label htmlFor="q-mobile">{copy.mobileNumber}</label>
               <input id="q-mobile" type="tel" autoComplete="tel" value={mobile} onChange={(e) => setMobile(e.target.value)} />
             </div>
           </div>
           <div className="qf-f">
-            <label htmlFor="q-email">Email</label>
+            <label htmlFor="q-email">{copy.email}</label>
             <input id="q-email" type="email" autoComplete="email" value={email} onChange={(e) => setEmail(e.target.value)} />
           </div>
           <label className="qf-chk qf-sm">
@@ -438,9 +439,9 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
             <span>{TEXT_CONSENT_WORDING}</span>
           </label>
           {problem}
-          <button className="qf-btn full">See my price</button>
+          <button className="qf-btn full">{copy.seeMyPrice}</button>
         </form>
-        <button type="button" className="qf-lk" style={{ alignSelf: "flex-start" }} onClick={() => go("photos")}>Back</button>
+        <button type="button" className="qf-lk" style={{ alignSelf: "flex-start" }} onClick={() => go("photos")}>{copy.back}</button>
       </>
     );
   }
@@ -448,15 +449,15 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
   if (step === "working") {
     body = (
       <>
-        {head("Working out your price", "This usually takes a few moments. You can stay here.")}
+        {head(copy.workingOutYourPrice, copy.thisUsuallyTakesA)}
         <div className="qf-card qf-stack" style={{ padding: "6px 20px" }} role="status">
           <div className="qf-row qf-g12" style={{ padding: "15px 0" }}>
             <span className="qf-spin" aria-hidden="true" />
-            <span>{photoTotal ? `Reading your ${photoTotal} photo${photoTotal === 1 ? "" : "s"}` : "Checking your job"}</span>
+            <span>{photoTotal ? `Reading your ${photoTotal} photo${photoTotal === 1 ? "" : "s"}` : copy.checkingYourJob}</span>
           </div>
           <div className="qf-row qf-g12 qf-hair qf-mut" style={{ padding: "15px 0" }}>
             <span style={{ width: 20, height: 20, borderRadius: "50%", border: "2px solid var(--line)", flex: "none" }} />
-            <span>Applying Curbology rates</span>
+            <span>{copy.applyingCurbologyRates}</span>
           </div>
         </div>
       </>
@@ -466,11 +467,11 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
   if (step === "price" && shown?.priceCents !== undefined) {
     body = (
       <>
-        {head("Your price", matched ?? address)}
+        {head(copy.yourPrice, matched ?? address)}
         <section className="qf-card">
           <div className="qf-deep qf-stack qf-g4">
             <span className="qf-price">{money(shown.priceCents)}</span>
-            {shown.depositCents ? <span className="qf-sm" style={{ color: "#c6d2e0" }}>Deposit to hold a date: {money(shown.depositCents)}</span> : null}
+            {shown.depositCents ? <span className="qf-sm" style={{ color: "#c6d2e0" }}>{copy.depositToHoldA}{" "}{money(shown.depositCents)}</span> : null}
           </div>
           {(shown.lines?.length ?? 0) > 0 && (
             <div style={{ padding: "6px 22px" }}>
@@ -488,21 +489,21 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
         </section>
         {shown.seen && (
           <div className="qf-card qf-pad18 qf-stack qf-g8">
-            <p className="qf-lb">What we saw in your photos</p>
+            <p className="qf-lb">{copy.whatWeSawIn}</p>
             <p>{shown.seen}</p>
           </div>
         )}
         {shown.note && (
           <div className="qf-card qf-pad18 qf-stack qf-g8">
-            <p className="qf-lb">A note from Tristen</p>
+            <p className="qf-lb">{copy.aNoteFromTristen}</p>
             <p>{shown.note}</p>
           </div>
         )}
         <div className="qf-stack qf-g12">
-          <a className="qf-btn full" href={phone.href}><PhoneIcon />Call to pick a date</a>
-          <button type="button" className="qf-lk qf-sm" style={{ alignSelf: "flex-start" }} onClick={startOver}>Start a new quote</button>
+          <a className="qf-btn full" href={phone.href}><PhoneIcon />{copy.callToPickA}</a>
+          <button type="button" className="qf-lk qf-sm" style={{ alignSelf: "flex-start" }} onClick={startOver}>{copy.startANewQuote}</button>
         </div>
-        <p className="qf-hint">Price assumes the area and photos match what is on site.</p>
+        <p className="qf-hint">{copy.priceAssumesTheArea}</p>
       </>
     );
   }
@@ -511,12 +512,12 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
     body = (
       <>
         {previewNote}
-        {head("Tristen will check this one", "Your job needs a closer look before we can give you a fair price.")}
+        {head(copy.tristenWillCheckThis, copy.yourJobNeedsA)}
         <div className="qf-card qf-pad qf-stack qf-g12">
-          <p className="qf-mut qf-sm">We have your details and will contact you with your price.</p>
-          <a className="qf-btn alt full" href={phone.href}><PhoneIcon />Call instead</a>
+          <p className="qf-mut qf-sm">{copy.weHaveYourDetails}</p>
+          <a className="qf-btn alt full" href={phone.href}><PhoneIcon />{copy.callInstead}</a>
         </div>
-        <button type="button" className="qf-lk qf-sm" style={{ alignSelf: "flex-start" }} onClick={startOver}>Start a new quote</button>
+        <button type="button" className="qf-lk qf-sm" style={{ alignSelf: "flex-start" }} onClick={startOver}>{copy.startANewQuote}</button>
       </>
     );
   }
@@ -536,7 +537,7 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
       </header>
       <div className="qf-prog">
         <div className="qf-wrap qf-progrow">
-          <strong>Step {stepIndex + 1} of {STEPS.length}: {STEP_NAMES[stepIndex]}</strong>
+          <strong>{copy.stepWord} {stepIndex + 1} {copy.ofWord} {STEPS.length}: {copy.stepNames[stepIndex]}</strong>
           <span className="qf-mut qf-num">{percent}%</span>
         </div>
         <div className="qf-bar"><div style={{ width: `${percent}%` }} /></div>
@@ -547,13 +548,13 @@ export function QuoteFlow({ phone, services }: { phone: { display: string; href:
           {showSummary && (
             <div className="qf-aside">
               <aside className="qf-card qf-stack qf-g8 qf-pad18">
-                <p className="qf-lb">Your job so far</p>
-                <div className="qf-row qf-btw qf-g12 qf-sm"><span className="qf-mut">Address</span><strong className="qf-right">{matched ?? address}</strong></div>
+                <p className="qf-lb">{copy.yourJobSoFar}</p>
+                <div className="qf-row qf-btw qf-g12 qf-sm"><span className="qf-mut">{copy.address}</span><strong className="qf-right">{matched ?? address}</strong></div>
                 {chosen.length > 0 && (
-                  <div className="qf-row qf-btw qf-g12 qf-sm"><span className="qf-mut">Service</span><strong className="qf-right">{chosen.map((s) => s.name).join(", ")}</strong></div>
+                  <div className="qf-row qf-btw qf-g12 qf-sm"><span className="qf-mut">{copy.service}</span><strong className="qf-right">{chosen.map((s) => s.name).join(", ")}</strong></div>
                 )}
                 {photoTotal > 0 && (
-                  <div className="qf-row qf-btw qf-g12 qf-sm"><span className="qf-mut">Photos</span><strong className="qf-right">{photoTotal} added</strong></div>
+                  <div className="qf-row qf-btw qf-g12 qf-sm"><span className="qf-mut">{copy.photos2}</span><strong className="qf-right">{photoTotal}{copy.added}</strong></div>
                 )}
               </aside>
             </div>

@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { previewMode, previewPassword } from "../../../lib/preview";
-import { services } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { NAV_GROUPS } from "../../../lib/admin/nav-config";
 import { A } from "../../../components/link";
 
@@ -20,7 +20,8 @@ export const metadata: Metadata = {
  *
  * It 404s outside preview mode. It is scaffolding, not a page of the site.
  */
-export default function PreviewIndex() {
+export default async function PreviewIndex() {
+  const { services } = await siteContent();
   if (!previewMode()) notFound();
   const consoleOpen = Boolean(previewPassword());
 

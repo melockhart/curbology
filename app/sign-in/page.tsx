@@ -3,14 +3,16 @@ import { currentUser } from "../../lib/session";
 import { redirect } from "next/navigation";
 import { previewMode, previewPassword } from "../../lib/preview";
 import { A } from "../../components/link";
+import { safePath } from "../../lib/safe-path";
 
 export const metadata: Metadata = { title: "Sign in", robots: { index: false, follow: false } };
 
 export default async function SignIn({
   searchParams,
-}: { searchParams: Promise<{ error?: string }> }) {
-  if (await currentUser()) redirect("/admin");
-  const { error } = await searchParams;
+}: { searchParams: Promise<{ error?: string; redirect?: string }> }) {
+  const { error, redirect: requested } = await searchParams;
+  const back = safePath(requested);
+  if (await currentUser()) redirect(back);
 
   return (
     <div className="ground-paper flex min-h-screen items-center justify-center bg-[#f6f7f9] px-6">
@@ -36,6 +38,7 @@ export default async function SignIn({
         )}
 
         <form action="/api/sign-in" method="post" className="mt-6 space-y-4">
+          <input type="hidden" name="redirect" value={back} />
           <div>
             <label htmlFor="email" className="block text-sm font-medium">Email</label>
             <input id="email" name="email" type="email" required autoComplete="username"

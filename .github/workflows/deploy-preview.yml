@@ -25,6 +25,12 @@ on:
   push:
     branches: [main]
   workflow_dispatch:
+    inputs:
+      target:
+        description: Where to deploy
+        type: choice
+        options: [preview, production]
+        default: preview
 
 # One deploy at a time. Two overlapping runs race on the same Worker and the
 # loser silently wins.
@@ -35,9 +41,13 @@ concurrency:
 jobs:
   deploy:
     runs-on: ubuntu-latest
+    env:
+      # Empty on a push to main, which always deploys preview.
+      TARGET: ${{ inputs.target || 'preview' }}
+      SITE: ${{ inputs.target == 'production' && 'curbology.op-site.net' || 'curbology.preview.op-site.net' }}
     environment:
-      name: preview
-      url: https://curbology.preview.op-site.net
+      name: ${{ inputs.target || 'preview' }}
+      url: https://${{ inputs.target == 'production' && 'curbology.op-site.net' || 'curbology.preview.op-site.net' }}
     steps:
       - uses: actions/checkout@v5
 
@@ -71,7 +81,11 @@ jobs:
       # how a red build reaches a URL somebody is about to open.
       - run: npx tsc --noEmit
       - run: npm run lint
+      # Only the build reads this: it flattens that environment into
+      # dist/server/wrangler.json, which every later wrangler step deploys from.
       - run: npm run build
+        env:
+          CLOUDFLARE_ENV: ${{ inputs.target == 'production' && 'production' || '' }}
 
       # Wrangler reports every credential problem as the same sentence —
       # "Authentication error [code: 10000]" — whether the token lacks a
@@ -152,6 +166,12 @@ jobs:
           CLOUDFLARE_API_TOKEN: ${{ secrets.CLOUDFLARE_API_TOKEN }}
           CLOUDFLARE_ACCOUNT_ID: ${{ secrets.CLOUDFLARE_ACCOUNT_ID }}
           PREVIEW_PASSWORD: ${{ secrets.PREVIEW_PASSWORD }}
+          SUPABASE_URL: ${{ secrets.SUPABASE_URL }}
+          SUPABASE_SECRET_KEY: ${{ secrets.SUPABASE_SECRET_KEY }}
+          SUPABASE_PUBLISHABLE_KEY: ${{ secrets.SUPABASE_PUBLISHABLE_KEY }}
+          CMS_SIGNING_SECRET: ${{ secrets.CMS_SIGNING_SECRET }}
+          QUOTE_HASH_SALT: ${{ secrets.QUOTE_HASH_SALT }}
+          ANTHROPIC_API_KEY: ${{ secrets.ANTHROPIC_API_KEY }}
           ADMIN_EMAILS: ${{ secrets.ADMIN_EMAILS }}
           OWNER_EMAILS: ${{ secrets.OWNER_EMAILS }}
         run: |
@@ -162,22 +182,33 @@ jobs:
               echo "$1 not set — skipping."
             fi
           }
-          put PREVIEW_PASSWORD "$PREVIEW_PASSWORD"
           put ADMIN_EMAILS "$ADMIN_EMAILS"
           put OWNER_EMAILS "$OWNER_EMAILS"
+          if [ "$TARGET" = "production" ]; then
+            # Setting SUPABASE_URL is what turns preview mode off, so these never reach preview.
+            put SUPABASE_URL "$SUPABASE_URL"
+            put SUPABASE_SECRET_KEY "$SUPABASE_SECRET_KEY"
+            put SUPABASE_PUBLISHABLE_KEY "$SUPABASE_PUBLISHABLE_KEY"
+            put CMS_SIGNING_SECRET "$CMS_SIGNING_SECRET"
+            put QUOTE_HASH_SALT "$QUOTE_HASH_SALT"
+            put ANTHROPIC_API_KEY "$ANTHROPIC_API_KEY"
+          else
+            put PREVIEW_PASSWORD "$PREVIEW_PASSWORD"
+          fi
 
       # Proof, not assumption: the URL answers, and it answers noindex.
       - name: Verify
         run: |
           for i in 1 2 3 4 5 6; do
-            code=$(curl -sS -o /dev/null -w '%{http_code}' https://curbology.preview.op-site.net/ || true)
+            code=$(curl -sS -o /dev/null -w '%{http_code}' https://$SITE/ || true)
             [ "$code" = "200" ] && break
             echo "attempt $i: HTTP $code — waiting for DNS and the edge to settle"
             sleep 20
           done
           [ "$code" = "200" ] || { echo "::error::Preview did not return 200 (last: $code)"; exit 1; }
-          robots=$(curl -sSI https://curbology.preview.op-site.net/ | tr -d '\r' | grep -i '^x-robots-tag:' || true)
+          robots=$(curl -sSI https://$SITE/ | tr -d '\r' | grep -i '^x-robots-tag:' || true)
           echo "$robots"
+          if [ "$TARGET" = "production" ]; then echo "Production is up."; exit 0; fi
           case "$robots" in
             *noindex*) echo "Preview is up and not indexable." ;;
             *) echo "::error::X-Robots-Tag noindex missing — refusing to call this deploy good."; exit 1 ;;

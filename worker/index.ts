@@ -36,6 +36,13 @@ const worker = {
      * true when SUPABASE_URL is set, so production can never accidentally
      * serve a noindex header, and the interlock stays defined in one place.
      */
+    // A browser previewing a draft must never have it cached or indexed.
+    if ((request.headers.get("cookie") ?? "").includes("curbology_draft=")) {
+      const headers = new Headers(response.headers);
+      headers.set("Cache-Control", "private, no-store");
+      headers.set("X-Robots-Tag", "noindex, nofollow");
+      return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
+    }
     if (!previewMode()) return response;
     const headers = new Headers(response.headers);
     headers.set("X-Robots-Tag", "noindex, nofollow");

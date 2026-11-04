@@ -1,11 +1,14 @@
 import type { Metadata } from "next";
-import { business } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { A } from "../../../components/link";
 
-export const metadata: Metadata = {
-  title: `${business.name}`,
-  description: `Call, text, or get a free quote. Exterior cleaning across ${business.serviceArea.county}, ${business.serviceArea.stateAbbr}.`,
-};
+export async function generateMetadata(): Promise<Metadata> {
+  const { business } = await siteContent();
+  return {
+    title: business.name,
+    description: `Call, text, or get a free quote. Exterior cleaning across ${business.serviceArea.county}, ${business.serviceArea.state}.`,
+  };
+}
 
 /**
  * The link-in-bio hub. Instagram bio, Google profile, truck decal, yard-sign QR.
@@ -19,21 +22,22 @@ export const metadata: Metadata = {
  * homepages rather than Curbology profiles. They return when Tristen supplies
  * real URLs — `business.socials` already drives this list.
  */
-const actions = [
-  { label: "Call us", href: business.phone.href, sub: business.phone.display, primary: true },
-  { label: "Text us", href: `sms:${business.phone.href.replace("tel:", "")}`, sub: "Fastest for a quick question" },
-  { label: "Get a free quote", href: "/quote", sub: "Send a photo, get a real number" },
-  { label: "Leave a review", href: "/review", sub: "Tell us how we did" },
-  { label: "See our work", href: "/gallery", sub: "Before and after" },
-];
 
-export default function HubPage() {
+export default async function HubPage() {
+  const { business, pages } = await siteContent();
+  const actions: { label: string; href: string; sub: string; primary?: boolean }[] = [
+    { label: pages.hub.actions.call, href: business.phone.href, sub: business.phone.display, primary: true },
+    { label: pages.hub.text.label, href: `sms:${business.phone.href.replace("tel:", "")}`, sub: pages.hub.text.sub },
+    { label: pages.hub.actions.quote.label, href: "/quote", sub: pages.hub.actions.quote.sub },
+    { label: pages.hub.actions.review.label, href: "/review", sub: pages.hub.actions.review.sub },
+    { label: pages.hub.actions.work.label, href: "/gallery", sub: pages.hub.actions.work.sub },
+  ];
   return (
     <div className="mx-auto flex min-h-screen w-full max-w-md flex-col justify-center px-6 py-12">
       <div className="text-center">
         <h1 className="font-display text-3xl font-bold">{business.name}</h1>
         <p className="mt-2 text-[color:var(--muted)]">
-          Pressure washing · Soft washing · Gutters · Roofs
+          {pages.hub.pressureWashingSoftWashing}
         </p>
       </div>
 

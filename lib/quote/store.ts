@@ -1,4 +1,6 @@
 import { runtimeEnv } from "../env";
+import { supabase } from "../service-db";
+import { QUOTE_PHOTO_BUCKET } from "../table-prefix";
 import { DRAFT_RATE_CARD, type RateCard } from "./pricing.ts";
 import { MAX_PHOTOS, readGeocoderReply, type AreaCheck, type PhotoType, type QuoteRow } from "./rules.ts";
 
@@ -8,20 +10,7 @@ import { MAX_PHOTOS, readGeocoderReply, type AreaCheck, type PhotoType, type Quo
  * server, because no customer has an account.
  */
 
-const BUCKET = "quote-photos";
-
-function supabase(path: string, init: RequestInit = {}) {
-  const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
-  if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) throw new Error("Supabase is not configured");
-  return fetch(`${SUPABASE_URL}${path}`, {
-    ...init,
-    headers: {
-      apikey: SUPABASE_SECRET_KEY,
-      Authorization: `Bearer ${SUPABASE_SECRET_KEY}`,
-      ...init.headers,
-    },
-  });
-}
+const BUCKET = QUOTE_PHOTO_BUCKET;
 
 function json(path: string, method: string, body: unknown, prefer = "return=representation") {
   return supabase(`/rest/v1/${path}`, {

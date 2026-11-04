@@ -1,3 +1,4 @@
+import { prefixed } from "./table-prefix";
 import { runtimeEnv, configured } from "./env";
 import type { Session } from "./session";
 import * as preview from "./preview";
@@ -12,7 +13,7 @@ import * as preview from "./preview";
 async function rest(path: string, init: RequestInit = {}) {
   const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) throw new Error("Supabase is not configured");
-  return fetch(`${SUPABASE_URL}/rest/v1/${path}`, {
+  return fetch(`${SUPABASE_URL}/rest/v1/${prefixed(path)}`, {
     ...init,
     headers: {
       apikey: SUPABASE_SECRET_KEY,
@@ -179,7 +180,7 @@ export async function rpc(name: string, args: Record<string, unknown>, session: 
         "database's own admin check, which needs the person's token and this key together.",
     );
   }
-  const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+  const response = await fetch(`${SUPABASE_URL}/rest/v1/${prefixed(`rpc/${name}`)}`, {
     method: "POST",
     headers: {
       apikey: SUPABASE_PUBLISHABLE_KEY,
@@ -204,7 +205,7 @@ export async function rpcRows<T>(name: string, args: Record<string, unknown>, se
   const { SUPABASE_URL, SUPABASE_PUBLISHABLE_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_PUBLISHABLE_KEY) return [];
   try {
-    const response = await fetch(`${SUPABASE_URL}/rest/v1/rpc/${name}`, {
+    const response = await fetch(`${SUPABASE_URL}/rest/v1/${prefixed(`rpc/${name}`)}`, {
       method: "POST",
       headers: {
         apikey: SUPABASE_PUBLISHABLE_KEY,

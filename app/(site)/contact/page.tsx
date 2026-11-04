@@ -1,6 +1,6 @@
 import type { Metadata } from "next";
 import { pageMetadata } from "../../../lib/seo";
-import { business, quoteForm, services } from "../../../lib/content";
+import { siteContent } from "../../../lib/cms";
 import { Section, Eyebrow } from "../../../components/ui";
 import { A } from "../../../components/link";
 import { SubmitNotice, type SubmitState } from "../../../components/portal";
@@ -21,6 +21,7 @@ export function generateMetadata(): Promise<Metadata> {
 export default async function ContactPage({
   searchParams,
 }: { searchParams: Promise<{ sent?: string }> }) {
+  const { business, quoteForm, services, pages } = await siteContent();
   const { sent } = await searchParams;
   const f = quoteForm.fields;
 
@@ -34,11 +35,10 @@ export default async function ContactPage({
     return (
       <Section cut={false} ground="teal">
         <div className="max-w-xl">
-          <Eyebrow>Free quote</Eyebrow>
-          <h1 data-wash-type className="text-5xl">We have it</h1>
+          <Eyebrow>{pages.contact.freeQuote}</Eyebrow>
+          <h1 data-wash-type className="text-5xl">{pages.contact.weHaveIt}</h1>
           <p className="mt-6 text-lg text-[color:var(--muted)]">
-            Tristen will come back to you with a real number. If it is urgent,
-            calling is faster —{" "}
+            {pages.contact.tristenWillComeBack}{" "}
             <A href={business.phone.href} className="font-medium underline underline-offset-4">
               {business.phone.display}
             </A>
@@ -46,7 +46,7 @@ export default async function ContactPage({
           </p>
           <div className="mt-8"><SubmitNotice state={sent as SubmitState} /></div>
           <p className="mt-4">
-            <A href="/gallery" className="underline underline-offset-4">See the work we have done</A>
+            <A href="/gallery" className="underline underline-offset-4">{pages.contact.seeTheWorkWe}</A>
           </p>
         </div>
       </Section>
@@ -57,20 +57,19 @@ export default async function ContactPage({
     <Section cut="l" ground="shallow">
       <div className="grid gap-14 md:grid-cols-2">
         <div>
-          <Eyebrow>Free quote</Eyebrow>
-          <h1 data-wash-type className="text-5xl">Tell us about the job</h1>
+          <Eyebrow>{pages.contact.freeQuote}</Eyebrow>
+          <h1 data-wash-type className="text-5xl">{pages.contact.tellUsAboutThe}</h1>
           <p className="mt-6 text-lg text-[color:var(--muted)]">
-            Send a few details and a photo or two. Most of the time that is enough
-            to give you a real number without visiting.
+            {pages.contact.sendAFewDetails}
           </p>
           <p className="mt-8">
-            Prefer to talk?{" "}
+            {pages.contact.preferToTalk}{" "}
             <A href={business.phone.href} className="font-medium underline underline-offset-4">
               {business.phone.display}
             </A>
           </p>
           <p className="mt-2 text-[color:var(--muted)]">
-            Serving {business.serviceArea.county}, {business.serviceArea.state}.
+            {pages.contact.serving}{" "}{business.serviceArea.county}, {business.serviceArea.state}.
           </p>
         </div>
 
@@ -90,11 +89,11 @@ export default async function ContactPage({
               id="service" name="service" required
               className="mt-2 min-h-[44px] w-full rounded-lg border border-ink/25 bg-paper px-3 py-2"
             >
-              <option value="">Select a service</option>
+              <option value="">{pages.contact.selectAService}</option>
               {services.map((s) => (
                 <option key={s.slug} value={s.slug}>{s.name}</option>
               ))}
-              <option value="not-sure">Not sure — help me choose</option>
+              <option value="not-sure">{pages.contact.notSureHelpMe}</option>
             </select>
           </div>
 

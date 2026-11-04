@@ -1,5 +1,5 @@
 import type { CSSProperties } from "react";
-import { business, nav, services } from "../lib/content";
+import { siteContent } from "../lib/cms";
 import { HeaderBehaviour } from "./motion/header";
 import { A } from "./link";
 import { previewMode } from "../lib/preview";
@@ -18,19 +18,21 @@ import { previewMode } from "../lib/preview";
  * also the more robust choice in email, where an image wordmark disappears
  * entirely when a client blocks images.
  */
-function Mark({ onDark = false }: { onDark?: boolean }) {
+async function Mark({ onDark = false }: { onDark?: boolean }) {
+  const { pages, images } = await siteContent();
+  const logo = images["brand.logo"];
   if (onDark) {
     return (
       <span className="font-display text-lg font-bold uppercase tracking-tight text-paper">
-        Curbology
+        {pages.chrome.curbology}
       </span>
     );
   }
   return (
     /* eslint-disable-next-line @next/next/no-img-element */
     <img
-      src="/brand/curbology-logo.png"
-      alt="Curbology Exterior Services"
+      src={logo?.url ?? "/brand/curbology-logo.png"}
+      alt={logo?.alt || "Curbology Exterior Services"}
       width={82}
       height={52}
       /* Height comes from --mark-h so the bar can resize the mark by flipping
@@ -41,7 +43,8 @@ function Mark({ onDark = false }: { onDark?: boolean }) {
   );
 }
 
-export function Nav() {
+export async function Nav() {
+  const { business, nav, services, pages } = await siteContent();
   return (
     <header
       id="site-header"
@@ -95,7 +98,7 @@ export function Nav() {
           </A>
 
           <A href="/quote" className="btn btn--ink btn--bar hidden sm:inline-flex">
-            Get a free quote
+            {pages.chrome.getAFreeQuote}
           </A>
 
           {/*
@@ -124,8 +127,8 @@ export function Nav() {
                   <span className="block h-[2px] w-4 bg-current transition-opacity duration-200 group-open:opacity-0" />
                   <span className="block h-[2px] w-4 bg-current transition-transform duration-200 group-open:-translate-y-[5px] group-open:-rotate-45" />
                 </span>
-                <span className="group-open:hidden">Menu</span>
-                <span className="hidden group-open:inline">Close</span>
+                <span className="group-open:hidden">{pages.chrome.menu}</span>
+                <span className="hidden group-open:inline">{pages.chrome.close}</span>
               </span>
             </summary>
 
@@ -171,7 +174,7 @@ export function Nav() {
                   className="shrink-0 lg:pb-4"
                 >
                   <h2 className="font-spec text-xs uppercase tracking-[0.22em] text-stone-400">
-                    Services
+                    {pages.chrome.services}
                   </h2>
                   <ul className="mt-4 space-y-2.5">
                     {services.map((service) => (
@@ -193,9 +196,9 @@ export function Nav() {
                   className="flex shrink-0 flex-col items-start gap-5 lg:pb-4"
                 >
                   <p className="font-spec text-xs uppercase tracking-[0.22em] text-stone-400">
-                    Straight to it
+                    {pages.chrome.straightToIt}
                   </p>
-                  <A href="/quote" className="btn btn--paper">Get a free quote</A>
+                  <A href="/quote" className="btn btn--paper">{pages.chrome.getAFreeQuote}</A>
                   <A
                     href={business.phone.href}
                     className="whitespace-nowrap font-display text-3xl font-bold text-teal-300 underline underline-offset-8"
@@ -203,7 +206,7 @@ export function Nav() {
                     {business.phone.display}
                   </A>
                   <p className="max-w-[18rem] text-sm text-[color:var(--muted)]">
-                    Exterior cleaning across {business.serviceArea.county},{" "}
+                    {pages.chrome.exteriorCleaningAcross}{" "}{business.serviceArea.county},{" "}
                     {business.serviceArea.stateAbbr}.
                   </p>
                 </div>
@@ -217,7 +220,8 @@ export function Nav() {
   );
 }
 
-export function Footer() {
+export async function Footer() {
+  const { business, pages } = await siteContent();
   return (
     <footer className="site-footer ground-ink bg-ink text-stone-050">
       {/* Extra bottom clearance in preview so the fixed ribbon does not sit on
@@ -227,13 +231,13 @@ export function Footer() {
           <div>
             <Mark onDark />
             <p className="mt-4 max-w-xs text-sm text-white/70">
-              Exterior cleaning across {business.serviceArea.county},{" "}
+              {pages.chrome.exteriorCleaningAcross}{" "}{business.serviceArea.county},{" "}
               {business.serviceArea.state}.
             </p>
           </div>
 
           <div className="text-sm">
-            <h2 className="mb-3 font-display text-base">Get in touch</h2>
+            <h2 className="mb-3 font-display text-base">{pages.chrome.getInTouch}</h2>
             <p>
               <A href={business.phone.href} className="underline underline-offset-4">
                 {business.phone.display}
@@ -241,7 +245,7 @@ export function Footer() {
             </p>
             <p className="mt-1">
               <A href="/contact" className="underline underline-offset-4">
-                Request a free quote
+                {pages.chrome.requestAFreeQuote}
               </A>
             </p>
             {/*
@@ -259,22 +263,22 @@ export function Footer() {
           </div>
 
           <div className="text-sm">
-            <h2 className="mb-3 font-display text-base">Services</h2>
+            <h2 className="mb-3 font-display text-base">{pages.chrome.services}</h2>
             <ul className="space-y-1">
-              <li><A href="/services/pressure-washing" className="hover:underline">Pressure Washing</A></li>
-              <li><A href="/services/house-siding-washing" className="hover:underline">House &amp; Siding Soft Wash</A></li>
-              <li><A href="/services/gutter-cleaning" className="hover:underline">Gutter Cleaning &amp; Brightening</A></li>
-              <li><A href="/services/roof-cleaning" className="hover:underline">Roof Cleaning</A></li>
+              <li><A href="/services/pressure-washing" className="hover:underline">{pages.chrome.pressureWashing}</A></li>
+              <li><A href="/services/house-siding-washing" className="hover:underline">{pages.chrome.houseSidingSoftWash}</A></li>
+              <li><A href="/services/gutter-cleaning" className="hover:underline">{pages.chrome.gutterCleaningBrightening}</A></li>
+              <li><A href="/services/roof-cleaning" className="hover:underline">{pages.chrome.roofCleaning}</A></li>
             </ul>
           </div>
         </div>
 
         <div className="mt-12 flex flex-col gap-2 border-t border-white/15 pt-6 text-sm text-white/60 md:flex-row md:justify-between">
-          <p>© {new Date().getFullYear()} {business.name}. All rights reserved.</p>
+          <p>© {new Date().getFullYear()} {business.name}{pages.chrome.allRightsReserved}</p>
           <p className="flex gap-4">
-            <A href="/privacy" className="hover:underline">Privacy</A>
-            <A href="/terms" className="hover:underline">Terms</A>
-            <A href="/accessibility" className="hover:underline">Accessibility</A>
+            <A href="/privacy" className="hover:underline">{pages.chrome.privacy}</A>
+            <A href="/terms" className="hover:underline">{pages.chrome.terms}</A>
+            <A href="/accessibility" className="hover:underline">{pages.chrome.accessibility}</A>
           </p>
         </div>
       </div>

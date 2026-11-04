@@ -33,6 +33,16 @@ belong there. Nothing here may depend on it.
   are 6–12px rects; eyebrows are flat mono kicker text; status labels are mono
   text plus a colour dot. Exempt: circular dots, avatars, window chrome.
 
+## Shared database
+
+Curbology runs in Opscend's Supabase project for now, whose `public` schema also
+holds Opscend's own `profiles`, `user_roles`, `has_role` and auth triggers. Every
+Curbology table, function, type, index and bucket is named `curbology_*` (or
+`curbology-*`), and `lib/table-prefix.ts` is the one place code applies it. Never
+create, replace or drop anything without that prefix, and never touch triggers on
+`auth.users`. Production is `curbology.op-site.net`; preview is
+`curbology.preview.op-site.net`, which has no database.
+
 ## Checks — all four, after any code change
 
 ```
