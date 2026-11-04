@@ -7,7 +7,7 @@ test("keeps a same-site path with its query", () => {
 });
 
 test("refuses anything that could leave the site", () => {
-  for (const bad of ["https://evil.example", "//evil.example", "/\\evil.example", "\\\\evil.example", "/x\nLocation: y", "javascript:alert(1)", "", null, undefined, 5]) {
+  for (const bad of ["https://evil.example", "//evil.example", "/\\evil.example", "\\\\evil.example", "/x\nLocation: y", "/\t/evil.example", "/\n/evil.example", "javascript:alert(1)", "", null, undefined, 5]) {
     assert.equal(safePath(bad), "/admin", String(bad));
   }
 });

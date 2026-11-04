@@ -1,4 +1,5 @@
 import { runtimeEnv } from "../../../lib/env";
+import { safePath } from "../../../lib/safe-path";
 import { DRAFT_COOKIE, verifyDraftCookie } from "../../../lib/cms/signing";
 
 /**
@@ -18,9 +19,7 @@ export async function GET(request: Request) {
 }
 
 function leave(url: URL, cookie: string): Response {
-  const path = url.searchParams.get("path") ?? "/";
-  // Same-site paths only. An absolute URL here would be an open redirect.
-  const target = path.startsWith("/") && !path.startsWith("//") && !path.includes("\\") ? path : "/";
+  const target = safePath(url.searchParams.get("path"), "/");
   return new Response(null, {
     status: 303,
     headers: { Location: target, "Set-Cookie": cookie, "Cache-Control": "no-store", "X-Robots-Tag": "noindex" },

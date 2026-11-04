@@ -4,6 +4,9 @@
  */
 export function safePath(value: unknown, fallback = "/admin"): string {
   if (typeof value !== "string" || !value.startsWith("/")) return fallback;
-  if (value.startsWith("//") || value.includes("\\") || /[\r\n\t]/.test(value)) return fallback;
-  return value;
+  // Browsers strip tabs and newlines from a URL, so "/\t/evil.example" arrives as "//evil.example".
+  // eslint-disable-next-line no-control-regex -- control characters are exactly what this looks for
+  if (value.startsWith("//") || value.includes("\\") || /[\u0000-\u001f\u007f]/.test(value)) return fallback;
+  const resolved = new URL(value, "https://same.invalid");
+  return resolved.origin === "https://same.invalid" ? value : fallback;
 }
