@@ -5,8 +5,10 @@
  */
 import { business, connective, home, nav, portfolio, quoteForm, services } from "../content";
 import { pages } from "../page-copy";
+import v2 from "../v2/copy.generated.json";
+import v2Images from "../v2/images.generated.json";
 
-export const DEFAULTS = { business, nav, home, services, portfolio, quoteForm, connective, pages };
+export const DEFAULTS = { business, nav, home, services, portfolio, quoteForm, connective, pages, v2 };
 export type SiteContent = typeof DEFAULTS;
 
 /** Identifiers and records of where copy came from. Changing these breaks links or facts about the capture. */
@@ -31,22 +33,19 @@ export function listCopy(): CopyEntry[] {
       out.push({ key: path, value: null });
     }
   };
-  walk(DEFAULTS, "");
+  // Only what the site renders today. The older lib/content.ts wording stays for
+  // the quote flow's names and numbers, but editing it would change nothing visible.
+  walk({ pages: DEFAULTS.pages, v2: DEFAULTS.v2 }, "");
   return out;
 }
 
 const KNOWN = new Set(listCopy().map((entry) => entry.key));
 export const isCopyKey = (key: string) => KNOWN.has(key);
 
-/**
- * Places a picture can go. Every one of them renders an honest "waiting for a
- * photo" panel until an image is set, so a slot can never show a broken picture.
- */
-export const IMAGE_SLOTS: Record<string, string> = {
-  "brand.logo": "The logo, in every header and portal",
-  ...Object.fromEntries(portfolio.map((item, index) => [`gallery.${index}`, `Gallery: ${item.title}`])),
-  ...Object.fromEntries(services.map((service) => [`service.${service.slug}`, `Service page: ${service.name}`])),
-};
+/** Every image the site uses. A slot shows its current picture until a new one is published. */
+export const IMAGE_SLOTS: Record<string, string> = Object.fromEntries(
+  Object.entries(v2Images).map(([slot, image]) => [slot, `${image.file}, used on ${image.usedOn.join(", ")}`]),
+);
 export const isImageSlot = (slot: string) => Object.hasOwn(IMAGE_SLOTS, slot);
 
 export type SiteImage = { url: string; alt: string };

@@ -38,7 +38,8 @@ export async function POST(request: Request) {
   } catch {
     return redirectBack(request, "failed");
   }
-  return redirectBack(request, "ok");
+  // The approved confirmation screens. The Google link on each is the same for every rating.
+  return Response.redirect(new URL(rating <= 2 ? "/review/thanks-low" : "/review/thanks", request.url).toString(), 303);
 }
 
 function redirectBack(request: Request, state: string) {

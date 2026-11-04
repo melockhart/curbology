@@ -132,6 +132,15 @@ export const TOOLS: Tool[] = [
       const found = needle
         ? entries.filter((e) => e.key.toLowerCase().includes(needle) || String(e.value ?? "").toLowerCase().includes(needle))
         : entries;
+      // There are well over a thousand strings, so an unfiltered call lists the groups instead.
+      if (!needle && found.length > 400) {
+        const groups: Record<string, number> = {};
+        for (const entry of found) {
+          const group = entry.key.split(".").slice(0, 2).join(".");
+          groups[group] = (groups[group] ?? 0) + 1;
+        }
+        return { count: found.length, note: "Too many to list. Call again with search, using words from the page or a group name.", groups };
+      }
       return { count: found.length, entries: found };
     },
   },
