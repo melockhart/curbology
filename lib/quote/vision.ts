@@ -45,9 +45,13 @@ function base64(bytes: Uint8Array): string {
 
 export type PhotoInput = { bytes: Uint8Array; mediaType: "image/jpeg" | "image/png" | "image/webp" };
 
-export async function readPhotos(photos: PhotoInput[], services: string[]): Promise<PhotoRead | null> {
+/** Why a read failed, kept on the quote so a failure can be seen. Never holds the key or the photos. */
+export type PhotoReadFailure = { error: string };
+
+export async function readPhotos(photos: PhotoInput[], services: string[]): Promise<PhotoRead | PhotoReadFailure> {
   const apiKey = runtimeEnv().ANTHROPIC_API_KEY;
-  if (!apiKey || photos.length === 0) return null;
+  if (!apiKey) return { error: "no_api_key" };
+  if (photos.length === 0) return { error: "no_photos" };
 
   try {
     const client = new Anthropic({ apiKey, timeout: 90_000, maxRetries: 1 });
@@ -71,10 +75,11 @@ export async function readPhotos(photos: PhotoInput[], services: string[]): Prom
         },
       ],
     });
-    if (response.stop_reason === "refusal") return null;
-    return response.parsed_output ?? null;
+    if (response.stop_reason === "refusal") return { error: "refused" };
+    return response.parsed_output ?? { error: `no_output: ${response.stop_reason}` };
   } catch (error) {
-    console.error("quote photo read failed", error instanceof Error ? error.message : "unknown error");
-    return null;
+    const message = error instanceof Error ? error.message : "unknown error";
+    console.error("quote photo read failed", message);
+    return { error: message.slice(0, 300) };
   }
 }

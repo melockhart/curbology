@@ -189,7 +189,7 @@ export type ConsoleQuote = StoredQuote & {
   photo_read: PhotoReadRow | null;
   submitted_at: string | null;
 };
-type PhotoReadRow = { condition?: string; confidence?: string; stories?: number | null; flags?: string[]; summary?: string };
+type PhotoReadRow = { error?: string; condition?: string; confidence?: string; stories?: number | null; flags?: string[]; summary?: string };
 
 /** Submitted quotes, newest first. The token hash and IP hash stay in the database. */
 export async function listQuotes(): Promise<ConsoleQuote[]> {

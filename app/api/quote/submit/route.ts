@@ -11,7 +11,7 @@ import {
   underReadLimit,
   updateLead,
 } from "../../../../lib/quote/store";
-import { readPhotos, type PhotoInput, type PhotoRead } from "../../../../lib/quote/vision";
+import { readPhotos, type PhotoInput, type PhotoRead, type PhotoReadFailure } from "../../../../lib/quote/vision";
 
 const dollars = (cents: number) => `$${(cents / 100).toFixed(2)}`;
 
@@ -79,9 +79,10 @@ export async function POST(request: Request) {
     }
 
     const { id: rateCardId, card } = await currentRateCard();
-    const read: PhotoRead | null = (await underReadLimit())
+    const outcome: PhotoRead | PhotoReadFailure = (await underReadLimit())
       ? await readPhotos(await loadPhotos(quote.photo_paths), services)
-      : null;
+      : { error: "daily_limit" };
+    const read: PhotoRead | null = "error" in outcome ? null : outcome;
 
     const result = priceQuote(
       {
@@ -98,7 +99,7 @@ export async function POST(request: Request) {
 
     quote = await saveOutcome(quote.id, {
       status: priced ? "priced" : "review",
-      photo_read: read,
+      photo_read: outcome,
       result,
       rate_card_id: rateCardId,
       lead_id: leadId,

@@ -151,7 +151,7 @@ function Detail({ quote }: { quote: ConsoleQuote }) {
 
         {quote.message && <p className="text-sm"><span className="font-medium">Customer says: </span>{quote.message}</p>}
 
-        {read ? (
+        {read && !read.error ? (
           <div className="text-sm">
             <p className="font-medium">Photo reader: {read.condition} condition, {read.confidence} confidence{read.stories ? `, ${read.stories} storey` : ""}</p>
             {read.summary && <p className="mt-1 text-[color:var(--muted)]">{read.summary}</p>}
