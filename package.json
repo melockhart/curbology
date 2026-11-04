@@ -10,7 +10,7 @@
     "build": "vinext build",
     "start": "vinext start",
     "lint": "eslint .",
-    "test": "node --test lib/quote/*.test.ts lib/*.test.ts",
+    "test": "node --test lib/quote/*.test.ts lib/cms/*.test.ts lib/*.test.ts",
     "contrast": "node scripts/contrast-sweep.mjs"
   },
   "dependencies": {

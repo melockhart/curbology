@@ -13,7 +13,7 @@ import { chromium } from "playwright";
 
 const BASE = process.env.CONTRAST_BASE || "http://localhost:3000";
 
-const publicRoutes = ["/", "/quote", "/services", "/services/pressure-washing", "/services/house-siding-washing",
+const publicRoutes = ["/", "/quote", "/review/thanks", "/review/thanks-low", "/review/platforms", "/services", "/services/pressure-washing", "/services/house-siding-washing",
   "/services/gutter-cleaning", "/services/roof-cleaning", "/about", "/contact", "/reviews",
   "/service-area", "/gallery", "/faq", "/hub", "/review", "/testimonial", "/email-unsubscribe?id=demo", "/nope-404",
   // The confirmation screens. Every form redirects to one of these, and until
@@ -60,7 +60,8 @@ if (email) {
  */
 const OPEN_MENU = new Set(["/", "/faq"]);
 
-for (const route of [...routes, "/#menu", "/faq#menu"]) {
+// The v2 site's menu is its own page, /menu, so there is no header menu to open.
+for (const route of [...routes, "/menu"]) {
   const path = route.replace(/#menu$/, "");
   const openMenu = route.endsWith("#menu");
   await p.goto(BASE + path, { waitUntil: "networkidle" });

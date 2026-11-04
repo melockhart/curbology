@@ -48,6 +48,14 @@ export const IMAGE_SLOTS: Record<string, string> = Object.fromEntries(
 );
 export const isImageSlot = (slot: string) => Object.hasOwn(IMAGE_SLOTS, slot);
 
+/**
+ * Image URLs go straight into HTML attributes and CSS url(), so only https or a
+ * same-site path, in characters that cannot end either context, gets through.
+ */
+export function isSafeImageUrl(url: string): boolean {
+  return /^(https:\/\/|\/(?!\/))[A-Za-z0-9._~:/?#@!$&+,;=%-]+$/.test(url);
+}
+
 export type SiteImage = { url: string; alt: string };
 export type Overrides = Record<string, unknown>;
 
@@ -69,7 +77,9 @@ export function applyOverrides(overrides: Overrides): SiteContent & { images: Re
   for (const [key, value] of Object.entries(overrides)) {
     if (!key.startsWith("image.") || !isImageSlot(key.slice(6))) continue;
     const image = value as Partial<SiteImage> | null;
-    if (image && typeof image.url === "string") images[key.slice(6)] = { url: image.url, alt: String(image.alt ?? "") };
+    if (image && typeof image.url === "string" && isSafeImageUrl(image.url)) {
+      images[key.slice(6)] = { url: image.url, alt: String(image.alt ?? "") };
+    }
   }
   return { ...content, images };
 }
