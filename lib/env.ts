@@ -43,6 +43,10 @@ type RuntimeEnv = {
   PREVIEW_MODE?: string;
   /** The password that opens the preview console. No value, no console. */
   PREVIEW_PASSWORD?: string;
+  /** Reads quote photos. Without it every quote goes to the owner unread. */
+  ANTHROPIC_API_KEY?: string;
+  /** Salts the stored IP hash behind the quote rate limit. Quotes refuse to start without it. */
+  QUOTE_HASH_SALT?: string;
 };
 
 let workersEnv: Record<string, string | undefined> | null = null;
