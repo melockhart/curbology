@@ -12,6 +12,7 @@ interface Env {
   /** Supplied by the deploy target and locally by a gitignored .dev.vars. */
   SUPABASE_URL: string;
   SUPABASE_SECRET_KEY: string;
+  NOINDEX?: string;
 }
 
 interface ExecutionContext {
@@ -43,7 +44,9 @@ const worker = {
       headers.set("X-Robots-Tag", "noindex, nofollow");
       return new Response(response.body, { status: response.status, statusText: response.statusText, headers });
     }
-    if (!previewMode()) return response;
+    // NOINDEX keeps production out of search until the real design and the legal
+    // pages exist. Remove it from wrangler.jsonc at launch.
+    if (!previewMode() && env.NOINDEX !== "1") return response;
     const headers = new Headers(response.headers);
     headers.set("X-Robots-Tag", "noindex, nofollow");
     return new Response(response.body, {

@@ -35,7 +35,7 @@
   "env": {
     "production": {
       "routes": [{ "pattern": "curbology.op-site.net", "custom_domain": true }],
-      "vars": { "SITE_HOST": "curbology.op-site.net" },
+      "vars": { "SITE_HOST": "curbology.op-site.net", "NOINDEX": "1" },
       "browser": { "binding": "BROWSER" },
       "observability": { "enabled": true }
     }
