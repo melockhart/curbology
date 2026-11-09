@@ -33,6 +33,14 @@ belong there. Nothing here may depend on it.
   are 6–12px rects; eyebrows are flat mono kicker text; status labels are mono
   text plus a colour dot. Exempt: circular dots, avatars, window chrome.
 
+## Public pages come from the design source
+
+Every public page is the approved v2 design, compiled into `lib/v2/*.generated.json`
+and `public/v2/` by `site-port.cjs` in `~/Claude/Development/curbology-canvas`
+(run `node site.cjs && node site-port.cjs` there). Do not hand-edit the generated
+files: change the canvas source and regenerate. Copy and images on those pages
+are edited through the MCP server, not in code.
+
 ## Shared database
 
 Curbology runs in Opscend's Supabase project for now, whose `public` schema also
