@@ -13,19 +13,25 @@ import { verifyDraftCookie, DRAFT_COOKIE } from "./signing";
 const TTL_MS = 30_000;
 let published: { at: number; values: Overrides } | null = null;
 
+function remember(values: Overrides): Overrides {
+  published = { at: Date.now(), values };
+  return values;
+}
+
 async function readPublished(): Promise<Overrides> {
   // A short memo, because every page view needs this and edits are rare. A
   // publish reaches every visitor within TTL_MS.
   if (published && Date.now() - published.at < TTL_MS) return published.values;
   try {
     const response = await supabase("/rest/v1/content_blocks?select=key,value");
-    if (!response.ok) return published?.values ?? {};
+    if (!response.ok) return remember(published?.values ?? {});
     const rows = (await response.json()) as { key: string; value: unknown }[];
     published = { at: Date.now(), values: Object.fromEntries(rows.map((row) => [row.key, row.value])) };
     return published.values;
   } catch {
-    // A database outage must not take the public site down: it falls back to the last good copy.
-    return published?.values ?? {};
+    // A database outage must not take the public site down: it falls back to the last good
+    // copy, and remembers the failure so the next visitors are not each kept waiting.
+    return remember(published?.values ?? {});
   }
 }
 

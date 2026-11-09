@@ -90,6 +90,7 @@ export async function currentSession(): Promise<Session | null> {
 
   try {
     const response = await fetch(`${SUPABASE_URL}/auth/v1/user`, {
+      signal: AbortSignal.timeout(6000),
       headers: { apikey: SUPABASE_SECRET_KEY, Authorization: `Bearer ${token}` },
     });
     if (!response.ok) return null;

@@ -1,4 +1,5 @@
 import { prefixed } from "./table-prefix";
+import { guarded } from "./service-db";
 import { runtimeEnv, configured } from "./env";
 import type { Session } from "./session";
 import * as preview from "./preview";
@@ -13,7 +14,8 @@ import * as preview from "./preview";
 async function rest(path: string, init: RequestInit = {}) {
   const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) throw new Error("Supabase is not configured");
-  return fetch(`${SUPABASE_URL}/rest/v1/${prefixed(path)}`, {
+  return guarded(() => fetch(`${SUPABASE_URL}/rest/v1/${prefixed(path)}`, {
+    signal: init.signal ?? AbortSignal.timeout(4000),
     ...init,
     headers: {
       apikey: SUPABASE_SECRET_KEY,
@@ -21,7 +23,7 @@ async function rest(path: string, init: RequestInit = {}) {
       "Content-Type": "application/json",
       ...(init.headers ?? {}),
     },
-  });
+  }));
 }
 
 /** Reads return [] when there is no database, so every screen renders its empty
