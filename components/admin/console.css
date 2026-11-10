@@ -1,0 +1,35 @@
+/* The simplified console, from the approved draft: navy rail, five pages, white
+   cards on the wash, Instrument Sans with Archivo headings. The utility classes the
+   screens already use read these variables, so they follow without changes. */
+.cx {
+  --color-ink: #0c2448; --color-paper: #ffffff; --color-teal: #1890d0; --color-slate: #163a6d;
+  --muted: #3d5070; --console-line: #d3dbe3; --console-surface: #ffffff; --console-bg: #f1f4f6;
+  min-height: 100dvh; background: var(--console-bg); color: #0c2448;
+  font-family: "Instrument Sans Variable", "Instrument Sans", sans-serif; display: flex;
+}
+.cx h1, .cx h2 { font-family: "Archivo Variable", Archivo, sans-serif; font-stretch: 80%; letter-spacing: -.02em; }
+.cx-rail { width: 200px; flex: none; background: #0c2448; padding: 16px 12px; display: flex; flex-direction: column; gap: 4px; position: sticky; top: 0; height: 100dvh; }
+.cx-mark { background: #fff; border-radius: 12px; padding: 8px 12px; margin-bottom: 12px; display: block; }
+.cx-mark img { height: 44px; width: auto; display: block; }
+.cx-ni { display: flex; align-items: center; min-height: 40px; padding: 0 12px; border-radius: 12px; color: #fff; font-size: 15px; font-weight: 500; text-decoration: none; }
+.cx-ni:hover { background: #ffffff1f; }
+.cx-ni[aria-current="page"] { background: #0d659f; }
+.cx-who { color: #a9bbcf; font-size: 13px; padding: 0 12px; overflow-wrap: anywhere; }
+.cx-out { background: none; border: 0; color: #fff; font: inherit; font-size: 14px; padding: 6px 12px; text-align: left; cursor: pointer; }
+.cx-main { flex: 1; min-width: 0; padding: 32px 40px 48px; }
+.cx-top { display: none; }
+.cx-tabs { display: none; }
+.cx :focus-visible { outline: 3px solid #1890d0; outline-offset: 2px; }
+@media (max-width: 899.98px) {
+  .cx { display: block; }
+  .cx-rail { display: none; }
+  .cx-top { display: flex; align-items: center; justify-content: space-between; gap: 12px; background: #fff; border-bottom: 1px solid #d3dbe3; padding: 8px 16px; position: sticky; top: 0; z-index: 5; }
+  .cx-top img { height: 40px; width: auto; display: block; }
+  .cx-top .cx-out { color: #0c2448; }
+  .cx-main { padding: 20px 16px 96px; }
+  .cx-tabs { display: grid; grid-template-columns: repeat(5, 1fr); position: fixed; left: 0; right: 0; bottom: 0; z-index: 5; background: #fff; border-top: 1px solid #d3dbe3; padding: 4px 4px calc(4px + env(safe-area-inset-bottom)); }
+  .cx-tabs a { display: flex; align-items: center; justify-content: center; min-height: 48px; border-radius: 10px; font-size: 13px; font-weight: 500; color: #0c2448; text-decoration: none; }
+  .cx-tabs a[aria-current="page"] { background: #0d659f; color: #fff; }
+}
+/* On the preview deployment, its ribbon sits above the bottom tabs instead of on them. */
+@media (max-width: 899.98px) { body:has(.cx) [data-preview-ribbon] { bottom: calc(68px + env(safe-area-inset-bottom)); } }

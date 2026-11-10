@@ -9,7 +9,8 @@ export async function POST(request: Request) {
     // disappear is not, and there is no policy or function that would allow it.
     await rpc("review_set_state", {
       _id: id,
-      _published: form.get("published") === "yes",
+      // The site follows the review rule, not this flag, so it is always on.
+      _published: true,
       _archived: form.get("archived") === "yes",
       _reply: String(form.get("owner_reply") ?? "").trim(),
     }, session);

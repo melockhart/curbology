@@ -21,7 +21,7 @@ export function PreviewRibbon() {
   return (
     <A
       href="/preview"
-      className="ground-teal fixed bottom-3 right-3 z-[60] flex items-center gap-2 rounded-lg bg-teal px-3.5 py-2 text-xs font-medium text-ink shadow-lg print:hidden"
+      data-preview-ribbon className="ground-teal fixed bottom-3 right-3 z-[60] flex items-center gap-2 rounded-lg bg-teal px-3.5 py-2 text-xs font-medium text-ink shadow-lg print:hidden"
     >
       <span aria-hidden="true" className="h-1.5 w-1.5 rounded-full bg-ink" />
       Preview — sample data, nothing saves

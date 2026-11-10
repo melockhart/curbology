@@ -28,10 +28,7 @@ const publicRoutes = ["/", "/quote", "/review/thanks", "/review/thanks-low", "/r
  * credentials are supplied; without them the public sweep runs as before rather
  * than silently measuring sixteen copies of the sign-in page.
  */
-const adminRoutes = ["/sign-in", "/admin", "/admin/analytics", "/admin/activity", "/connections", "/admin/quotes", "/admin/rates", "/admin/leads",
-  "/admin/reviews", "/admin/bookings", "/admin/content", "/admin/forms", "/admin/seo",
-  "/admin/theme", "/admin/settings", "/admin/team", "/admin/team-access", "/admin/users",
-  "/admin/domain", "/admin/account"];
+const adminRoutes = ["/sign-in", "/admin", "/admin/quotes", "/admin/leads", "/admin/reviews", "/admin/rates", "/connections"];
 
 // /preview only exists in preview mode, where it is the index everything hangs
 // off — worth measuring, and a 404 everywhere else.

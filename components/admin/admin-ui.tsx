@@ -14,10 +14,10 @@ export function AdminHeader({
   eyebrow, title, intro, actions,
 }: { eyebrow?: string; title: string; intro?: string; actions?: ReactNode }) {
   return (
-    <header className="flex flex-wrap items-end justify-between gap-4 border-b border-[color:var(--console-line)] pb-6">
+    <header className="flex flex-wrap items-end justify-between gap-4">
       <div className="min-w-0">
-        {eyebrow && <p className="eyebrow">{eyebrow}</p>}
-        <h1 className="mt-1.5 font-display text-[28px] font-bold leading-tight tracking-tight">{title}</h1>
+        {eyebrow && <span className="sr-only">{eyebrow}</span>}
+        <h1 className="text-[34px] font-bold leading-tight">{title}</h1>
         {intro && <p className="mt-2 max-w-prose text-sm text-[color:var(--muted)]">{intro}</p>}
       </div>
       {actions && <div className="flex flex-wrap items-center gap-2">{actions}</div>}
@@ -30,11 +30,11 @@ export function Card({
 }: { title?: string; hint?: string; children: ReactNode; className?: string; padded?: boolean }) {
   return (
     <section
-      className={`rounded-lg border border-[color:var(--console-line)] bg-[color:var(--console-surface)] ${className}`}
+      className={`rounded-[14px] border border-[color:var(--console-line)] bg-[color:var(--console-surface)] ${className}`}
     >
       {title && (
         <div className="border-b border-[color:var(--console-line)] px-5 py-4">
-          <h2 className="font-display text-base font-bold">{title}</h2>
+          <h2 className="text-lg font-bold">{title}</h2>
           {hint && <p className="mt-1 text-sm text-[color:var(--muted)]">{hint}</p>}
         </div>
       )}
@@ -45,9 +45,9 @@ export function Card({
 
 export function Stat({ label, value, hint }: { label: string; value: ReactNode; hint?: string }) {
   return (
-    <div className="rounded-lg border border-[color:var(--console-line)] bg-[color:var(--console-surface)] px-5 py-4">
-      <p className="eyebrow">{label}</p>
-      <p className="mt-2 font-display text-3xl font-bold leading-none tabular-nums">{value}</p>
+    <div className="rounded-[14px] border border-[color:var(--console-line)] bg-[color:var(--console-surface)] px-5 py-4">
+      <p className="text-[30px] font-bold leading-none tabular-nums" style={{ fontFamily: '"Archivo Variable", Archivo, sans-serif', fontStretch: "75%" }}>{value}</p>
+      <p className="mt-1.5 text-sm font-semibold">{label}</p>
       {hint && <p className="mt-2 text-sm text-[color:var(--muted)]">{hint}</p>}
     </div>
   );
@@ -56,11 +56,11 @@ export function Stat({ label, value, hint }: { label: string; value: ReactNode; 
 export type Tone = "default" | "accent" | "success" | "warn" | "muted";
 
 const DOT: Record<Tone, string> = {
-  default: "#1a202c",
-  accent: "#04b8ba",
-  success: "#0f7a3d",
-  warn: "#7a2e12",
-  muted: "#4a5568",
+  default: "#0c2448",
+  accent: "#8a5a00",
+  success: "#14724a",
+  warn: "#a32f2f",
+  muted: "#566880",
 };
 
 /**
@@ -77,7 +77,7 @@ const DOT: Record<Tone, string> = {
  */
 export function Pill({ tone = "default", children }: { tone?: Tone; children: ReactNode }) {
   return (
-    <span className="inline-flex items-center gap-1.5 whitespace-nowrap font-mono text-[11px] font-medium uppercase tracking-wide text-ink">
+    <span className="inline-flex items-center gap-1.5 whitespace-nowrap text-sm font-semibold" style={{ color: DOT[tone] }}>
       <span aria-hidden="true" className="h-1.5 w-1.5 shrink-0 rounded-full" style={{ background: DOT[tone] }} />
       {children}
     </span>
@@ -85,8 +85,8 @@ export function Pill({ tone = "default", children }: { tone?: Tone; children: Re
 }
 
 export const fieldCls =
-  "mt-1.5 min-h-[40px] w-full rounded-md border border-ink/25 bg-[color:var(--console-surface)] px-3 py-2 " +
-  "text-sm outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-teal";
+  "mt-1.5 min-h-[44px] w-full rounded-[12px] border border-[#8796a8] bg-[color:var(--console-surface)] px-3 py-2 " +
+  "text-sm outline-none focus-visible:border-ink focus-visible:ring-2 focus-visible:ring-[#1890d0]";
 
 export function Field({
   label, hint, htmlFor, className = "", children,
@@ -109,12 +109,12 @@ export function Button({
 }) {
   const styles =
     weight === "loud"
-      ? "bg-ink text-paper hover:bg-slate"
-      : "border border-ink/25 hover:bg-ink/5";
+      ? "border border-ink bg-ink text-paper hover:bg-[#163a6d]"
+      : "border border-[color:var(--console-line)] bg-white hover:bg-[#f1f4f6]";
   return (
     <button
       type={type} name={name} value={value} formAction={formAction}
-      className={`min-h-[40px] rounded-md px-4 text-sm font-medium transition-colors ${styles}`}
+      className={`min-h-[44px] rounded-[12px] px-4 text-[15px] font-semibold transition-colors ${styles}`}
     >
       {children}
     </button>
@@ -167,7 +167,7 @@ export function Code({ children }: { children: ReactNode }) {
 
 export function Empty({ children }: { children: ReactNode }) {
   return (
-    <div className="rounded-lg border border-[color:var(--console-line)] bg-[color:var(--console-surface)] p-10 text-center text-[color:var(--muted)]">
+    <div className="rounded-[14px] border border-[color:var(--console-line)] bg-[color:var(--console-surface)] p-10 text-center text-[color:var(--muted)]">
       {children}
     </div>
   );
@@ -182,8 +182,8 @@ export function SaveBanner({ state, message }: { state?: string; message?: strin
   return (
     <p
       role="status"
-      className={`rounded-md border px-4 py-3 text-sm ${
-        ok ? "border-ink/20 bg-teal/15" : "border-[#7a2e12] bg-[#7a2e12]/10"
+      className={`rounded-[12px] border px-4 py-3 text-sm ${
+        ok ? "border-[color:var(--console-line)] bg-[#e8f3fa]" : "border-[#a32f2f] bg-white text-[#a32f2f]"
       }`}
     >
       {ok ? "Saved." : `Not saved. ${message ?? "The database refused the change."}`}

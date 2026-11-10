@@ -1,119 +1,92 @@
 import type { Metadata } from "next";
 import { configured } from "../../../lib/env";
-import { previewMode } from "../../../lib/preview";
-import { listLeads, listReviews, listBookings } from "../../../lib/db";
-import { AdminHeader, NotConfigured, Empty, Card, Stat, Pill, age } from "../../../components/admin/admin-ui";
+import { previewMode, previewQuotes } from "../../../lib/preview";
+import { listAllLeads, listReviews, type Review } from "../../../lib/db";
+import { currentRateCard, listQuotes } from "../../../lib/quote/store";
+import { AdminHeader, NotConfigured, Card, Stat, Pill, age } from "../../../components/admin/admin-ui";
 import { A } from "../../../components/link";
 
-export const metadata: Metadata = { title: "Dashboard" };
+export const metadata: Metadata = { title: "Today" };
+
+type Waiting = { kind: string; who: string; what: string; at: string; href: string };
+const DAY = 86_400_000;
+
+/** Reviews with no reply yet. A low rating shows how long until it posts, under the 48-hour rule. */
+function reviewsWaiting(reviews: Review[]): Waiting[] {
+  const now = Date.now();
+  return reviews
+    .filter((r) => !r.owner_reply && r.status !== "archived" && r.status !== "flagged")
+    .map((r) => {
+      const posts = new Date(r.created_at).getTime() + 2 * DAY;
+      const low = r.rating <= 2 && posts > now;
+      return { kind: "Review", who: r.name, what: low ? `${r.rating} stars, posts in ${Math.max(1, Math.ceil((posts - now) / 36e5))}h` : `${r.rating} stars, no reply yet`, at: r.created_at, href: "/admin/reviews" };
+    });
+}
 
 /**
- * "What needs me today", before anything offers a filter.
- *
- * Three queues, each showing only what is genuinely waiting on Tristen, oldest
- * first. If all three are empty the page says so plainly rather than rendering
- * three empty tables.
+ * What is waiting on Tristen, oldest first, in one list. The three counts above
+ * it are the same items, so the page never disagrees with itself.
  */
-export default async function AdminDashboard() {
+export default async function Today() {
   if (!configured() && !previewMode()) {
-    return (
-      <div className="space-y-8">
-        <AdminHeader eyebrow="Data" title="Dashboard" />
-        <NotConfigured />
-      </div>
-    );
+    return <div className="space-y-8"><AdminHeader title="Today" /><NotConfigured /></div>;
   }
 
-  const [leads, reviews, bookings] = await Promise.all([listLeads(), listReviews(), listBookings()]);
-  const newLeads = leads.filter((l) => l.status === "new");
-  const newReviews = reviews.filter((r) => r.status === "new");
-  const newBookings = bookings.filter((b) => b.state === "requested");
-  const nothing = !newLeads.length && !newReviews.length && !newBookings.length;
+  const [quotes, leads, reviews, rates] = await Promise.all([
+    previewMode() ? previewQuotes : listQuotes(),
+    listAllLeads(),
+    listReviews(),
+    previewMode() ? null : currentRateCard().catch(() => null),
+  ]);
+
+  const quoteWaiting: Waiting[] = quotes
+    .filter((q) => ["review", "reading", "outside"].includes(q.status))
+    .map((q) => ({ kind: "Quote", who: q.name ?? "Customer", what: q.status === "outside" ? "Outside the area" : "Needs a price", at: q.created_at, href: `/admin/quotes?id=${q.id}` }));
+  // Quote requests also create a lead. Counting both would show one customer twice.
+  const quoteLeads = new Set(quotes.map((q) => q.email).filter(Boolean));
+  const leadWaiting: Waiting[] = leads
+    .filter((l) => l.status === "new" && !(l.source_page === "/quote" && quoteLeads.has(l.email)))
+    .map((l) => ({ kind: "Message", who: l.name, what: l.service ?? "Contact form", at: l.created_at, href: "/admin/leads" }));
+  const reviewWaiting = reviewsWaiting(reviews);
+  const all = [...quoteWaiting, ...leadWaiting, ...reviewWaiting].sort((a, b) => a.at.localeCompare(b.at));
+  const ratesApproved = previewMode() ? false : Boolean(rates?.card.approvedAt);
 
   return (
-    <div className="space-y-8">
-      <AdminHeader
-        eyebrow="Data"
-        title="Dashboard"
-        intro={nothing ? undefined : "Oldest first. These are waiting on you."}
-      />
-
+    <div className="space-y-6">
+      <AdminHeader title="Today" intro="What is waiting on you, oldest first." />
       <div className="grid gap-4 sm:grid-cols-3">
-        <Stat label="Open quotes" value={leads.filter((l) => l.status !== "spam").length}
-          hint={newLeads.length ? `${newLeads.length} not yet contacted` : "All contacted"} />
-        <Stat label="Reviews live" value={reviews.filter((r) => r.published).length}
-          hint={`${reviews.length} received`} />
-        <Stat label="Testimonials" value={bookings.filter((b) => b.state === "received" || b.state === "published").length}
-          hint={newBookings.length ? `${newBookings.length} waiting to be scheduled` : "Nothing waiting"} />
+        <Stat label="Quotes need you" value={quoteWaiting.length} />
+        <Stat label="New messages" value={leadWaiting.length} />
+        <Stat label="Reviews to answer" value={reviewWaiting.length} />
       </div>
-
-      {nothing ? (
-        <Empty>
-          <p className="font-display text-xl text-ink">Nothing waiting</p>
-          <p className="mt-2">No new quote requests, reviews or booking requests.</p>
-        </Empty>
-      ) : (
-        <div className="space-y-6">
-          {newLeads.length > 0 && (
-            <Queue title="Quote requests" href="/admin/leads" count={newLeads.length}>
-              {newLeads.slice(0, 5).map((l) => (
-                <Row key={l.id} href="/admin/leads" primary={l.name}
-                  secondary={[l.service, l.town ?? l.address].filter(Boolean).join(" · ")}
-                  meta={age(l.created_at)} />
-              ))}
-            </Queue>
-          )}
-          {newReviews.length > 0 && (
-            <Queue title="Reviews" href="/admin/reviews" count={newReviews.length}>
-              {newReviews.slice(0, 5).map((r) => (
-                <Row key={r.id} href="/admin/reviews" primary={r.name}
-                  secondary={`${r.rating}★ · ${r.body.slice(0, 60)}${r.body.length > 60 ? "…" : ""}`}
-                  meta={age(r.created_at)} />
-              ))}
-            </Queue>
-          )}
-          {newBookings.length > 0 && (
-            <Queue title="Testimonial requests" href="/admin/bookings" count={newBookings.length}>
-              {newBookings.slice(0, 5).map((b) => (
-                <Row key={b.id} href="/admin/bookings" primary={b.name}
-                  secondary={b.requested_slots ?? ""} meta={age(b.created_at)} />
-              ))}
-            </Queue>
-          )}
-        </div>
+      <Card title="Waiting on you" padded={all.length === 0}>
+        {all.length === 0 ? (
+          <p className="text-sm text-[color:var(--muted)]">Nothing is waiting. New quotes, messages and reviews land here.</p>
+        ) : (
+          <ul className="divide-y divide-[color:var(--console-line)]">
+            {all.map((item, index) => (
+              <li key={`${item.href}-${index}`}>
+                <A href={item.href} className="flex items-start justify-between gap-4 px-5 py-4 hover:bg-[#f1f4f6]">
+                  <span className="min-w-0">
+                    <span className="block font-medium">{item.who}</span>
+                    <span className="block text-sm text-[color:var(--muted)]">{item.kind}: {item.what}</span>
+                  </span>
+                  <Pill tone="accent">{age(item.at)}</Pill>
+                </A>
+              </li>
+            ))}
+          </ul>
+        )}
+      </Card>
+      {!ratesApproved && (
+        <Card>
+          <div className="flex flex-wrap items-center justify-between gap-3">
+            <p className="text-sm"><strong className="font-semibold">Rates are not approved.</strong>{" "}
+              <span className="text-[color:var(--muted)]">Every quote comes to you until they are.</span></p>
+            <A href="/admin/rates" className="inline-flex min-h-[44px] items-center rounded-[12px] border border-[color:var(--console-line)] bg-white px-4 text-[15px] font-semibold hover:bg-[#f1f4f6]">Open rates</A>
+          </div>
+        </Card>
       )}
     </div>
-  );
-}
-
-function Queue({ title, href, count, children }: {
-  title: string; href: string; count: number; children: React.ReactNode;
-}) {
-  return (
-    <Card padded={false}>
-      <div className="flex items-baseline justify-between border-b border-[color:var(--console-line)] px-5 py-4">
-        <h2 className="font-display text-base font-bold">
-          {title} <span className="font-normal text-[color:var(--muted)]">({count})</span>
-        </h2>
-        <A href={href} className="text-sm underline underline-offset-4">See all</A>
-      </div>
-      <ul className="divide-y divide-[color:var(--console-line)]">{children}</ul>
-    </Card>
-  );
-}
-
-function Row({ href, primary, secondary, meta }: {
-  href: string; primary: string; secondary: string; meta: string;
-}) {
-  return (
-    <li>
-      <A href={href} className="flex items-center gap-4 px-5 py-3.5 hover:bg-ink/[0.03]">
-        <span className="min-w-0 flex-1">
-          <span className="block font-medium">{primary}</span>
-          {secondary && <span className="block truncate text-sm text-[color:var(--muted)]">{secondary}</span>}
-        </span>
-        <Pill tone="accent">{meta}</Pill>
-      </A>
-    </li>
   );
 }

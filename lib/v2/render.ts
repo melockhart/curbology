@@ -66,7 +66,8 @@ function reviewCard(review: Review, now: number): string {
 }
 
 function reviewParts(reviews: Review[], query: URLSearchParams, now: number) {
-  const live = reviews.filter((review) => review.status !== "archived" && review.status !== "flagged");
+  // "Done" in the console only clears the owner's list. Only spam is kept off the site.
+  const live = reviews.filter((review) => review.status !== "flagged");
   const counts = [5, 4, 3, 2, 1].map((n) => [n, live.filter((review) => review.rating === n).length] as const);
   const most = Math.max(1, ...counts.map(([, count]) => count));
   const hist = `<div class="stack g8">${counts
@@ -132,7 +133,7 @@ export async function renderPage(path: string, request: Request, status = 200): 
   if (page.id === "home") {
     // Only real reviews. With none yet, the section stands on its heading and links.
     const recent = (await loadReviews())
-      .filter((review) => review.status !== "archived" && review.status !== "flagged" && review.consented)
+      .filter((review) => review.status !== "flagged" && review.consented)
       .filter((review) => review.rating >= 3 || now - new Date(review.created_at).getTime() >= 2 * DAY)
       .slice(0, 3);
     const fan = (dv: string) =>

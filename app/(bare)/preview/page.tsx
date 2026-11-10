@@ -2,7 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { previewMode, previewPassword } from "../../../lib/preview";
 import { siteContent } from "../../../lib/cms";
-import { NAV_GROUPS } from "../../../lib/admin/nav-config";
+import { CONSOLE_PAGES } from "../../../components/admin/admin-shell";
 import { A } from "../../../components/link";
 
 export const metadata: Metadata = {
@@ -113,10 +113,9 @@ export default async function PreviewIndex() {
           </A>
         </p>
         <ul className="mt-6 grid gap-x-8 gap-y-1 sm:grid-cols-2">
-          {NAV_GROUPS.flatMap((g) => g.items).map((item) => (
+          {CONSOLE_PAGES.map((item) => (
             <li key={item.to} className="flex items-baseline gap-3 text-sm">
               <A href={item.to} className="underline underline-offset-4">{item.label}</A>
-              {item.hint && <span className="truncate text-[color:var(--muted)]">{item.hint}</span>}
             </li>
           ))}
         </ul>

@@ -66,7 +66,7 @@ export default async function RatesPage({
 
       <form action="/api/admin/quote-rates" method="post" className="space-y-6">
         <Card title="Rate card" padded={false}>
-          <div className="overflow-x-auto">
+          <div className="relative overflow-x-auto">
             <table className="w-full min-w-[36rem] text-sm">
               <thead>
                 <tr className="border-b border-[color:var(--console-line)] text-left">

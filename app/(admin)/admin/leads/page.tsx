@@ -66,7 +66,7 @@ function money(n: number): string {
 function Table({ rows, heading, dim = false }: { rows: Lead[]; heading: string; dim?: boolean }) {
   return (
     <Card title={heading} padded={false}>
-      <div className="overflow-x-auto">
+      <div className="relative overflow-x-auto">
         <table className="w-full min-w-[62rem] text-sm">
           <thead>
             <tr className="border-b border-[color:var(--console-line)] text-left">

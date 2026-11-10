@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import { configured, writable } from "../../../../lib/env";
 import { previewMode } from "../../../../lib/preview";
-import { listReviews } from "../../../../lib/db";
+import { listReviews, type Review } from "../../../../lib/db";
 import {
   AdminHeader, NotConfigured, NotWritable, Empty, Card, Stat, Pill, Button,
   SaveBanner, age, fieldCls,
@@ -9,16 +9,29 @@ import {
 
 export const metadata: Metadata = { title: "Reviews" };
 
+const DAY = 86_400_000;
+
+/** Where each review stands on the public site, by the same rule lib/v2/render.ts applies. */
+function siteStates(reviews: Review[]): Map<string, string> {
+  const now = Date.now();
+  return new Map(reviews.map((r) => {
+    if (!r.consented) return [r.id, "Rating counts, words private"];
+    const posts = new Date(r.created_at).getTime() + 2 * DAY;
+    if (r.rating <= 2 && posts > now) return [r.id, `Posts in ${Math.max(1, Math.ceil((posts - now) / 36e5))}h`];
+    return [r.id, "On the site"];
+  }));
+}
+
 /**
  * The review inbox.
  *
  * The full text is always shown, never a truncated preview — the decision to
  * publish depends on exactly the part a preview would cut.
  *
- * Publishing is per review and reversible. Nothing here deletes: a review can
- * be archived so it leaves the queue, and it stays readable. Curation is
- * choosing what the site shows; suppression is making it disappear, and this
- * screen deliberately only does the first.
+ * What the site shows follows the approved rule, not a per-review switch: 3 to 5
+ * stars post straight away, 1 and 2 stars after 48 hours, words only with the
+ * customer's consent, and every rating counts. Marking one done takes it off this
+ * list and nothing else, so no rating can be hidden from the public by hand.
  */
 export default async function ReviewsPage({
   searchParams,
@@ -29,7 +42,8 @@ export default async function ReviewsPage({
   }
 
   const reviews = await listReviews();
-  const live = reviews.filter((r) => r.published).length;
+  const states = siteStates(reviews);
+  const live = reviews.filter((r) => states.get(r.id) === "On the site").length;
   const average = reviews.length
     ? (reviews.reduce((t, r) => t + r.rating, 0) / reviews.length).toFixed(1)
     : "—";
@@ -39,7 +53,7 @@ export default async function ReviewsPage({
       <AdminHeader
         eyebrow="Work"
         title="Reviews"
-        intro="Every review lands here whatever it says. Nothing is routed by its rating, and nothing reaches the site until you publish it."
+        intro="Every review lands here whatever it says. 3 to 5 stars post straight away. 1 and 2 stars post after 48 hours, so you can reach the customer first. Words show only if the customer agreed."
       />
       <SaveBanner state={s} message={m} />
       {!writable() && <NotWritable />}
@@ -51,7 +65,7 @@ export default async function ReviewsPage({
       </div>
 
       {reviews.length === 0 ? (
-        <Empty>No reviews yet. They arrive here unpublished — nothing reaches the site until you say so.</Empty>
+        <Empty>No reviews yet. They arrive here the moment a customer sends one.</Empty>
       ) : (
         <ul className="space-y-4">
           {reviews.map((r) => (
@@ -66,10 +80,8 @@ export default async function ReviewsPage({
                     {"★".repeat(r.rating)}{"☆".repeat(5 - r.rating)}
                   </span>
                   {r.service && <Pill tone="muted">{r.service}</Pill>}
-                  <Pill tone={r.published ? "default" : "accent"}>
-                    {r.published ? "On the site" : "Not published"}
-                  </Pill>
-                  {r.status === "archived" && <Pill tone="muted">archived</Pill>}
+                  <Pill tone={states.get(r.id) === "On the site" ? "success" : "accent"}>{states.get(r.id)}</Pill>
+                  {r.status === "archived" && <Pill tone="muted">Done</Pill>}
                   <span className="ml-auto text-sm text-[color:var(--muted)]">{age(r.created_at)} ago</span>
                 </div>
 
@@ -78,8 +90,8 @@ export default async function ReviewsPage({
 
                 {!r.consented && (
                   <p className="mt-3 text-sm text-[color:var(--muted)]">
-                    They did not tick the box allowing their name and review on the site.
-                    Ask before publishing this one.
+                    They did not tick the box allowing their name and words on the site, so only
+                    their rating counts in the public numbers.
                   </p>
                 )}
 
@@ -89,20 +101,16 @@ export default async function ReviewsPage({
                   <div>
                     <label htmlFor={`reply-${r.id}`} className="block text-sm font-medium">
                       Your reply{" "}
-                      <span className="font-normal text-[color:var(--muted)]">— public if the site shows it</span>
+                      <span className="font-normal text-[color:var(--muted)]">— shown beside the review on the site</span>
                     </label>
                     <textarea id={`reply-${r.id}`} name="owner_reply" rows={2}
                       defaultValue={r.owner_reply ?? ""} className={fieldCls} />
                   </div>
                   <div className="flex flex-wrap items-center gap-4">
                     <label className="flex items-center gap-2 text-sm">
-                      <input type="checkbox" name="published" value="yes" defaultChecked={r.published} />
-                      Show on the site
-                    </label>
-                    <label className="flex items-center gap-2 text-sm">
                       <input type="checkbox" name="archived" value="yes" defaultChecked={r.status === "archived"} />
-                      Archive{" "}
-                      <span className="text-[color:var(--muted)]">(leaves the queue, stays readable)</span>
+                      Done{" "}
+                      <span className="text-[color:var(--muted)]">(off this list, still on the site)</span>
                     </label>
                     <span className="ml-auto"><Button>Save</Button></span>
                   </div>
