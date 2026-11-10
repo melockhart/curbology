@@ -2,9 +2,10 @@ import { runtimeEnv } from "./env";
 import { prefixed } from "./table-prefix";
 
 /**
- * When the database stops answering, every page would wait out each read in turn.
- * After one timeout, calls fail at once for a short spell, so pages fall back to
- * their defaults straight away and the database is tried again shortly after.
+ * For reads a public page can do without: when the database stops answering, a
+ * page would wait out each read in turn. After one timeout these reads fail at
+ * once for a short spell, and the page shows its default copy. Writes, sign-in
+ * and MCP calls do not go through this, so a slow moment never blocks them.
  */
 let downUntil = 0;
 export async function guarded(call: () => Promise<Response>): Promise<Response> {
@@ -12,7 +13,7 @@ export async function guarded(call: () => Promise<Response>): Promise<Response> 
   try {
     return await call();
   } catch (error) {
-    if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) downUntil = Date.now() + 30_000;
+    if (error instanceof Error && (error.name === "TimeoutError" || error.name === "AbortError")) downUntil = Date.now() + 15_000;
     throw error;
   }
 }
@@ -22,9 +23,9 @@ export function supabase(path: string, init: RequestInit = {}) {
   const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) throw new Error("Supabase is not configured");
   const target = path.startsWith("/rest/v1/") ? `/rest/v1/${prefixed(path.slice(9))}` : path;
-  return guarded(() => fetch(`${SUPABASE_URL}${target}`, {
-    // A slow database must not hang a page. Callers treat a timeout like any failed read.
-    signal: init.signal ?? AbortSignal.timeout(4000),
+  return fetch(`${SUPABASE_URL}${target}`, {
+    // Long enough for a busy shared database, short enough that nothing hangs.
+    signal: init.signal ?? AbortSignal.timeout(12000),
     ...init,
     headers: {
       apikey: SUPABASE_SECRET_KEY,
@@ -32,7 +33,7 @@ export function supabase(path: string, init: RequestInit = {}) {
       "Content-Type": "application/json",
       ...init.headers,
     },
-  }));
+  });
 }
 
 /**

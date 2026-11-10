@@ -14,8 +14,10 @@ import * as preview from "./preview";
 async function rest(path: string, init: RequestInit = {}) {
   const { SUPABASE_URL, SUPABASE_SECRET_KEY } = runtimeEnv();
   if (!SUPABASE_URL || !SUPABASE_SECRET_KEY) throw new Error("Supabase is not configured");
-  return guarded(() => fetch(`${SUPABASE_URL}/rest/v1/${prefixed(path)}`, {
-    signal: init.signal ?? AbortSignal.timeout(4000),
+  // Only reads take the fail-fast path. A form submission always gets its full chance.
+  const run = (init.method ?? "GET") === "GET" ? guarded : (call: () => Promise<Response>) => call();
+  return run(() => fetch(`${SUPABASE_URL}/rest/v1/${prefixed(path)}`, {
+    signal: init.signal ?? AbortSignal.timeout((init.method ?? "GET") === "GET" ? 6000 : 12000),
     ...init,
     headers: {
       apikey: SUPABASE_SECRET_KEY,

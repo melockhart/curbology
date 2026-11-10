@@ -1,7 +1,7 @@
 import { siteContent } from "../cms";
 import { configured } from "../env";
 import { previewMode, previewReviews } from "../preview";
-import { supabase } from "../service-db";
+import { guarded, supabase } from "../service-db";
 import { seoFor, siteSettings, type Review } from "../db";
 import pagesJson from "./pages.generated.json";
 import copyJson from "./copy.generated.json";
@@ -42,7 +42,7 @@ export function hasPage(path: string): boolean {
 async function loadReviews(): Promise<Review[]> {
   if (previewMode()) return previewReviews;
   if (!configured()) return [];
-  const response = await supabase("/rest/v1/reviews?select=*&order=created_at.desc&limit=200").catch(() => null);
+  const response = await guarded(() => supabase("/rest/v1/reviews?select=*&order=created_at.desc&limit=200", { signal: AbortSignal.timeout(6000) })).catch(() => null);
   if (!response?.ok) return [];
   return (await response.json()) as Review[];
 }

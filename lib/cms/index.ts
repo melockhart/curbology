@@ -3,7 +3,7 @@ import { cache } from "react";
 import { runtimeEnv, configured } from "../env";
 import { previewMode } from "../preview";
 import { applyOverrides, type Overrides } from "./core";
-import { supabase } from "../service-db";
+import { guarded, supabase } from "../service-db";
 import { verifyDraftCookie, DRAFT_COOKIE } from "./signing";
 
 /**
@@ -23,7 +23,7 @@ async function readPublished(): Promise<Overrides> {
   // publish reaches every visitor within TTL_MS.
   if (published && Date.now() - published.at < TTL_MS) return published.values;
   try {
-    const response = await supabase("/rest/v1/content_blocks?select=key,value");
+    const response = await guarded(() => supabase("/rest/v1/content_blocks?select=key,value", { signal: AbortSignal.timeout(6000) }));
     if (!response.ok) return remember(published?.values ?? {});
     const rows = (await response.json()) as { key: string; value: unknown }[];
     published = { at: Date.now(), values: Object.fromEntries(rows.map((row) => [row.key, row.value])) };
