@@ -4,9 +4,15 @@ import { redirect } from "next/navigation";
 import { previewMode, previewPassword } from "../../lib/preview";
 import { A } from "../../components/link";
 import { safePath } from "../../lib/safe-path";
+import "@fontsource-variable/archivo/wdth.css";
+import "../../components/admin/console.css";
 
 export const metadata: Metadata = { title: "Sign in", robots: { index: false, follow: false } };
 
+const field =
+  "mt-1.5 min-h-[44px] w-full rounded-[12px] border border-[#8796a8] bg-white px-3 py-2 text-[#0c2448] focus-visible:border-[#0c2448] focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-[#1890d0]";
+
+/** The approved sign-in screen: navy brand panel beside the form, stacked on a phone. */
 export default async function SignIn({
   searchParams,
 }: { searchParams: Promise<{ error?: string; redirect?: string }> }) {
@@ -15,51 +21,51 @@ export default async function SignIn({
   if (await currentUser()) redirect(back);
 
   return (
-    <div className="ground-paper flex min-h-screen items-center justify-center bg-[#f6f7f9] px-6">
-      <div className="w-full max-w-sm">
-        {/* eslint-disable-next-line @next/next/no-img-element */}
-        <img src="/brand/curbology-logo.png" alt="Curbology Exterior Services" className="mb-8 h-12 w-auto" />
-        <h1 className="font-display text-2xl font-bold">Console</h1>
-        {previewMode() && (
-          <p className="mt-3 rounded-lg border border-ink/20 bg-teal/15 px-3 py-2 text-sm">
-            {previewPassword() ? (
-              <>
-                Preview. Any email, plus the preview password —{" "}
-                <A href="/preview" className="underline underline-offset-4">every screen</A>.
-              </>
-            ) : (
-              <>
-                Preview, and the console is closed: no preview password is set on
-                this deployment. The rest of the build is at{" "}
-                <A href="/preview" className="underline underline-offset-4">/preview</A>.
-              </>
-            )}
-          </p>
-        )}
-
-        <form action="/api/sign-in" method="post" className="mt-6 space-y-4">
-          <input type="hidden" name="redirect" value={back} />
-          <div>
-            <label htmlFor="email" className="block text-sm font-medium">Email</label>
-            <input id="email" name="email" type="email" required autoComplete="username"
-              className="mt-1 min-h-[42px] w-full rounded-lg border border-ink/25 bg-paper px-3 py-2" />
-          </div>
-          <div>
-            <label htmlFor="password" className="block text-sm font-medium">Password</label>
-            <input id="password" name="password" type="password" required autoComplete="current-password"
-              className="mt-1 min-h-[42px] w-full rounded-lg border border-ink/25 bg-paper px-3 py-2" />
-          </div>
-          {error && (
-            <p role="alert" className="text-sm text-[color:var(--muted)]">
-              {/* The same message whether the address is unknown, not on the
-                  allowlist, or the password is wrong. Which of those it was is
-                  not something to tell someone who is not getting in. */}
-              {decodeURIComponent(error)}
+    <div className="si">
+      <section className="si-brand">
+        <span className="cx-mark si-mark">
+          {/* eslint-disable-next-line @next/next/no-img-element -- the logo, as on the site */}
+          <img src="/v2/logo.png" alt="Curbology" />
+        </span>
+        <div className="si-line">
+          <p className="si-big">Quotes, messages and reviews, in one place.</p>
+          <p className="si-small">For Curbology&apos;s team only.</p>
+        </div>
+      </section>
+      <main className="si-side">
+        <div className="si-card">
+          <h1 className="si-h1">Sign in</h1>
+          <p className="mt-1 text-sm text-[#3d5070]">Use your Opscend login.</p>
+          {previewMode() && (
+            <p className="mt-4 rounded-[12px] border border-[#d3dbe3] bg-[#e8f3fa] px-3 py-2 text-sm">
+              {previewPassword() ? (
+                <>Preview. Any email, plus the preview password. <A href="/preview" className="underline underline-offset-4">Every screen</A>.</>
+              ) : (
+                <>Preview, and the console is closed: no preview password is set here. The rest of the build is at{" "}
+                  <A href="/preview" className="underline underline-offset-4">/preview</A>.</>
+              )}
             </p>
           )}
-          <button className="min-h-[42px] w-full rounded-lg bg-ink px-5 text-paper hover:bg-slate">Sign in</button>
-        </form>
-      </div>
+          <form action="/api/sign-in" method="post" className="mt-5 space-y-4">
+            <input type="hidden" name="redirect" value={back} />
+            <div>
+              <label htmlFor="email" className="block text-sm font-semibold">Email</label>
+              <input id="email" name="email" type="email" required autoComplete="username" className={field} />
+            </div>
+            <div>
+              <label htmlFor="password" className="block text-sm font-semibold">Password</label>
+              <input id="password" name="password" type="password" required autoComplete="current-password" className={field} />
+            </div>
+            <button className="min-h-[46px] w-full rounded-[12px] bg-[#0c2448] px-5 text-[15px] font-semibold text-white hover:bg-[#163a6d]">Sign in</button>
+            {error && (
+              <p role="alert" className="text-sm font-semibold text-[#a32f2f]">
+                {/* One message whether the address is unknown, not allowed, or the password is wrong. */}
+                {decodeURIComponent(error)}
+              </p>
+            )}
+          </form>
+        </div>
+      </main>
     </div>
   );
 }

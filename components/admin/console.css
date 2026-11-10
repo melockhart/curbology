@@ -33,3 +33,23 @@
 }
 /* On the preview deployment, its ribbon sits above the bottom tabs instead of on them. */
 @media (max-width: 899.98px) { body:has(.cx) [data-preview-ribbon] { bottom: calc(68px + env(safe-area-inset-bottom)); } }
+
+/* Sign-in, from the approved draft. */
+.si { min-height: 100dvh; display: grid; grid-template-columns: 1fr 1fr; background: #f1f4f6; color: #0c2448; font-family: "Instrument Sans Variable", "Instrument Sans", sans-serif; }
+.si-brand { background: #0c2448; padding: 40px; display: flex; flex-direction: column; justify-content: space-between; gap: 32px; }
+.si-mark { align-self: flex-start; margin: 0; }
+.si-big, .si-h1 { font-family: "Archivo Variable", Archivo, sans-serif; font-stretch: 80%; letter-spacing: -.02em; font-weight: 700; }
+.si-big { margin: 0; color: #fff; font-size: clamp(32px, 3.4vw, 48px); line-height: 1.05; max-width: 14ch; }
+.si-small { margin: 12px 0 0; color: #c6d2e0; font-size: 15px; }
+.si-side { display: flex; align-items: center; justify-content: center; padding: 40px 16px; }
+.si-card { width: 100%; max-width: 380px; background: #fff; border: 1px solid #d3dbe3; border-radius: 16px; padding: 28px; }
+.si-h1 { margin: 0; font-size: 32px; line-height: 1.1; }
+.si :focus-visible { outline: 3px solid #1890d0; outline-offset: 2px; }
+@media (max-width: 899.98px) {
+  .si { grid-template-columns: 1fr; grid-template-rows: auto 1fr; }
+  .si-brand { padding: 16px; }
+  .si-mark img { height: 36px; }
+  .si-line { display: none; }
+  .si-side { align-items: flex-start; padding: 20px 16px 40px; }
+  .si-card { padding: 22px; }
+}
